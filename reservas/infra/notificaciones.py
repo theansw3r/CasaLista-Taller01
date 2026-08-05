@@ -9,6 +9,7 @@ import logging
 
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils import timezone
 
 from ..domain.puertos import Notificador
 
@@ -20,10 +21,12 @@ def _asunto(reserva) -> str:
 
 
 def _cuerpo(reserva) -> str:
+    # El cliente lee la hora de su cita en su propia zona horaria, no en UTC.
+    inicio = timezone.localtime(reserva.bloque.inicio)
     return (
         f"Hola {reserva.cliente.nombre},\n\n"
         f"Tu reserva con {reserva.profesional.nombre} quedo registrada.\n"
-        f"Fecha: {reserva.bloque.inicio:%d/%m/%Y %H:%M}\n"
+        f"Fecha: {inicio:%d/%m/%Y %H:%M}\n"
         f"Direccion: {reserva.direccion} ({reserva.zona})\n"
         f"Total: $ {reserva.total}\n"
         f"Estado: {reserva.get_estado_display()}\n\n"
