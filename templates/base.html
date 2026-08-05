@@ -9,8 +9,11 @@
     <nav>
         <a href="{% url 'portal:inicio' %}">CasaLista</a>
         {% if user.is_authenticated %}
+            {# solo un cliente puede reservar: al resto no se le ofrecen los enlaces #}
+            {% if user.cliente %}
             <a href="{% url 'portal:catalogo' %}">Reservar</a>
             <a href="{% url 'portal:mis-reservas' %}">Mis reservas</a>
+            {% endif %}
             Hola, {{ user.username }}.
             <form method="post" action="{% url 'cuentas:logout' %}" style="display:inline">
                 {% csrf_token %}

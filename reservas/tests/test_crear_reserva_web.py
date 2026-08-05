@@ -63,6 +63,15 @@ class CrearReservaWebViewTests(TestCase):
     def test_exige_autenticacion(self):
         self.assertEqual(self.client.get(self.url).status_code, 302)
 
+    def test_una_cuenta_sin_perfil_de_cliente_no_llega_al_formulario(self):
+        """El aviso llega ANTES de llenar el formulario, no despues."""
+        self.client.force_login(self.profesional.usuario)
+
+        respuesta = self.client.get(self.url, follow=True)
+
+        self.assertRedirects(respuesta, reverse("portal:inicio"))
+        self.assertContains(respuesta, "no tiene perfil de cliente")
+
     def test_servicio_inexistente_da_404(self):
         self.client.force_login(self.cliente.usuario)
 

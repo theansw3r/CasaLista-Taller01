@@ -10,7 +10,7 @@ ReservaService.
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.functional import cached_property
 from django.views.generic import ListView, TemplateView
@@ -22,11 +22,33 @@ from .models import Reserva, Servicio
 from .services import ReservaService
 
 
+class ClienteRequeridoMixin(LoginRequiredMixin):
+    """Exige sesion iniciada Y perfil de cliente.
+
+    El Service ya rechaza a un usuario sin perfil (VAL-06), pero lo hace al
+    final: el usuario llenaba el formulario entero para recibir el error.
+    Aqui se adelanta la misma condicion para no hacerle perder el trabajo.
+    Es una cortesia de la interfaz, no una regla nueva: la garantia sigue
+    estando en el Service.
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and not hasattr(request.user, "cliente"):
+            messages.warning(
+                request,
+                f"La cuenta '{request.user.username}' no tiene perfil de cliente, "
+                f"asi que no puede reservar. Inicia sesion con una cuenta de "
+                f"cliente o crea una en Registrarse.",
+            )
+            return redirect("portal:inicio")
+        return super().dispatch(request, *args, **kwargs)
+
+
 class InicioView(TemplateView):
     template_name = "index.html"
 
 
-class CatalogoView(LoginRequiredMixin, ListView):
+class CatalogoView(ClienteRequeridoMixin, ListView):
     """Paso 1: elegir que servicio se quiere contratar."""
 
     template_name = "reservas/catalogo.html"
@@ -40,7 +62,7 @@ class CatalogoView(LoginRequiredMixin, ListView):
         )
 
 
-class CrearReservaWebView(LoginRequiredMixin, FormView):
+class CrearReservaWebView(ClienteRequeridoMixin, FormView):
     """Paso 2: elegir horario y direccion. Mismo Service que la API."""
 
     template_name = "reservas/crear_reserva.html"
@@ -82,7 +104,7 @@ class CrearReservaWebView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class MisReservasListView(LoginRequiredMixin, ListView):
+class MisReservasListView(ClienteRequeridoMixin, ListView):
     """Lista las reservas del cliente autenticado."""
 
     model = Reserva
@@ -90,9 +112,6 @@ class MisReservasListView(LoginRequiredMixin, ListView):
     context_object_name = "reservas"
 
     def get_queryset(self):
-        cliente = getattr(self.request.user, "cliente", None)
-        if cliente is None:
-            return Reserva.objects.none()
-        return Reserva.objects.filter(cliente=cliente).select_related(
+        return Reserva.objects.filter(cliente=self.request.user.cliente).select_related(
             "profesional", "bloque"
         )

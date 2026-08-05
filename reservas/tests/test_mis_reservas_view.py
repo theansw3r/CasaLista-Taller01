@@ -40,9 +40,11 @@ class MisReservasListViewTests(TestCase):
 
         self.assertEqual(list(respuesta.context["reservas"]), [reserva_propia])
 
-    def test_usuario_sin_perfil_de_cliente_ve_lista_vacia(self):
+    def test_usuario_sin_perfil_de_cliente_es_redirigido_con_aviso(self):
+        """Antes veia una lista vacia, que sugeria que podia tener reservas."""
         self.client.force_login(self.profesional.usuario)
 
-        respuesta = self.client.get(self.url)
+        respuesta = self.client.get(self.url, follow=True)
 
-        self.assertEqual(list(respuesta.context["reservas"]), [])
+        self.assertRedirects(respuesta, reverse("portal:inicio"))
+        self.assertContains(respuesta, "no tiene perfil de cliente")

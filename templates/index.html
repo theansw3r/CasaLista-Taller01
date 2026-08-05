@@ -3,8 +3,13 @@
 {% block content %}
 <h1>CasaLista</h1>
 <p>Marketplace de reserva de servicios profesionales para el hogar.</p>
-{% if user.is_authenticated %}
+{% if user.cliente %}
 <p><a href="{% url 'portal:catalogo' %}">Reservar un servicio</a></p>
 <p><a href="{% url 'portal:mis-reservas' %}">Ver mis reservas</a></p>
+{% elif user.is_authenticated %}
+<p>
+    Tu cuenta no tiene perfil de cliente.
+    <a href="{% url 'cuentas:registro' %}">Crea una cuenta de cliente</a> para reservar.
+</p>
 {% endif %}
 {% endblock %}
