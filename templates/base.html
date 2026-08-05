@@ -9,6 +9,7 @@
     <nav>
         <a href="{% url 'portal:inicio' %}">CasaLista</a>
         {% if user.is_authenticated %}
+            <a href="{% url 'portal:crear-reserva' %}">Reservar</a>
             <a href="{% url 'portal:mis-reservas' %}">Mis reservas</a>
             Hola, {{ user.username }}.
             <form method="post" action="{% url 'cuentas:logout' %}" style="display:inline">
@@ -21,6 +22,13 @@
         {% endif %}
     </nav>
     <main>
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
 </body>

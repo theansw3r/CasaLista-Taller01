@@ -11,6 +11,7 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 from .domain.dinero import a_dinero
 
@@ -109,7 +110,11 @@ class BloqueDisponibilidad(models.Model):
         ordering = ["inicio"]
 
     def __str__(self) -> str:
-        return f"{self.profesional.nombre}: {self.inicio:%d/%m %H:%M}-{self.fin:%H:%M}"
+        # Django devuelve datetimes en UTC al leerlos de la base; hay que
+        # convertirlos a la zona local antes de mostrarlos.
+        inicio = timezone.localtime(self.inicio)
+        fin = timezone.localtime(self.fin)
+        return f"{self.profesional.nombre}: {inicio:%d/%m %H:%M}-{fin:%H:%M}"
 
     @property
     def duracion_minutos(self) -> int:
