@@ -13,6 +13,10 @@ class ReglaDeNegocioViolada(Exception):
     codigo = "RN-00"
     estado_http = 409
 
+    def como_respuesta(self) -> dict:
+        """Representacion serializable del error, sin filtrar detalles internos."""
+        return {"codigo": self.codigo, "error": str(self)}
+
 
 # --- Validaciones estructurales de la peticion ------------------------------
 

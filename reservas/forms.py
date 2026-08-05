@@ -6,9 +6,21 @@ Si el profesional cubre la zona o si el bloque esta libre son preguntas de
 negocio y se responden en el dominio.
 """
 
+import json
+
 from django import forms
 
 from .dto import CrearReservaCommand, LineaSolicitada
+
+
+def datos_del_request(request):
+    """Extrae el cuerpo del request acepte o no JSON, sin ensuciar la vista."""
+    if request.content_type == "application/json":
+        try:
+            return json.loads(request.body or "{}")
+        except ValueError:
+            return {}
+    return request.POST
 
 
 class CrearReservaForm(forms.Form):
