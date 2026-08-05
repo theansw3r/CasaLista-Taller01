@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Mis reservas{% endblock %}
+{% block content %}
+<h1>Mis reservas</h1>
+<ul>
+{% for reserva in reservas %}
+    <li>
+        Reserva #{{ reserva.pk }} con {{ reserva.profesional.nombre }}
+        - {{ reserva.bloque.inicio|date:"d/m/Y H:i" }}
+        - $ {{ reserva.total }}
+        - {{ reserva.get_estado_display }}
+    </li>
+{% empty %}
+    <li>Todavia no tienes reservas.</li>
+{% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CasaLista{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'portal:inicio' %}">CasaLista</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'portal:mis-reservas' %}">Mis reservas</a>
+            Hola, {{ user.username }}.
+            <form method="post" action="{% url 'cuentas:logout' %}" style="display:inline">
+                {% csrf_token %}
+                <button type="submit">Cerrar sesion</button>
+            </form>
+        {% else %}
+            <a href="{% url 'cuentas:registro' %}">Registrarse</a>
+            <a href="{% url 'cuentas:login' %}">Iniciar sesion</a>
+        {% endif %}
+    </nav>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

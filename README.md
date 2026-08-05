@@ -35,40 +35,13 @@ $env:NOTIFICADOR_TYPE="MOCK"; $env:TARIFA_TYPE="BASE";     python manage.py semb
 $env:NOTIFICADOR_TYPE="REAL"; $env:TARIFA_TYPE="DINAMICA"; python manage.py sembrar_demo
 ```
 
-## Endpoint
+## Paginas
 
-```
-POST /api/reservas/
+| Ruta | Que hace |
+|---|---|
+| `/` | inicio |
+| `/cuentas/registro/` | registro de un cliente nuevo |
+| `/cuentas/login/` `/cuentas/logout/` | sesion |
+| `/mis-reservas/` | reservas del cliente autenticado |
+| `POST /api/reservas/` | crea una reserva (endpoint JSON) |
 
-{
-  "bloque_id": 1,
-  "direccion": "Calle 30 #45-12",
-  "zona": "Laureles",
-  "servicios": [{"servicio_id": 1, "cantidad": 1}]
-}
-```
-
-Responde `201` con la reserva creada, o un error con el codigo de la regla que
-se violo:
-
-```json
-{"codigo": "RN-07", "error": "El profesional Pedro Osorio no cubre la zona Sabaneta."}
-```
-
-## Estructura
-
-```
-reservas/
-├── views.py          vista (solo traduce HTTP)
-├── services.py       ReservaService
-├── models.py
-├── domain/
-│   ├── reserva_builder.py    Builder
-│   ├── puertos.py            interfaces
-│   ├── tarifas.py            estrategias de precio
-│   └── excepciones.py
-├── infra/
-│   ├── factories.py          Factories
-│   └── notificaciones.py
-└── tests/
-```
