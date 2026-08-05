@@ -7,17 +7,12 @@ Los modelos guardan estado y el comportamiento que es intrinsecamente suyo
 coordinan varias entidades NO viven aqui: viven en el Builder y en el Service.
 """
 
-from decimal import ROUND_HALF_UP, Decimal
+from decimal import Decimal
 
 from django.conf import settings
 from django.db import models
 
-CENTAVOS = Decimal("0.01")
-
-
-def a_dinero(valor: Decimal) -> Decimal:
-    """Normaliza cualquier calculo monetario a dos decimales."""
-    return Decimal(valor).quantize(CENTAVOS, rounding=ROUND_HALF_UP)
+from .domain.dinero import a_dinero
 
 
 class Cliente(models.Model):
