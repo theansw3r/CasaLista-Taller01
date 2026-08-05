@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Servicios disponibles{% endblock %}
+{% block content %}
+<h1>Servicios disponibles</h1>
+<table border="1" cellpadding="6">
+    <tr>
+        <th>Profesional</th>
+        <th>Servicio</th>
+        <th>Precio base</th>
+        <th>Duracion</th>
+        <th>Zonas que cubre</th>
+        <th></th>
+    </tr>
+    {% for servicio in servicios %}
+    <tr>
+        <td>{{ servicio.profesional.nombre }}</td>
+        <td>{{ servicio.nombre }}</td>
+        <td>$ {{ servicio.precio_base }}</td>
+        <td>{{ servicio.duracion_minutos }} min</td>
+        <td>{{ servicio.profesional.zonas_cobertura }}</td>
+        <td><a href="{% url 'portal:crear-reserva' servicio.pk %}">Reservar</a></td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6">
+            No hay servicios cargados. Corre
+            <code>python manage.py sembrar_catalogo</code>.
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

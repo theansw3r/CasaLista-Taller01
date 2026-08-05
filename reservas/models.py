@@ -57,13 +57,16 @@ class Profesional(models.Model):
     def __str__(self) -> str:
         return self.nombre
 
+    def zonas_lista(self) -> list[str]:
+        """Zonas cubiertas, ya limpias. Alimenta el desplegable del formulario."""
+        return [z.strip() for z in self.zonas_cobertura.split(",") if z.strip()]
+
     def cubre_zona(self, zona: str) -> bool:
         """RN-07: la cobertura del profesional debe incluir la zona del cliente."""
         objetivo = (zona or "").strip().casefold()
         if not objetivo:
             return False
-        cubiertas = {z.strip().casefold() for z in self.zonas_cobertura.split(",")}
-        return objetivo in cubiertas
+        return objetivo in {z.casefold() for z in self.zonas_lista()}
 
 
 class Servicio(models.Model):

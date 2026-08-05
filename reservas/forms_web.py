@@ -1,40 +1,56 @@
 """Formulario HTML para crear una reserva desde el navegador.
 
-Es una alternativa de interfaz al endpoint JSON (`forms.CrearReservaForm`):
-ambos terminan armando el mismo `CrearReservaCommand` y llamando al mismo
-`ReservaService`. Eso es lo que demuestra que la logica no depende de HTTP.
+Es una interfaz alterna al endpoint JSON (`forms.CrearReservaForm`): ambos
+arman el mismo `CrearReservaCommand` y llaman al mismo `ReservaService`.
+
+El formulario se construye SIEMPRE alrededor de un servicio ya elegido. Con
+eso, los horarios y las zonas que se ofrecen son solo los de ese profesional,
+y las reglas RN-02 y RN-07 se vuelven imposibles de violar desde la interfaz.
+El Builder las sigue validando igual: la interfaz evita el error, el dominio
+lo garantiza.
 """
 
 from django import forms
 
 from .dto import CrearReservaCommand, LineaSolicitada
-from .models import BloqueDisponibilidad, Servicio
+from .models import BloqueDisponibilidad, Reserva
 
 
 class CrearReservaWebForm(forms.Form):
-    servicio = forms.ModelChoiceField(
-        queryset=Servicio.objects.filter(
-            activo=True, profesional__verificado=True
-        ).select_related("profesional"),
-        label="Servicio",
-    )
     bloque = forms.ModelChoiceField(
-        queryset=BloqueDisponibilidad.objects.filter(
-            estado=BloqueDisponibilidad.Estado.LIBRE
-        ).select_related("profesional"),
+        queryset=BloqueDisponibilidad.objects.none(),
         label="Horario disponible",
-        help_text="Debe ser un bloque del mismo profesional que el servicio elegido.",
+        empty_label=None,
     )
-    direccion = forms.CharField(max_length=180)
-    zona = forms.CharField(max_length=80)
+    zona = forms.ChoiceField(choices=(), label="Zona")
+    direccion = forms.CharField(max_length=180, label="Direccion")
+    cantidad = forms.IntegerField(min_value=1, max_value=10, initial=1)
+
+    def __init__(self, *args, servicio, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.servicio = servicio
+        profesional = servicio.profesional
+
+        self.fields["bloque"].queryset = (
+            BloqueDisponibilidad.objects.filter(
+                profesional=profesional,
+                estado=BloqueDisponibilidad.Estado.LIBRE,
+            )
+            .exclude(reservas__estado__in=Reserva.ESTADOS_ACTIVOS)
+            .order_by("inicio")
+        )
+        self.fields["zona"].choices = [(z, z) for z in profesional.zonas_lista()]
 
     def a_comando(self, usuario_id: int) -> CrearReservaCommand:
-        servicio = self.cleaned_data["servicio"]
-        bloque = self.cleaned_data["bloque"]
+        datos = self.cleaned_data
         return CrearReservaCommand(
             usuario_id=usuario_id,
-            bloque_id=bloque.pk,
-            direccion=self.cleaned_data["direccion"],
-            zona=self.cleaned_data["zona"],
-            lineas=(LineaSolicitada(servicio_id=servicio.pk, cantidad=1),),
+            bloque_id=datos["bloque"].pk,
+            direccion=datos["direccion"],
+            zona=datos["zona"],
+            lineas=(
+                LineaSolicitada(
+                    servicio_id=self.servicio.pk, cantidad=datos["cantidad"]
+                ),
+            ),
         )
