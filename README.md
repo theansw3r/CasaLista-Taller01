@@ -1,154 +1,63 @@
 # CasaLista — Entrega 1
 
-Marketplace de reserva de servicios profesionales para el hogar en el Área
-Metropolitana del Valle de Aburrá.
-
-**Entrega No. 1: Núcleo de Negocio y Exposición de API Profesional**
-Arquitectura de Software 2026 — Prof. Nicolás Ramírez Vélez
-
-La documentación técnica completa está en [`docs/wiki/`](docs/wiki) y en la
-Wiki del repositorio.
-
----
-
-## Qué se implementó
-
-| Requisito de la entrega | Dónde está |
-|---|---|
-| 50–60 % de las clases de dominio | 8 de 10 clases del diagrama (80 %) — ver [Modelo de Dominio](docs/wiki/01-Modelo-de-Dominio.md) |
-| Service Layer, sin lógica en views ni serializers | un `services.py` por app — ver [Arquitectura por Capas](docs/wiki/03-Arquitectura-por-Capas.md) |
-| Serializers + `APIView` + códigos HTTP | `apps/*/api/` — ver [Referencia de la API](docs/wiki/07-Referencia-de-la-API.md) |
-| **Builder** en la entidad más compleja | `apps/reservas/dominio/reserva_builder.py` |
-| **Factory** para dependencia externa y variante de lógica | 3 factories — ver [Patrones Creacionales](docs/wiki/04-Patrones-Creacionales.md) |
-| Preparación para API Gateway | ver [API Gateway](docs/wiki/06-API-Gateway.md) |
-
-128 pruebas automáticas cubren las reglas de negocio, la orquestación de los
-servicios y los códigos de estado de la API.
-
----
+Marketplace de reserva de servicios para el hogar. Entrega 1 de Arquitectura
+de Software: núcleo de negocio + API con Django REST Framework.
 
 ## Instalación
 
-Requiere Python 3.11 o superior.
-
 ```bash
 python -m venv .venv
-
-# Windows
-.venv\Scripts\activate
-# Linux / macOS
-source .venv/bin/activate
+.venv\Scripts\activate        # Linux/macOS: source .venv/bin/activate
 
 pip install -r requirements.txt
-cp .env.example .env          # copy .env.example .env en Windows
+copy .env.example .env        # Linux/macOS: cp .env.example .env
 
 python manage.py migrate
 python manage.py sembrar_demo
 python manage.py runserver
 ```
 
-`sembrar_demo` crea un profesional verificado con catálogo y tres franjas de
-agenda, un cliente, y ejecuta el flujo completo (reserva → pago →
-confirmación) usando los mismos servicios que usa la API. Deja **dos franjas
-libres** para poder demostrar el flujo en vivo.
-
-### Comprobar que todo funciona
+`sembrar_demo` crea un profesional verificado, catálogo, agenda y hace una
+reserva de ejemplo (usa los mismos servicios que la API, no crea nada a
+mano).
 
 ```bash
-python manage.py test          # 128 pruebas
+python manage.py test    # corre las pruebas
 ```
 
----
+## Dónde ver la API
 
-## Puntos de entrada
-
-| URL | Qué es |
-|---|---|
-| `http://localhost:8000/api/docs/` | documentación interactiva (Swagger) |
-| `http://localhost:8000/api/schema/` | contrato OpenAPI que consume el Gateway |
-| `http://localhost:8000/api/v1/salud/` | estado de la instancia |
-| `http://localhost:8000/admin/` | panel para verificar profesionales (RN-07) |
-
-Para el admin: `python manage.py createsuperuser`.
-
----
-
-## Prueba rápida del flujo completo
-
-```bash
-# 1. Token (las credenciales las imprime sembrar_demo)
-curl -X POST http://localhost:8000/api/v1/cuentas/token/ \
-  -H "Content-Type: application/json" \
-  -d '{"username": "laura@correo.com", "password": "casalista2026"}'
-
-# 2. Buscar profesionales que cubran una zona
-curl "http://localhost:8000/api/v1/catalogo/profesionales/?zona=Laureles"
-
-# 3. Ver franjas libres (sembrar_demo deja dos sin reservar)
-curl "http://localhost:8000/api/v1/reservas/disponibilidad/?profesional_id=1"
-
-# 4. Reservar — dispara el Builder y las 2 Factories de reservas.
-#    Use un bloque_id de los que devolvió el paso 3.
-curl -X POST http://localhost:8000/api/v1/reservas/ \
-  -H "Authorization: Bearer <TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"bloque_id": <ID_LIBRE>, "direccion": "Calle 33 #70-21", "zona": "Laureles",
-       "servicios": [{"servicio_id": 1, "cantidad": 1}]}'
-
-# 5. Pagar — dispara la Factory de pasarelas y confirma la reserva (RN-03)
-curl -X POST http://localhost:8000/api/v1/pagos/ \
-  -H "Authorization: Bearer <TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"reserva_id": <ID_RESERVA>, "medio": "TARJETA"}'
-```
-
-Para ver los errores de negocio: repetir el paso 4 sobre la misma franja
-devuelve `409 RN-01`, y cambiar la zona a `"Sabaneta"` devuelve `409 RN-07`.
-
----
-
-## Cambiar el comportamiento sin tocar código
-
-Las tres Factories leen su implementación del entorno:
-
-| Variable | Valores | Efecto |
-|---|---|---|
-| `NOTIFICADOR_TYPE` | `MOCK` / `REAL` | log en consola / correo real |
-| `TARIFA_TYPE` | `BASE` / `DINAMICA` | suma simple / recargo nocturno y fin de semana |
-| `PASARELA_PAGO_TYPE` | `SIMULADA` / `TARJETA` / `PSE` | aprueba siempre / adaptador real |
-
-```bash
-# La misma reserva, con recargo nocturno y de fin de semana:
-TARIFA_TYPE=DINAMICA python manage.py sembrar_demo --reiniciar
-```
-
-En PowerShell: `$env:TARIFA_TYPE="DINAMICA"; python manage.py sembrar_demo --reiniciar`
-
----
+- `http://localhost:8000/api/docs/` — Swagger
+- `http://localhost:8000/api/v1/salud/`
+- `http://localhost:8000/admin/` — para verificar profesionales (`createsuperuser`)
 
 ## Estructura
 
 ```
-config/            configuración y tabla de rutas raíz
 apps/
-  comun/           núcleo compartido (dinero, errores, factory base)
-  cuentas/         Usuario, Cliente, Profesional
-  catalogo/        Servicio
-  reservas/        BloqueDisponibilidad, Reserva, DetalleReserva  ← Builder
-  pagos/           Pago                                           ← Factory de pasarelas
-docs/wiki/         documentación técnica
+  comun/       # cosas compartidas (dinero, errores, factory base)
+  cuentas/     # Usuario, Cliente, Profesional
+  catalogo/    # Servicio
+  reservas/    # BloqueDisponibilidad, Reserva, DetalleReserva  (acá está el Builder)
+  pagos/       # Pago  (acá está la Factory de pasarelas)
 ```
 
-Cada app tiene la misma estructura interna por capas:
+Cada app tiene: `models.py` (solo datos), `dominio/` (reglas de negocio y el
+Builder), `services.py` (un caso de uso por clase), `infraestructura/`
+(Factories y adaptadores) y `api/` (serializers + views + urls).
 
-```
-models.py          solo datos y restricciones de integridad
-dominio/           reglas de negocio, puertos, Builder
-services.py        Service Layer: una clase por flujo de negocio
-infraestructura/   adaptadores y Factories
-api/               serializers, APIViews y rutas
-tests/
-```
+Documentación más detallada en [`docs/wiki/`](docs/wiki):
 
-La justificación de esta estructura está en
-[Estructura del Proyecto](docs/wiki/02-Estructura-del-Proyecto.md).
+- [Estructura de carpetas](docs/wiki/01-Estructura-de-Carpetas.md)
+- [Diagrama de secuencia](docs/wiki/02-Diagrama-de-Secuencia.md)
+- [Preparación para API Gateway](docs/wiki/03-API-Gateway.md)
+
+## Cambiar comportamiento sin tocar código
+
+Tres variables en `.env` controlan qué implementación usan las Factories:
+
+| Variable | Valores | Qué cambia |
+|---|---|---|
+| `NOTIFICADOR_TYPE` | `MOCK` / `REAL` | log en consola / correo real |
+| `TARIFA_TYPE` | `BASE` / `DINAMICA` | precio normal / con recargo nocturno y fin de semana |
+| `PASARELA_PAGO_TYPE` | `SIMULADA` / `TARJETA` / `PSE` | siempre aprueba / adaptador real |
