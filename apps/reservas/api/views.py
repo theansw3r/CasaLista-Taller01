@@ -21,6 +21,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.comun.api.paginacion import respuesta_paginada
 from apps.reservas.api.serializers import (
     AbrirDisponibilidadSerializer,
     BloqueSerializer,
@@ -69,9 +70,7 @@ class DisponibilidadView(APIView):
             profesional_id=filtros.validated_data["profesional_id"],
             desde=filtros.validated_data.get("desde"),
         )
-        return Response(
-            BloqueSerializer(bloques, many=True).data, status=status.HTTP_200_OK
-        )
+        return respuesta_paginada(self, request, bloques, BloqueSerializer)
 
     @extend_schema(
         summary="Publicar una franja de disponibilidad",
@@ -110,9 +109,7 @@ class ReservasView(APIView):
     )
     def get(self, request):
         reservas = self.servicio_consulta().reservas_de(request.user.pk)
-        return Response(
-            ReservaSerializer(reservas, many=True).data, status=status.HTTP_200_OK
-        )
+        return respuesta_paginada(self, request, reservas, ReservaSerializer)
 
     @extend_schema(
         summary="Crear una reserva (Builder + Factory)",

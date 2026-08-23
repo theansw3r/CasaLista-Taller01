@@ -5,11 +5,16 @@ import os
 import sys
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-# Carga el .env (si existe) ANTES de importar settings, porque settings lee
+# Se carga el .env (si existe) ANTES de importar settings, porque settings lee
 # las variables de entorno en tiempo de import.
-load_dotenv(Path(__file__).resolve().parent / ".env")
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(Path(__file__).resolve().parent / ".env")
+except ImportError:
+    # Sin python-dotenv el proyecto sigue funcionando: solo hay que exportar
+    # las variables a mano. No vale la pena romper aqui por esto.
+    pass
 
 
 def main() -> None:

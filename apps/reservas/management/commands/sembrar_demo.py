@@ -56,11 +56,13 @@ class Command(BaseCommand):
         profesional = self._crear_profesional()
         servicios = self._crear_catalogo(profesional)
         cliente = self._crear_cliente()
-        bloque = self._abrir_agenda(profesional)
-        reserva = self._crear_reserva(cliente, bloque, servicios)
+        # Se abren tres franjas y solo se reserva la primera: las otras dos
+        # quedan libres para poder demostrar el flujo completo en vivo.
+        bloques = self._abrir_agenda(profesional, cuantas=3)
+        reserva = self._crear_reserva(cliente, bloques[0], servicios)
         pago = self._pagar(cliente, reserva)
 
-        self._resumen(profesional, cliente, bloque, reserva, pago)
+        self._resumen(profesional, cliente, bloques, reserva, pago)
 
     # ------------------------------------------------------------------
     @transaction.atomic
@@ -128,29 +130,37 @@ class Command(BaseCommand):
             )
         )
 
-    def _abrir_agenda(self, profesional: Profesional) -> BloqueDisponibilidad:
-        # Manana a las 9:00, dos horas. Se busca un hueco libre para poder
-        # correr el comando varias veces sin chocar con AGD-03.
+    def _abrir_agenda(
+        self, profesional: Profesional, cuantas: int = 3
+    ) -> list[BloqueDisponibilidad]:
+        """Publica `cuantas` franjas de dos horas en dias consecutivos.
+
+        Se busca un hueco libre antes de cada una para poder correr el comando
+        varias veces sin chocar con AGD-03 (franjas solapadas).
+        """
+        agenda = AgendaService()
+        bloques = []
         inicio = (timezone.localtime() + timedelta(days=1)).replace(
             hour=9, minute=0, second=0, microsecond=0
         )
-        while True:
-            libre = not BloqueDisponibilidad.objects.filter(
+        while len(bloques) < cuantas:
+            ocupado = BloqueDisponibilidad.objects.filter(
                 profesional=profesional,
                 inicio__lt=inicio + timedelta(hours=2),
                 fin__gt=inicio,
             ).exists()
-            if libre:
-                break
+            if not ocupado:
+                bloques.append(
+                    agenda.abrir_disponibilidad(
+                        AbrirDisponibilidadCommand(
+                            usuario_id=profesional.usuario_id,
+                            inicio=inicio,
+                            fin=inicio + timedelta(hours=2),
+                        )
+                    )
+                )
             inicio += timedelta(days=1)
-
-        return AgendaService().abrir_disponibilidad(
-            AbrirDisponibilidadCommand(
-                usuario_id=profesional.usuario_id,
-                inicio=inicio,
-                fin=inicio + timedelta(hours=2),
-            )
-        )
+        return bloques
 
     def _crear_reserva(self, cliente, bloque, servicios) -> Reserva:
         return ReservaService().crear_reserva(
@@ -176,13 +186,15 @@ class Command(BaseCommand):
         )
 
     # ------------------------------------------------------------------
-    def _resumen(self, profesional, cliente, bloque, reserva, pago) -> None:
+    def _resumen(self, profesional, cliente, bloques, reserva, pago) -> None:
         reserva.refresh_from_db()
         self.stdout.write(self.style.SUCCESS("\nDatos de demo listos.\n"))
         self.stdout.write(f"  Profesional : {profesional.nombre} (verificado)")
         self.stdout.write(f"  Cliente     : {cliente.nombre} / {CONTRASENA}")
         self.stdout.write(f"  Correo      : {cliente.usuario.username}")
-        self.stdout.write(f"  Franja      : {bloque}")
+        self.stdout.write(f"  Franja      : {bloques[0]} (reservada)")
+        for bloque in bloques[1:]:
+            self.stdout.write(f"  Franja libre: id={bloque.pk}  {bloque}")
         self.stdout.write(
             f"  Reserva #{reserva.pk}: total $ {reserva.total} "
             f"(tarifa {reserva.tarifa_aplicada}), estado {reserva.estado}"

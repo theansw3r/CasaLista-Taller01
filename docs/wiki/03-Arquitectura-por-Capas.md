@@ -394,14 +394,14 @@ class Notificador(ABC):
 
 ```bash
 python manage.py test
-# Ran 127 tests in 0.610s — OK
+# Ran 128 tests in 0.510s — OK
 ```
 
 | Qué se prueba | Archivo | Pruebas |
 |---|---|---|
 | Reglas del dominio (Builder) | `reservas/tests/test_reserva_builder.py` | 16 |
 | Orquestación de los servicios | `reservas/tests/test_services.py` | 19 |
-| Códigos HTTP de la API | `reservas/tests/test_api.py` | 25 |
+| Códigos HTTP de la API | `reservas/tests/test_api.py` | 26 |
 | Factories | `reservas/tests/test_factories.py` | 12 |
 | Pagos (RN-03) | `pagos/tests/test_pagos.py` | 14 |
 | Cobertura (RN-07) y registro | `cuentas/tests/test_cuentas.py` | 15 |

@@ -1,10 +1,16 @@
 """
 Paginacion estandar de la API.
 
-Se define una sola clase y se aplica por defecto a todos los listados. Que
-todos los listados respondan con la misma envoltura es lo que permite que un
-cliente (o el Gateway) escriba una sola vez la logica de "traer la siguiente
-pagina".
+Hay una sola clase y todos los listados la usan. Que todos respondan con la
+misma envoltura es lo que permite que un cliente (o el API Gateway) escriba
+una sola vez la logica de "traer la siguiente pagina".
+
+Sobre por que hace falta el ayudante `respuesta_paginada`
+---------------------------------------------------------
+`DEFAULT_PAGINATION_CLASS` de DRF solo se aplica sola en las vistas que
+heredan de `GenericAPIView`. Este proyecto usa `APIView` a proposito, para
+tener control total de la peticion, asi que la paginacion hay que invocarla
+explicitamente. El ayudante evita repetir esas cuatro lineas en cada listado.
 """
 
 from rest_framework.pagination import PageNumberPagination
@@ -28,3 +34,15 @@ class PaginacionEstandar(PageNumberPagination):
                 "resultados": data,
             }
         )
+
+
+def respuesta_paginada(vista, request, objetos, serializer) -> Response:
+    """Pagina una lista y la serializa con la envoltura estandar.
+
+    Ningun listado de la API devuelve una coleccion sin limite: con suficientes
+    reservas o profesionales, una respuesta sin paginar tumba la memoria del
+    proceso y el tiempo de respuesta del cliente.
+    """
+    paginador = PaginacionEstandar()
+    pagina = paginador.paginate_queryset(objetos, request, view=vista)
+    return paginador.get_paginated_response(serializer(pagina, many=True).data)

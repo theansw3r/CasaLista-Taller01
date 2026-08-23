@@ -38,7 +38,7 @@ completa** sobre esa base:
 | Manejo de errores | `try/except` en cada vista | **manejador central**, cero `try/except` en las vistas |
 | Autenticación | sesión de Django | **JWT sin estado** (validable por el Gateway) |
 | Contrato | ninguno | **OpenAPI** publicado en `/api/schema/` |
-| Pruebas | 6 archivos | **127 pruebas** |
+| Pruebas | 6 archivos | **128 pruebas** |
 
 ### El cambio más importante
 

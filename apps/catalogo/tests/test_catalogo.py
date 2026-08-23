@@ -100,8 +100,8 @@ class CatalogoAPITest(APITestCase):
         )
 
         self.assertEqual(respuesta.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(respuesta.data), 1)
-        self.assertEqual(respuesta.data[0]["zonas"], ["Laureles", "Belen"])
+        self.assertEqual(respuesta.data["total"], 1)
+        self.assertEqual(respuesta.data["resultados"][0]["zonas"], ["Laureles", "Belen"])
 
     def test_200_el_catalogo_de_un_profesional(self):
         respuesta = self.client.get(
@@ -111,7 +111,7 @@ class CatalogoAPITest(APITestCase):
         )
 
         self.assertEqual(respuesta.status_code, status.HTTP_200_OK)
-        self.assertEqual(respuesta.data[0]["precio_base"], "85000.00")
+        self.assertEqual(respuesta.data["resultados"][0]["precio_base"], "85000.00")
 
     def test_404_si_el_profesional_no_existe(self):
         respuesta = self.client.get(

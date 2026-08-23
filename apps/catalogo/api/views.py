@@ -7,9 +7,7 @@ por eso es la primera candidata a cachearse en el API Gateway.
 """
 
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import status
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.catalogo.api.serializers import (
@@ -17,6 +15,7 @@ from apps.catalogo.api.serializers import (
     ServicioSerializer,
 )
 from apps.catalogo.services import CatalogoService
+from apps.comun.api.paginacion import respuesta_paginada
 from apps.cuentas.api.serializers import ProfesionalSerializer
 
 
@@ -42,10 +41,7 @@ class BuscarProfesionalesView(APIView):
             zona=filtros.validated_data.get("zona", ""),
             texto=filtros.validated_data.get("texto", ""),
         )
-        return Response(
-            ProfesionalSerializer(profesionales, many=True).data,
-            status=status.HTTP_200_OK,
-        )
+        return respuesta_paginada(self, request, profesionales, ProfesionalSerializer)
 
 
 class ServiciosDelProfesionalView(APIView):
@@ -61,6 +57,4 @@ class ServiciosDelProfesionalView(APIView):
     )
     def get(self, request, profesional_id: int):
         servicios = self.servicio().servicios_de(profesional_id)
-        return Response(
-            ServicioSerializer(servicios, many=True).data, status=status.HTTP_200_OK
-        )
+        return respuesta_paginada(self, request, servicios, ServicioSerializer)

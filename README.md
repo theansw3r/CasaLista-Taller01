@@ -22,7 +22,7 @@ Wiki del repositorio.
 | **Factory** para dependencia externa y variante de lógica | 3 factories — ver [Patrones Creacionales](docs/wiki/04-Patrones-Creacionales.md) |
 | Preparación para API Gateway | ver [API Gateway](docs/wiki/06-API-Gateway.md) |
 
-127 pruebas automáticas cubren las reglas de negocio, la orquestación de los
+128 pruebas automáticas cubren las reglas de negocio, la orquestación de los
 servicios y los códigos de estado de la API.
 
 ---
@@ -47,14 +47,15 @@ python manage.py sembrar_demo
 python manage.py runserver
 ```
 
-`sembrar_demo` crea un profesional verificado con catálogo y agenda, un
-cliente, y ejecuta el flujo completo (reserva → pago → confirmación) usando
-los mismos servicios que usa la API.
+`sembrar_demo` crea un profesional verificado con catálogo y tres franjas de
+agenda, un cliente, y ejecuta el flujo completo (reserva → pago →
+confirmación) usando los mismos servicios que usa la API. Deja **dos franjas
+libres** para poder demostrar el flujo en vivo.
 
 ### Comprobar que todo funciona
 
 ```bash
-python manage.py test          # 127 pruebas
+python manage.py test          # 128 pruebas
 ```
 
 ---
@@ -83,22 +84,26 @@ curl -X POST http://localhost:8000/api/v1/cuentas/token/ \
 # 2. Buscar profesionales que cubran una zona
 curl "http://localhost:8000/api/v1/catalogo/profesionales/?zona=Laureles"
 
-# 3. Ver franjas libres
+# 3. Ver franjas libres (sembrar_demo deja dos sin reservar)
 curl "http://localhost:8000/api/v1/reservas/disponibilidad/?profesional_id=1"
 
-# 4. Reservar (dispara Builder + 2 Factories)
+# 4. Reservar — dispara el Builder y las 2 Factories de reservas.
+#    Use un bloque_id de los que devolvió el paso 3.
 curl -X POST http://localhost:8000/api/v1/reservas/ \
   -H "Authorization: Bearer <TOKEN>" \
   -H "Content-Type: application/json" \
-  -d '{"bloque_id": 2, "direccion": "Calle 33 #70-21", "zona": "Laureles",
+  -d '{"bloque_id": <ID_LIBRE>, "direccion": "Calle 33 #70-21", "zona": "Laureles",
        "servicios": [{"servicio_id": 1, "cantidad": 1}]}'
 
-# 5. Pagar (dispara la Factory de pasarelas y confirma la reserva)
+# 5. Pagar — dispara la Factory de pasarelas y confirma la reserva (RN-03)
 curl -X POST http://localhost:8000/api/v1/pagos/ \
   -H "Authorization: Bearer <TOKEN>" \
   -H "Content-Type: application/json" \
-  -d '{"reserva_id": 1, "medio": "TARJETA"}'
+  -d '{"reserva_id": <ID_RESERVA>, "medio": "TARJETA"}'
 ```
+
+Para ver los errores de negocio: repetir el paso 4 sobre la misma franja
+devuelve `409 RN-01`, y cambiar la zona a `"Sabaneta"` devuelve `409 RN-07`.
 
 ---
 

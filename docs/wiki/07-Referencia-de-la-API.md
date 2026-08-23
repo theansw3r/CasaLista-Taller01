@@ -134,15 +134,20 @@ GET /api/v1/catalogo/profesionales/?zona=Laureles&texto=plomer
 ```
 
 ```json
-[
-  {
-    "id": 1,
-    "nombre": "Andrés Ruiz - Plomería",
-    "verificado": true,
-    "zonas": ["Laureles", "Belén", "Envigado"],
-    "calificacion_promedio": "0.00"
-  }
-]
+{
+  "total": 1,
+  "pagina": 1,
+  "paginas": 1,
+  "resultados": [
+    {
+      "id": 1,
+      "nombre": "Andrés Ruiz - Plomería",
+      "verificado": true,
+      "zonas": ["Laureles", "Belén", "Envigado"],
+      "calificacion_promedio": "0.00"
+    }
+  ]
+}
 ```
 
 Solo devuelve profesionales **verificados** cuya cobertura incluye la zona. La
@@ -155,19 +160,24 @@ GET /api/v1/catalogo/profesionales/1/servicios/
 ```
 
 ```json
-[
-  {
-    "id": 1,
-    "nombre": "Reparación de fuga en cocina",
-    "descripcion": "",
-    "precio_base": "85000.00",
-    "duracion_minutos": 60,
-    "requiere_visita_previa": false,
-    "activo": true,
-    "profesional_id": 1,
-    "profesional": "Andrés Ruiz - Plomería"
-  }
-]
+{
+  "total": 1,
+  "pagina": 1,
+  "paginas": 1,
+  "resultados": [
+    {
+      "id": 1,
+      "nombre": "Reparación de fuga en cocina",
+      "descripcion": "",
+      "precio_base": "85000.00",
+      "duracion_minutos": 60,
+      "requiere_visita_previa": false,
+      "activo": true,
+      "profesional_id": 1,
+      "profesional": "Andrés Ruiz - Plomería"
+    }
+  ]
+}
 ```
 
 Omite los servicios dados de baja. `404` (`CAT-02`) si el profesional no existe
@@ -184,16 +194,21 @@ GET /api/v1/reservas/disponibilidad/?profesional_id=1&desde=2026-08-24T00:00:00-
 ```
 
 ```json
-[
-  {
-    "id": 2,
-    "profesional": "Andrés Ruiz - Plomería",
-    "inicio": "2026-08-24T09:00:00-05:00",
-    "fin": "2026-08-24T11:00:00-05:00",
-    "duracion_minutos": 120,
-    "estado": "LIBRE"
-  }
-]
+{
+  "total": 1,
+  "pagina": 1,
+  "paginas": 1,
+  "resultados": [
+    {
+      "id": 2,
+      "profesional": "Andrés Ruiz - Plomería",
+      "inicio": "2026-08-24T09:00:00-05:00",
+      "fin": "2026-08-24T11:00:00-05:00",
+      "duracion_minutos": 120,
+      "estado": "LIBRE"
+    }
+  ]
+}
 ```
 
 Solo franjas `LIBRE` y futuras: mostrar un horario de ayer solo produciría un
@@ -410,6 +425,37 @@ GET /api/v1/salud/
 
 Sin autenticación y sin límite de tasa. Devuelve `503` si la base de datos no
 responde, para que el balanceador saque la instancia del pool.
+
+---
+
+## Paginación
+
+**Todos los listados vienen paginados.** Ninguno devuelve una colección sin
+límite: con suficientes reservas o profesionales, una respuesta sin paginar
+agota la memoria del proceso.
+
+```json
+{
+  "total": 47,
+  "pagina": 2,
+  "paginas": 3,
+  "resultados": [ ... ]
+}
+```
+
+| Parámetro | Por defecto | Máximo |
+|---|---|---|
+| `?pagina=` | 1 | — |
+| `?tamano=` | 20 | 100 |
+
+```http
+GET /api/v1/catalogo/profesionales/?zona=Laureles&pagina=2&tamano=50
+```
+
+Nota de implementación: `DEFAULT_PAGINATION_CLASS` de DRF solo se aplica sola
+en vistas que heredan de `GenericAPIView`. Como este proyecto usa `APIView` a
+propósito, cada listado invoca la paginación explícitamente a través del
+ayudante `respuesta_paginada()` de `apps/comun/api/paginacion.py`.
 
 ---
 

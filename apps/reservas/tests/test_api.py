@@ -185,7 +185,15 @@ class ConsultarReservasAPITest(APITestCase):
         respuesta = self.client.get(reverse("reservas:reservas"))
 
         self.assertEqual(respuesta.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(respuesta.data), 1)
+        self.assertEqual(respuesta.data["total"], 1)
+        self.assertEqual(len(respuesta.data["resultados"]), 1)
+
+    def test_los_listados_vienen_paginados(self):
+        """Ningun listado devuelve una coleccion sin limite."""
+        respuesta = self.client.get(reverse("reservas:reservas"))
+
+        for clave in ("total", "pagina", "paginas", "resultados"):
+            self.assertIn(clave, respuesta.data)
 
     def test_200_detalle_de_una_reserva_propia(self):
         respuesta = self.client.get(
@@ -283,7 +291,7 @@ class DisponibilidadAPITest(APITestCase):
         )
 
         self.assertEqual(respuesta.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(respuesta.data), 1)
+        self.assertEqual(respuesta.data["total"], 1)
 
     def test_400_si_falta_el_profesional_en_la_consulta(self):
         respuesta = self.client.get(self.url)
