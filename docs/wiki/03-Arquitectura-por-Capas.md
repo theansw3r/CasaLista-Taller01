@@ -136,7 +136,7 @@ un serializer de DRF. Hay una prueba que lo garantiza
 
 ## El Service Layer
 
-Hay **nueve servicios** en el proyecto, uno por flujo de negocio:
+Hay **diez servicios** en el proyecto, uno por flujo de negocio:
 
 | App | Servicio | Caso de uso |
 |---|---|---|
@@ -149,6 +149,7 @@ Hay **nueve servicios** en el proyecto, uno por flujo de negocio:
 | reservas | `ConsultaReservasService` | el cliente lee sus reservas |
 | reservas | `CancelacionReservaService` | el cliente cancela (RN-01, RN-04) |
 | pagos | `PagoService` | el cliente paga y la reserva se confirma (RN-03) |
+| pagos | `ConsultaPagosService` | el cliente consulta un pago suyo |
 
 ### Por qué crear y cancelar son dos servicios y no dos métodos
 
