@@ -1,23 +1,3 @@
-"""
-Modelos del modulo *Cuentas*.
-
-Corresponden a las clases Usuario, Cliente y Profesional del diagrama de
-dominio.
-
-Decision importante de esta entrega
------------------------------------
-Los modelos guardan ESTADO y nada mas. No tienen metodos que calculen,
-validen o decidan: eso vive en `dominio/` (reglas) y en `services.py`
-(orquestacion). Un modelo aqui responde "que datos soy", nunca "que puedo
-hacer".
-
-La clase abstracta `Usuario` del diagrama se resuelve con el `User` de
-django.contrib.auth (autenticacion, hash de contrasena, permisos) mas un
-perfil por rol. Es la traduccion estandar de una herencia de dominio a Django:
-heredar de AbstractUser habria obligado a un unico tipo de cuenta, y un mismo
-correo puede ser cliente hoy y profesional manana.
-"""
-
 from decimal import Decimal
 
 from django.conf import settings
@@ -26,7 +6,6 @@ from django.db import models
 
 
 class Cliente(models.Model):
-    """Quien solicita y paga la visita."""
 
     usuario = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -48,7 +27,6 @@ class Cliente(models.Model):
 
 
 class Profesional(models.Model):
-    """Quien ofrece servicios y ejecuta la visita."""
 
     usuario = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -56,6 +34,10 @@ class Profesional(models.Model):
         related_name="profesional",
     )
     nombre = models.CharField(max_length=120)
+    descripcion = models.TextField(
+        blank=True,
+        help_text="Como se presenta: oficio, experiencia, que trabajos hace.",
+    )
     documento = models.CharField(
         max_length=30,
         unique=True,
@@ -65,9 +47,6 @@ class Profesional(models.Model):
         default=False,
         help_text="RN-07: solo un profesional verificado puede recibir reservas.",
     )
-    # Se guarda como texto separado por comas por simplicidad de esta entrega.
-    # La normalizacion en una tabla ZonaCobertura esta anotada como deuda
-    # tecnica en la wiki (03-Patrones-Creacionales, seccion de limitaciones).
     zonas_cobertura = models.CharField(
         max_length=255,
         blank=True,
@@ -87,7 +66,6 @@ class Profesional(models.Model):
         verbose_name_plural = "Profesionales"
         ordering = ["-calificacion_promedio", "nombre"]
         indexes = [
-            # La busqueda del catalogo filtra siempre por verificado.
             models.Index(fields=["verificado"], name="idx_profesional_verificado"),
         ]
 

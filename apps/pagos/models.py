@@ -1,18 +1,3 @@
-"""
-Modelos del modulo *Pagos y Liquidacion*.
-
-Esta entrega implementa Pago. Liquidacion queda para la Entrega 2 (ver el
-alcance en docs/wiki/01-Modelo-de-Dominio.md).
-
-Segun el diagrama, la relacion Reserva - Pago es 1 a 0..1: una reserva genera
-como maximo un pago. Eso se expresa con un OneToOneField, no con un
-ForeignKey: la cardinalidad la garantiza la base de datos y no un `if` que
-alguien pueda olvidar.
-
-Como en el resto del proyecto, el modelo solo declara datos. `procesar()`,
-`reembolsar()` y `estaAprobado()` del diagrama viven en `dominio/`.
-"""
-
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
@@ -22,7 +7,6 @@ from apps.reservas.models import Reserva
 
 
 class Pago(models.Model):
-    """Movimiento de dinero del cliente hacia la plataforma."""
 
     class Estado(models.TextChoices):
         PENDIENTE = "PENDIENTE", "Pendiente"

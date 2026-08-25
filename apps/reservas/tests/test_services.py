@@ -1,12 +1,3 @@
-"""
-Pruebas de la capa de aplicacion.
-
-Lo que se comprueba aqui NO son las reglas (esas ya se probaron contra el
-Builder), sino la ORQUESTACION: que el servicio llame a quien tiene que
-llamar, en el orden correcto, y que se le puedan inyectar colaboradores
-distintos sin tocar variables de entorno.
-"""
-
 from datetime import timedelta
 from decimal import Decimal
 
@@ -72,7 +63,6 @@ class ReservaServiceTest(TestCase):
         self.assertEqual(self.espia.avisos, [reserva.pk])
 
     def test_la_estrategia_de_tarifa_se_inyecta_no_se_lee_del_entorno(self):
-        """Dos servicios, dos estrategias, dos totales, sin tocar settings."""
         sabado_noche = self._proximo_sabado_a_las_20()
         bloque = BloqueDisponibilidad.objects.create(
             profesional=self.escenario["profesional"],
@@ -115,7 +105,6 @@ class ReservaServiceTest(TestCase):
             self.servicio.crear_reserva(inexistente)
 
     def test_rechaza_una_cuenta_sin_perfil_de_cliente(self):
-        """Un profesional autenticado no puede reservar: no es cliente."""
         profesional = crear_profesional(nombre="Sin perfil de cliente")
         comando = comando_de(self.escenario)
         ajeno = CrearReservaCommand(
@@ -170,7 +159,6 @@ class AgendaServiceTest(TestCase):
             self.servicio.abrir_disponibilidad(self._comando(en_horas=25, duracion=1))
 
     def test_permite_franjas_consecutivas(self):
-        """De 10 a 11 y de 11 a 12 no se solapan: son seguidas."""
         self.servicio.abrir_disponibilidad(self._comando(en_horas=24, duracion=1))
         bloque = self.servicio.abrir_disponibilidad(
             self._comando(en_horas=25, duracion=1)
@@ -203,14 +191,13 @@ class CancelacionReservaServiceTest(TestCase):
         )
 
     def test_rn04_sin_penalizacion_con_mas_de_24_horas(self):
-        # El escenario basico crea la franja a 48 horas.
         reserva = self._cancelar()
         self.assertEqual(reserva.penalizacion, Decimal("0.00"))
 
     def test_rn04_retiene_30_por_ciento_entre_24_y_2_horas(self):
         self._mover_franja_a(horas=5)
         reserva = self._cancelar()
-        self.assertEqual(reserva.penalizacion, Decimal("15000.00"))  # 30% de 50000
+        self.assertEqual(reserva.penalizacion, Decimal("15000.00"))
 
     def test_rn04_sin_reembolso_con_menos_de_2_horas(self):
         self._mover_franja_a(horas=1)

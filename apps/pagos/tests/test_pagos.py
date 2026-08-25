@@ -1,10 +1,3 @@
-"""
-Pruebas del modulo Pagos.
-
-El caso interesante es RN-03: pagar tiene que dejar la reserva CONFIRMADA, y
-si el pago no se aprueba la reserva no se puede mover de PENDIENTE.
-"""
-
 from decimal import Decimal
 
 from django.test import TestCase
@@ -75,7 +68,6 @@ class PagoServiceTest(TestCase):
         self.assertEqual(self.reserva.estado, Reserva.Estado.PENDIENTE)
 
     def test_un_rechazo_si_queda_registrado(self):
-        """Un pago rechazado es informacion de negocio, no un no-evento."""
         with self.assertRaises(PagoRechazado):
             PagoService(pasarela=PasarelaQueRechaza()).procesar(self.comando)
 
@@ -107,12 +99,6 @@ class PagoServiceTest(TestCase):
             PagoService(pasarela=PasarelaQueAprueba()).procesar(ajeno)
 
     def test_un_reintento_tras_rechazo_choca_con_el_pago_ya_registrado(self):
-        """Limitacion conocida: la relacion es 1 a 1, un rechazo bloquea el reintento.
-
-        Se documenta como deuda tecnica en la wiki: el modelo del diagrama dice
-        0..1 pagos por reserva, asi que reintentar exigira modelar intentos
-        aparte en la Entrega 2.
-        """
         with self.assertRaises(PagoRechazado):
             PagoService(pasarela=PasarelaQueRechaza()).procesar(self.comando)
 

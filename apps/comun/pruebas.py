@@ -1,11 +1,3 @@
-"""
-Ayudas para las pruebas: fabrica de datos y dobles de prueba.
-
-Vive en `comun` porque las usan las cuatro apps. Sin esto, cada archivo de
-prueba repetiria treinta lineas de preparacion y una prueba fallaria por
-razones que no tienen que ver con lo que quiere comprobar.
-"""
-
 from datetime import timedelta
 from decimal import Decimal
 
@@ -26,14 +18,10 @@ _contador = {"n": 0}
 
 
 def _siguiente() -> int:
-    """Contador para que los correos y documentos no se repitan."""
     _contador["n"] += 1
     return _contador["n"]
 
 
-# ---------------------------------------------------------------------------
-# Fabrica de datos
-# ---------------------------------------------------------------------------
 def crear_cliente(nombre: str = "Cliente de prueba") -> Cliente:
     numero = _siguiente()
     usuario = Usuario.objects.create_user(
@@ -70,10 +58,13 @@ def crear_servicio(
     precio: str = "50000",
     minutos: int = 60,
     activo: bool = True,
+    categoria: str = Servicio.Oficio.PLOMERIA,
 ) -> Servicio:
     return Servicio.objects.create(
         profesional=profesional,
+        categoria=categoria,
         nombre=f"{nombre} {_siguiente()}",
+        descripcion="Servicio creado para las pruebas automaticas.",
         precio_base=Decimal(precio),
         duracion_minutos=minutos,
         activo=activo,
@@ -94,10 +85,6 @@ def crear_bloque(
 
 
 def escenario_basico() -> dict:
-    """Un cliente, un profesional verificado, un servicio y una franja libre.
-
-    Es el punto de partida de casi toda prueba de reservas.
-    """
     profesional = crear_profesional()
     return {
         "cliente": crear_cliente(),
@@ -107,15 +94,7 @@ def escenario_basico() -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# Dobles de prueba
-# ---------------------------------------------------------------------------
 class NotificadorEspia(Notificador):
-    """Notificador que solo registra a quien se le aviso.
-
-    Sirve para comprobar que el servicio notifica, sin mandar un correo y sin
-    depender de una variable de entorno.
-    """
 
     nombre = "ESPIA"
 
@@ -127,7 +106,6 @@ class NotificadorEspia(Notificador):
 
 
 class PasarelaQueRechaza(PasarelaDePago):
-    """Pasarela que siempre dice que no. Para probar el camino de rechazo."""
 
     nombre = "RECHAZA"
 
@@ -136,7 +114,6 @@ class PasarelaQueRechaza(PasarelaDePago):
 
 
 class PasarelaQueAprueba(PasarelaDePago):
-    """Pasarela que siempre aprueba, con una referencia predecible."""
 
     nombre = "APRUEBA"
 

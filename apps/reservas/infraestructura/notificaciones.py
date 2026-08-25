@@ -1,11 +1,3 @@
-"""
-Adaptadores del puerto `Notificador`.
-
-Los dos cumplen el mismo contrato, asi que el Service puede recibir cualquiera
-sin enterarse de cual es (Principio de Sustitucion de Liskov). El unico lugar
-del sistema que sabe que existen es la Factory.
-"""
-
 import logging
 
 from django.conf import settings
@@ -22,7 +14,6 @@ def _asunto(reserva) -> str:
 
 
 def _cuerpo(reserva) -> str:
-    # El cliente lee la hora de su cita en su zona horaria, no en UTC.
     inicio = timezone.localtime(reserva.bloque.inicio)
     return (
         f"Hola {reserva.cliente.nombre},\n\n"
@@ -36,11 +27,6 @@ def _cuerpo(reserva) -> str:
 
 
 class NotificadorConsola(Notificador):
-    """Implementacion MOCK: deja rastro en el log y no sale de la maquina.
-
-    Es la que se usa en desarrollo y en las pruebas, para no depender de un
-    servidor de correo ni mandar correos de verdad desde la maquina de nadie.
-    """
 
     nombre = "MOCK"
 
@@ -49,7 +35,6 @@ class NotificadorConsola(Notificador):
 
 
 class NotificadorEmail(Notificador):
-    """Implementacion REAL: envia el correo con el backend de Django."""
 
     nombre = "REAL"
 
@@ -58,8 +43,6 @@ class NotificadorEmail(Notificador):
         if not destinatario:
             logger.warning("Reserva %s: el cliente no tiene correo.", reserva.pk)
             return
-        # `fail_silently=True` cumple el contrato del puerto: una notificacion
-        # caida no puede tumbar una reserva que ya se guardo.
         send_mail(
             subject=_asunto(reserva),
             message=_cuerpo(reserva),

@@ -1,5 +1,3 @@
-"""Rutas del modulo Pagos (prefijo /api/v1/pagos/)."""
-
 from django.urls import path
 
 from apps.pagos.api.views import PagoDetalleView, ProcesarPagoView

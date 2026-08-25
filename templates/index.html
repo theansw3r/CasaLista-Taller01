@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CasaLista</title>
+  <link rel="stylesheet" href="{% static 'css/estilos.css' %}?v=5">
+</head>
+<body>
+
+<header>
+  <div class="contenedor barra">
+    <h1>CasaLista</h1>
+    <div id="sesion" class="sesion"></div>
+  </div>
+</header>
+
+<main class="contenedor">
+
+  <!-- ============ ACCESO ============ -->
+  <section id="pantalla-acceso">
+    <div class="tarjeta">
+      <div class="pestanas">
+        <button class="pestana activa" data-panel="panel-login">Iniciar sesion</button>
+        <button class="pestana" data-panel="panel-registro">Soy cliente</button>
+        <button class="pestana" data-panel="panel-registro-pro">Soy profesional</button>
+      </div>
+
+      <div id="panel-login" class="panel">
+        <label>Correo
+          <input type="email" id="login-correo">
+        </label>
+        <label>Contrasena
+          <input type="password" id="login-clave">
+        </label>
+        <button class="boton principal" id="btn-login">Entrar</button>
+        <p class="pista">Datos de prueba: laura@correo.com / casalista2026</p>
+      </div>
+
+      <div id="panel-registro" class="panel oculto">
+        <label>Nombre
+          <input type="text" id="reg-nombre">
+        </label>
+        <label>Correo
+          <input type="email" id="reg-correo">
+        </label>
+        <label>Contrasena (minimo 8 caracteres)
+          <input type="password" id="reg-clave">
+        </label>
+        <label>Telefono
+          <input type="text" id="reg-telefono">
+        </label>
+        <button class="boton principal" id="btn-registro">Registrarme</button>
+      </div>
+
+      <div id="panel-registro-pro" class="panel oculto">
+        <label>Nombre o razon social
+          <input type="text" id="pro-nombre">
+        </label>
+        <label>Correo
+          <input type="email" id="pro-correo">
+        </label>
+        <label>Contrasena (minimo 8 caracteres)
+          <input type="password" id="pro-clave">
+        </label>
+        <label>Documento de identidad
+          <input type="text" id="pro-documento">
+        </label>
+        <label>Describe tu experiencia
+          <input type="text" id="pro-descripcion">
+        </label>
+        <label>Zonas donde trabajas
+          <div class="casillas" id="pro-zonas">
+            <label class="casilla"><input type="checkbox" value="Laureles"> Laureles</label>
+            <label class="casilla"><input type="checkbox" value="Belen"> Belen</label>
+            <label class="casilla"><input type="checkbox" value="Envigado"> Envigado</label>
+            <label class="casilla"><input type="checkbox" value="Sabaneta"> Sabaneta</label>
+          </div>
+        </label>
+        <button class="boton principal" id="btn-registro-pro">Registrarme como profesional</button>
+        <p class="pista">
+          Un administrador debe verificar tu cuenta antes de que aparezcas en las
+          busquedas (regla RN-07).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ APP ============ -->
+  <section id="pantalla-app" class="oculto">
+
+    <nav class="menu" id="menu"></nav>
+
+    <!-- ---------- CLIENTE: BUSCAR ---------- -->
+    <div id="vista-buscar" class="vista">
+
+      <div class="tarjeta">
+        <h2>1. Busca un profesional en tu zona</h2>
+        <div class="fila">
+          <select id="buscar-oficio">
+            <option value="">Todos los oficios</option>
+            <option value="PLOMERIA">Plomeria</option>
+            <option value="ELECTRICIDAD">Electricidad</option>
+            <option value="ELECTRODOMESTICOS">Reparacion de electrodomesticos</option>
+            <option value="PINTURA">Pintura</option>
+            <option value="CERRAJERIA">Cerrajeria</option>
+          </select>
+          <select id="buscar-zona">
+            <option value="">Todas las zonas</option>
+            <option>Laureles</option>
+            <option>Belen</option>
+            <option>Envigado</option>
+            <option>Sabaneta</option>
+          </select>
+          <button class="boton" id="btn-buscar">Buscar</button>
+        </div>
+        <p class="nota">Solo aparecen profesionales verificados que cubren la zona (RN-07).</p>
+        <div id="lista-profesionales" class="lista"></div>
+      </div>
+
+      <div class="tarjeta oculto" id="bloque-servicios">
+        <h2>2. Elige los servicios</h2>
+        <div id="lista-servicios" class="lista"></div>
+      </div>
+
+      <div class="tarjeta oculto" id="bloque-agenda">
+        <h2>3. Elige un horario disponible</h2>
+        <div id="lista-bloques" class="lista"></div>
+      </div>
+
+      <div class="tarjeta oculto" id="bloque-confirmar">
+        <h2>4. Confirma la reserva</h2>
+        <label>Direccion de la visita
+          <input type="text" id="reserva-direccion">
+        </label>
+        <label>Zona
+          <input type="text" id="reserva-zona" readonly>
+        </label>
+        <div class="resumen" id="resumen-reserva"></div>
+        <button class="boton principal" id="btn-reservar">Reservar</button>
+      </div>
+
+    </div>
+
+    <!-- ---------- CLIENTE: MIS RESERVAS ---------- -->
+    <div id="vista-reservas" class="vista oculto">
+      <div class="tarjeta">
+        <h2>Mis reservas</h2>
+        <div id="lista-reservas" class="lista"></div>
+      </div>
+    </div>
+
+    <!-- ---------- PROFESIONAL: SERVICIOS ---------- -->
+    <div id="vista-mis-servicios" class="vista oculto">
+      <div id="aviso-verificacion"></div>
+
+      <div class="tarjeta">
+        <h2>Publicar un servicio</h2>
+        <label>Oficio
+          <select id="serv-categoria">
+            <option value="PLOMERIA">Plomeria</option>
+            <option value="ELECTRICIDAD">Electricidad</option>
+            <option value="ELECTRODOMESTICOS">Reparacion de electrodomesticos</option>
+            <option value="PINTURA">Pintura</option>
+            <option value="CERRAJERIA">Cerrajeria</option>
+          </select>
+        </label>
+        <label>Nombre del servicio
+          <input type="text" id="serv-nombre">
+        </label>
+        <label>Que incluye la visita
+          <input type="text" id="serv-descripcion">
+        </label>
+        <div class="fila">
+          <label style="flex:1">Precio
+            <input type="number" id="serv-precio" min="0">
+          </label>
+          <label style="flex:1">Duracion (minutos)
+            <input type="number" id="serv-duracion" min="60" max="240" step="30">
+          </label>
+        </div>
+        <button class="boton principal" id="btn-publicar-servicio">Publicar servicio</button>
+        <p class="nota">
+          CasaLista solo agenda los cinco oficios del listado, con visitas de
+          entre 1 y 4 horas.
+        </p>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Mis servicios</h2>
+        <div id="lista-mis-servicios" class="lista"></div>
+      </div>
+    </div>
+
+    <!-- ---------- PROFESIONAL: AGENDA ---------- -->
+    <div id="vista-mi-agenda" class="vista oculto">
+      <div class="tarjeta">
+        <h2>Abrir un horario</h2>
+        <div class="fila">
+          <label style="flex:1">Dia
+            <input type="date" id="agenda-dia">
+          </label>
+          <label style="flex:1">Hora de inicio
+            <input type="time" id="agenda-hora" value="09:00">
+          </label>
+          <label style="flex:1">Duracion (horas)
+            <input type="number" id="agenda-horas" value="2" min="1" max="8">
+          </label>
+        </div>
+        <button class="boton principal" id="btn-abrir-agenda">Publicar horario</button>
+        <p class="nota">No puedes publicar dos horarios que se crucen (AGD-03).</p>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Mis horarios</h2>
+        <div id="lista-mi-agenda" class="lista"></div>
+      </div>
+
+      <div class="tarjeta">
+        <h2>Reservas que me hicieron</h2>
+        <div id="lista-recibidas" class="lista"></div>
+      </div>
+    </div>
+
+  </section>
+</main>
+
+<div id="avisos" class="avisos"></div>
+
+<script src="{% static 'js/app.js' %}?v=5"></script>
+</body>
+</html>

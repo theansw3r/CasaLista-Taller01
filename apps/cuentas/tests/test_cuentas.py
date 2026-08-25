@@ -1,5 +1,3 @@
-"""Pruebas del modulo Cuentas: politica de cobertura (RN-07) y registro."""
-
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -11,18 +9,16 @@ from apps.cuentas.dominio.excepciones import (
     CorreoYaRegistrado,
     ProfesionalNoHabilitado,
 )
+from apps.catalogo.services import CatalogoService
 from apps.cuentas.dto import RegistrarClienteCommand
-from apps.cuentas.models import Cliente
-from apps.cuentas.services import RegistroClienteService
+from apps.cuentas.models import Cliente, Profesional
+from apps.cuentas.services import (
+    RegistroClienteService,
+    VerificacionProfesionalService,
+)
 
 
 class ProfesionalFalso:
-    """Doble sin base de datos.
-
-    Que la politica se pueda probar contra este objeto de tres lineas es la
-    demostracion practica de que la regla NO depende del ORM. Si `cubreZona()`
-    estuviera dentro del modelo, esta prueba necesitaria base de datos.
-    """
 
     def __init__(self, zonas: str, verificado: bool = True):
         self.pk = 1
@@ -156,7 +152,6 @@ class CuentasAPITest(APITestCase):
         self.assertEqual(respuesta.data["zonas"], ["Laureles", "Belen"])
 
     def test_el_token_jwt_da_acceso_a_los_endpoints_privados(self):
-        """Prueba del camino de autenticacion completo, sin sesion."""
         cliente = crear_cliente()
         cliente.usuario.set_password("contrasena-larga")
         cliente.usuario.save()
@@ -186,3 +181,37 @@ class CuentasAPITest(APITestCase):
 
         self.assertIsNone(respuesta.data["cliente"])
         self.assertEqual(respuesta.data["profesional"]["nombre"], profesional.nombre)
+
+
+class VerificacionProfesionalServiceTest(TestCase):
+    """RN-07: verificar es lo que habilita a un profesional para recibir reservas."""
+
+    def setUp(self):
+        self.servicio = VerificacionProfesionalService()
+        self.profesional = crear_profesional(verificado=False)
+
+    def _consulta(self):
+        return Profesional.objects.filter(pk=self.profesional.pk)
+
+    def test_verificar_habilita_al_profesional(self):
+        cambiados = self.servicio.verificar(self._consulta())
+
+        self.profesional.refresh_from_db()
+        self.assertEqual(cambiados, 1)
+        self.assertTrue(self.profesional.verificado)
+
+    def test_revocar_lo_saca_de_las_busquedas(self):
+        self.servicio.verificar(self._consulta())
+
+        self.servicio.revocar(self._consulta())
+
+        self.profesional.refresh_from_db()
+        self.assertFalse(self.profesional.verificado)
+
+    def test_un_profesional_sin_verificar_no_aparece_en_el_catalogo(self):
+        self.assertEqual(CatalogoService().buscar_profesionales(), [])
+
+        self.servicio.verificar(self._consulta())
+
+        encontrados = CatalogoService().buscar_profesionales()
+        self.assertEqual([p.pk for p in encontrados], [self.profesional.pk])

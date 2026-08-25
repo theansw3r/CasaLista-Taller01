@@ -1,25 +1,3 @@
-"""
-Modelos del modulo *Agenda y Reservas*.
-
-Corresponden a BloqueDisponibilidad, Reserva y DetalleReserva del diagrama.
-El Business Case los agrupa en un solo modulo porque cambian juntos: no existe
-una reserva sin una franja que ocupar.
-
-Los tres modelos son deliberadamente "delgados": campos, restricciones de
-integridad, `Meta` y `__str__`. Los metodos que el diagrama les asigna
-(`calcularTotal`, `estaLibre`, `confirmar`, `cancelar`, `calcularSubtotal`)
-estan implementados en `dominio/`, cada uno en la clase que corresponde:
-
-    estaLibre / ocupar / seSolapaCon -> dominio/agenda.py
-    calcularTotal / calcularSubtotal -> dominio/precios.py
-    confirmar / cancelar             -> dominio/ciclo_de_vida.py
-    calcularPenalizacion             -> dominio/cancelacion.py
-
-Lo que si vive aqui son las restricciones que debe garantizar la base de
-datos, porque una regla que solo se comprueba en Python se rompe en cuanto
-hay dos procesos escribiendo a la vez.
-"""
-
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
@@ -31,7 +9,6 @@ from apps.cuentas.models import Cliente, Profesional
 
 
 class BloqueDisponibilidad(models.Model):
-    """Franja horaria concreta que un profesional publica en su agenda."""
 
     class Estado(models.TextChoices):
         LIBRE = "LIBRE", "Libre"
@@ -55,9 +32,6 @@ class BloqueDisponibilidad(models.Model):
                 condition=models.Q(fin__gt=models.F("inicio")),
                 name="bloque_termina_despues_de_empezar",
             ),
-            # Un profesional no puede publicar dos veces exactamente la misma
-            # franja. El solapamiento parcial no se puede expresar con una
-            # restriccion portable, asi que lo valida AgendaService.
             models.UniqueConstraint(
                 fields=["profesional", "inicio", "fin"],
                 name="bloque_unico_por_profesional",
@@ -71,15 +45,12 @@ class BloqueDisponibilidad(models.Model):
         ]
 
     def __str__(self) -> str:
-        # Django guarda en UTC; se convierte a la zona del negocio solo para
-        # mostrar. Es formato, no una regla.
         inicio = timezone.localtime(self.inicio)
         fin = timezone.localtime(self.fin)
         return f"{self.profesional.nombre}: {inicio:%d/%m %H:%M}-{fin:%H:%M}"
 
 
 class Reserva(models.Model):
-    """Acuerdo entre cliente y profesional. Es la raiz del agregado."""
 
     class Estado(models.TextChoices):
         PENDIENTE = "PENDIENTE", "Pendiente de pago"
@@ -136,16 +107,10 @@ class Reserva(models.Model):
 
 
 class DetalleReserva(models.Model):
-    """Linea de la reserva: un servicio, su cantidad y el precio congelado.
-
-    Congelar el precio no es una optimizacion: es la nota del modelo de
-    dominio (seccion 2.2). Si el profesional sube el precio del servicio
-    manana, la reserva de hoy conserva lo que se acordo hoy.
-    """
 
     reserva = models.ForeignKey(
         Reserva,
-        on_delete=models.CASCADE,  # Composicion: sin reserva no hay detalle.
+        on_delete=models.CASCADE,
         related_name="detalles",
     )
     servicio = models.ForeignKey(Servicio, on_delete=models.PROTECT, related_name="+")

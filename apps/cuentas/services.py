@@ -1,11 +1,3 @@
-"""
-Capa de aplicacion del modulo Cuentas.
-
-Una clase por flujo de negocio (SRP). Cada servicio conoce el ALGORITMO de su
-caso de uso y nada mas: no sabe que existe HTTP, no arma respuestas y no
-formatea nada.
-"""
-
 from django.contrib.auth import get_user_model
 from django.db import transaction
 
@@ -21,24 +13,16 @@ Usuario = get_user_model()
 
 
 def _exigir_correo_libre(correo: str) -> None:
-    """Regla compartida por los dos registros: un correo, una cuenta.
-
-    Es una funcion del modulo y no un metodo, porque no pertenece mas a un
-    servicio que al otro. Duplicarla en ambos habria sido peor.
-    """
     if Usuario.objects.filter(username=correo).exists():
         raise CorreoYaRegistrado(correo=correo)
 
 
 class RegistroClienteService:
-    """Caso de uso: una persona se registra como cliente."""
 
     def registrar(self, comando: RegistrarClienteCommand) -> Cliente:
         correo = comando.correo.strip().lower()
         _exigir_correo_libre(correo)
 
-        # La cuenta y el perfil se crean juntos o no se crean: un usuario sin
-        # perfil de cliente podria autenticarse y no poder reservar nada.
         with transaction.atomic():
             usuario = Usuario.objects.create_user(
                 username=correo,
@@ -53,12 +37,6 @@ class RegistroClienteService:
 
 
 class RegistroProfesionalService:
-    """Caso de uso: una persona se registra como profesional.
-
-    Queda `verificado=False`: segun RN-07 no puede recibir reservas hasta que
-    un administrador lo verifique. Esa verificacion es un flujo aparte, no
-    parte del registro.
-    """
 
     def registrar(self, comando: RegistrarProfesionalCommand) -> Profesional:
         correo = comando.correo.strip().lower()
@@ -74,19 +52,13 @@ class RegistroProfesionalService:
                 usuario=usuario,
                 nombre=comando.nombre.strip(),
                 documento=comando.documento.strip(),
+                descripcion=comando.descripcion.strip(),
                 zonas_cobertura=",".join(comando.zonas_cobertura),
                 verificado=False,
             )
 
 
 class ConsultaPerfilService:
-    """Caso de uso de lectura: resolver el perfil de la cuenta autenticada.
-
-    Vive en un servicio y no en la vista porque el resto del sistema necesita
-    exactamente lo mismo: reservas y pagos tambien tienen que pasar de
-    "usuario autenticado" a "cliente del dominio". Si estuviera en la vista,
-    esa traduccion estaria copiada en cuatro lugares.
-    """
 
     @staticmethod
     def cliente_de(usuario_id: int) -> Cliente:
@@ -106,7 +78,6 @@ class ConsultaPerfilService:
 
     @classmethod
     def perfil_de(cls, usuario) -> dict:
-        """Describe la cuenta y los roles que tiene asociados."""
         cliente = Cliente.objects.filter(usuario_id=usuario.pk).first()
         profesional = Profesional.objects.filter(usuario_id=usuario.pk).first()
         return {
@@ -115,3 +86,20 @@ class ConsultaPerfilService:
             "cliente": cliente,
             "profesional": profesional,
         }
+
+
+class VerificacionProfesionalService:
+    """Caso de uso: el administrador habilita a un profesional (RN-07).
+
+    Es la puerta que decide quien puede recibir reservas, asi que es logica de
+    negocio y vive aqui, no en `admin.py`. El panel de administracion es solo
+    una interfaz mas que llama a este servicio, igual que lo haria una vista.
+    """
+
+    def verificar(self, profesionales) -> int:
+        """Habilita a los profesionales indicados. Devuelve cuantos cambiaron."""
+        return profesionales.update(verificado=True)
+
+    def revocar(self, profesionales) -> int:
+        """Quita la verificacion: dejan de aparecer en las busquedas."""
+        return profesionales.update(verificado=False)

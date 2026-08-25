@@ -1,5 +1,3 @@
-"""Pruebas del nucleo compartido: dinero, manejo de errores y operacion."""
-
 from decimal import Decimal
 
 from django.test import SimpleTestCase
@@ -22,7 +20,6 @@ class DineroTest(SimpleTestCase):
         self.assertEqual(a_dinero("10.004"), Decimal("10.00"))
 
     def test_redondea_hacia_arriba_en_el_empate(self):
-        """HALF_UP y no el redondeo bancario de Python: asi factura el negocio."""
         self.assertEqual(a_dinero("2.5"), Decimal("2.50"))
         self.assertEqual(a_dinero("0.125"), Decimal("0.13"))
 
@@ -56,7 +53,6 @@ class ExcepcionesDeDominioTest(SimpleTestCase):
 
 class SaludAPITest(APITestCase):
     def test_200_y_sin_autenticacion(self):
-        """El balanceador consulta este endpoint sin credenciales."""
         respuesta = self.client.get(reverse("salud"))
 
         self.assertEqual(respuesta.status_code, status.HTTP_200_OK)
@@ -71,10 +67,3 @@ class SaludAPITest(APITestCase):
 
         self.assertEqual(respuesta.data["id_peticion"], "abc-123")
         self.assertEqual(respuesta.headers["X-Request-ID"], "abc-123")
-
-
-class ContratoOpenAPITest(APITestCase):
-    def test_el_esquema_se_publica(self):
-        """Si el esquema deja de generarse, el Gateway se queda sin contrato."""
-        respuesta = self.client.get(reverse("esquema"))
-        self.assertEqual(respuesta.status_code, status.HTTP_200_OK)

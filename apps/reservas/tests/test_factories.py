@@ -1,11 +1,3 @@
-"""
-Pruebas de las Factories.
-
-Lo que se comprueba: que la seleccion la haga la configuracion y no el codigo
-que consume la dependencia, y que un valor mal escrito falle temprano y con un
-mensaje util.
-"""
-
 from django.core.exceptions import ImproperlyConfigured
 from django.test import SimpleTestCase, override_settings
 
@@ -54,7 +46,6 @@ class NotificadorFactoryTest(SimpleTestCase):
         self.assertIn("REAL", mensaje)
 
     def test_todo_lo_que_devuelve_cumple_el_puerto(self):
-        """Sustitucion de Liskov: quien recibe el puerto no necesita saber cual es."""
         for tipo in NotificadorFactory.opciones():
             self.assertIsInstance(NotificadorFactory.crear(tipo), Notificador)
 
@@ -76,7 +67,6 @@ class CalculadorTarifaFactoryTest(SimpleTestCase):
 class PasarelaPagoFactoryTest(SimpleTestCase):
     @override_settings(PASARELA_PAGO_TYPE="SIMULADA")
     def test_en_desarrollo_todo_medio_cae_en_la_simulada(self):
-        """Es la salvaguarda para no cobrarle de verdad a nadie en pruebas."""
         self.assertIsInstance(PasarelaPagoFactory.para_medio("TARJETA"), PasarelaSimulada)
         self.assertIsInstance(PasarelaPagoFactory.para_medio("PSE"), PasarelaSimulada)
 

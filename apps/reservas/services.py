@@ -1,24 +1,3 @@
-"""
-Capa de aplicacion del modulo Agenda y Reservas.
-
-Hay una clase por flujo de negocio y ninguna hace dos cosas (SRP):
-
-    AgendaService             el profesional publica y consulta franjas
-    ReservaService            el cliente crea una reserva
-    ConsultaReservasService   el cliente lee sus reservas
-    CancelacionReservaService el cliente cancela y se calcula RN-04
-
-Se separaron a proposito en lugar de escribir un unico `ReservaService` con
-seis metodos: crear y cancelar cambian por razones distintas (una depende de
-la tarifa, la otra de la politica de cancelacion) y tienen colaboradores
-distintos. Un solo servicio habria acabado dependiendo de todo.
-
-Lo que un servicio SI hace: resolver ids a entidades, orquestar los pasos del
-caso de uso y controlar la transaccion cuando escribe en varias tablas.
-Lo que un servicio NO hace: validar reglas (eso es del dominio), conocer HTTP
-ni instanciar implementaciones concretas (eso es de las Factories).
-"""
-
 from django.db import transaction
 from django.utils import timezone
 
@@ -49,12 +28,10 @@ from apps.reservas.models import BloqueDisponibilidad, Reserva
 
 
 class AgendaService:
-    """Caso de uso: un profesional gestiona su disponibilidad."""
 
     def abrir_disponibilidad(
         self, comando: AbrirDisponibilidadCommand
     ) -> BloqueDisponibilidad:
-        """Publica una franja nueva. 409 si se pisa con otra ya publicada."""
         profesional = ConsultaPerfilService.profesional_de(comando.usuario_id)
 
         ReglasAgenda.exigir_rango_valido(comando.inicio, comando.fin)
@@ -68,11 +45,6 @@ class AgendaService:
         )
 
     def bloques_libres(self, profesional_id: int, desde=None):
-        """Franjas que un cliente todavia puede reservar.
-
-        Se descartan las que ya pasaron: mostrar un horario de ayer solo
-        genera un 409 despues.
-        """
         momento = desde or timezone.now()
         return list(
             BloqueDisponibilidad.objects.filter(
@@ -82,15 +54,31 @@ class AgendaService:
             ).select_related("profesional")
         )
 
+    def mi_agenda(self, usuario_id: int):
+        """Todas las franjas del profesional, libres y ocupadas.
+
+        A diferencia de `bloques_libres`, que es la vitrina del cliente, esta
+        es la vista de trabajo del profesional: necesita ver lo que ya le
+        reservaron, no solo lo que sigue disponible.
+        """
+        profesional = ConsultaPerfilService.profesional_de(usuario_id)
+        return list(
+            BloqueDisponibilidad.objects.filter(
+                profesional=profesional
+            ).select_related("profesional")
+        )
+
+    def reservas_recibidas(self, usuario_id: int):
+        """Reservas que le hicieron al profesional autenticado."""
+        profesional = ConsultaPerfilService.profesional_de(usuario_id)
+        return (
+            Reserva.objects.filter(profesional=profesional)
+            .select_related("cliente", "bloque", "profesional")
+            .prefetch_related("detalles__servicio")
+        )
+
 
 class ReservaService:
-    """Caso de uso: un cliente reserva una franja con un profesional.
-
-    Es el flujo mas complejo del sistema y el que justifica toda la
-    arquitectura. El servicio conoce el ALGORITMO (que pasos y en que orden),
-    el Builder conoce las REGLAS y las Factories conocen las
-    IMPLEMENTACIONES. Ninguno de los tres invade al otro.
-    """
 
     def __init__(
         self,
@@ -98,15 +86,11 @@ class ReservaService:
         calculador_tarifa: CalculadorTarifa | None = None,
         builder_factory=ReservaBuilder,
     ) -> None:
-        # Inyeccion de dependencias con valor por defecto: en produccion los
-        # colaboradores los elige la Factory segun el entorno; en las pruebas
-        # se pasan dobles por el constructor, sin tocar variables de entorno.
         self.notificador = notificador or NotificadorFactory.crear()
         self.calculador_tarifa = calculador_tarifa or CalculadorTarifaFactory.crear()
         self.nuevo_builder = builder_factory
 
     def crear_reserva(self, comando: CrearReservaCommand) -> Reserva:
-        """Orquesta el flujo. Las reglas se validan dentro del Builder."""
         cliente = ConsultaPerfilService.cliente_de(comando.usuario_id)
         bloque = self._obtener_bloque(comando.bloque_id)
 
@@ -124,16 +108,9 @@ class ReservaService:
 
         reserva = builder.build()
 
-        # La notificacion va DESPUES de que el Builder cerro su transaccion.
-        # Si fuera dentro, un correo lento retrasaria el commit y mantendria
-        # el bloqueo del bloque abierto mas tiempo del necesario.
         self.notificador.enviar_confirmacion_reserva(reserva)
         return reserva
 
-    # ------------------------------------------------------------------
-    # Traduccion de ids a entidades. Es la frontera con el ORM: de aqui hacia
-    # arriba nadie vuelve a ver un DoesNotExist de Django.
-    # ------------------------------------------------------------------
     @staticmethod
     def _obtener_bloque(bloque_id: int) -> BloqueDisponibilidad:
         try:
@@ -156,7 +133,6 @@ class ReservaService:
 
 
 class ConsultaReservasService:
-    """Caso de uso de lectura: el cliente revisa sus reservas."""
 
     def reservas_de(self, usuario_id: int):
         cliente = ConsultaPerfilService.cliente_de(usuario_id)
@@ -167,11 +143,6 @@ class ConsultaReservasService:
         )
 
     def detalle_de(self, usuario_id: int, reserva_id: int) -> Reserva:
-        """Una reserva concreta, siempre que sea del cliente que pregunta.
-
-        La comprobacion de propiedad esta aqui y no en la vista: es una regla
-        (una reserva es privada de su cliente), no una preocupacion de HTTP.
-        """
         reserva = self._obtener(reserva_id)
         cliente = ConsultaPerfilService.cliente_de(usuario_id)
         if reserva.cliente_id != cliente.pk:
@@ -195,13 +166,6 @@ class ConsultaReservasService:
 
 
 class CancelacionReservaService:
-    """Caso de uso: el cliente cancela una reserva (RN-01 y RN-04).
-
-    Recibe la politica de cancelacion por constructor. Cuando exista una
-    politica distinta (por ejemplo, sin penalizacion para clientes
-    frecuentes), se inyecta otra clase que cumpla el mismo puerto y este
-    servicio no cambia.
-    """
 
     def __init__(
         self,
@@ -214,14 +178,9 @@ class CancelacionReservaService:
     def cancelar(self, comando: CancelarReservaCommand) -> Reserva:
         reserva = self.consultas.detalle_de(comando.usuario_id, comando.reserva_id)
 
-        # El estado se decide antes de abrir la transaccion: si la reserva ya
-        # estaba cancelada, no tiene sentido bloquear filas para nada.
         CicloDeVidaReserva.cancelar(reserva)
         penalizacion = self.politica.calcular_penalizacion(reserva, timezone.now())
 
-        # Cancelar la reserva y liberar la franja son un solo hecho del
-        # negocio (RN-01). Si se guardara la cancelacion y fallara la
-        # liberacion, la franja quedaria bloqueada para siempre.
         with transaction.atomic():
             reserva.penalizacion = penalizacion
             reserva.save(update_fields=["estado", "penalizacion", "actualizada_en"])

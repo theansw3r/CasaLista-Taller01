@@ -1,8 +1,7 @@
-"""Admin del modulo Cuentas: sirve para verificar profesionales (RN-07)."""
-
 from django.contrib import admin
 
 from apps.cuentas.models import Cliente, Profesional
+from apps.cuentas.services import VerificacionProfesionalService
 
 
 @admin.register(Cliente)
@@ -16,10 +15,17 @@ class ProfesionalAdmin(admin.ModelAdmin):
     list_display = ["nombre", "verificado", "zonas_cobertura", "calificacion_promedio"]
     list_filter = ["verificado"]
     search_fields = ["nombre", "documento"]
-    # Verificar es la accion del administrador que habilita RN-07.
-    actions = ["verificar"]
+    actions = ["verificar", "revocar"]
+
+    # El admin no decide nada: delega en el servicio, igual que una vista.
+    servicio = VerificacionProfesionalService
 
     @admin.action(description="Verificar los profesionales seleccionados")
     def verificar(self, request, queryset):
-        actualizados = queryset.update(verificado=True)
-        self.message_user(request, f"{actualizados} profesional(es) verificado(s).")
+        cuantos = self.servicio().verificar(queryset)
+        self.message_user(request, f"{cuantos} profesional(es) verificado(s).")
+
+    @admin.action(description="Quitar la verificacion")
+    def revocar(self, request, queryset):
+        cuantos = self.servicio().revocar(queryset)
+        self.message_user(request, f"{cuantos} profesional(es) sin verificar.")

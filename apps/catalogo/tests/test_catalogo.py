@@ -1,5 +1,3 @@
-"""Pruebas del modulo Catalogo: la busqueda tiene que respetar RN-07."""
-
 from decimal import Decimal
 
 from django.test import SimpleTestCase, TestCase
@@ -7,10 +5,15 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from apps.catalogo.dominio.excepciones import ProfesionalNoEncontrado, ServicioInactivo
+from apps.catalogo.dominio.estandares import EstandaresDeCasaLista
+from apps.catalogo.dominio.excepciones import (
+    ProfesionalNoEncontrado,
+    ServicioFueraDeEstandar,
+    ServicioInactivo,
+)
 from apps.catalogo.dominio.precios import CalculadoraDeServicio
 from apps.catalogo.services import CatalogoService
-from apps.comun.pruebas import crear_profesional, crear_servicio
+from apps.comun.pruebas import crear_cliente, crear_profesional, crear_servicio
 
 
 class ServicioFalso:
@@ -84,7 +87,6 @@ class CatalogoServiceTest(TestCase):
             self.servicio.servicios_de(999999)
 
     def test_404_si_el_profesional_no_esta_verificado(self):
-        """Un profesional sin verificar no tiene catalogo publico."""
         with self.assertRaises(ProfesionalNoEncontrado):
             self.servicio.servicios_de(self.sin_verificar.pk)
 
@@ -120,3 +122,114 @@ class CatalogoAPITest(APITestCase):
 
         self.assertEqual(respuesta.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(respuesta.data["error"]["codigo"], "CAT-02")
+
+
+class EstandaresDeCasaListaTest(SimpleTestCase):
+    """El nicho del Business Case (1.1) se hace cumplir, no solo se documenta."""
+
+    def test_acepta_una_visita_de_una_hora(self):
+        EstandaresDeCasaLista.exigir_duracion_de_visita(60)
+
+    def test_acepta_una_visita_de_cuatro_horas(self):
+        EstandaresDeCasaLista.exigir_duracion_de_visita(240)
+
+    def test_rechaza_visitas_de_menos_de_una_hora(self):
+        with self.assertRaises(ServicioFueraDeEstandar):
+            EstandaresDeCasaLista.exigir_duracion_de_visita(45)
+
+    def test_rechaza_visitas_de_mas_de_cuatro_horas(self):
+        with self.assertRaises(ServicioFueraDeEstandar) as capturado:
+            EstandaresDeCasaLista.exigir_duracion_de_visita(300)
+        self.assertEqual(capturado.exception.contexto["maximo"], 240)
+
+    def test_rechaza_una_descripcion_vacia_o_muy_corta(self):
+        with self.assertRaises(ServicioFueraDeEstandar):
+            EstandaresDeCasaLista.exigir_descripcion_util("")
+        with self.assertRaises(ServicioFueraDeEstandar):
+            EstandaresDeCasaLista.exigir_descripcion_util("arreglo cosas")
+
+    def test_acepta_una_descripcion_suficiente(self):
+        EstandaresDeCasaLista.exigir_descripcion_util(
+            "Reparacion de fugas en tuberia de cocina con prueba final."
+        )
+
+
+class PublicacionServicioAPITest(APITestCase):
+    def setUp(self):
+        self.profesional = crear_profesional()
+        self.client.force_authenticate(user=self.profesional.usuario)
+        self.url = reverse("catalogo:mis-servicios")
+
+    def _cuerpo(self, **cambios):
+        cuerpo = {
+            "categoria": "PLOMERIA",
+            "nombre": "Instalacion de lavaplatos",
+            "descripcion": "Instalacion completa con conexion hidraulica y prueba.",
+            "precio_base": "90000",
+            "duracion_minutos": 120,
+        }
+        cuerpo.update(cambios)
+        return cuerpo
+
+    def test_201_publica_un_servicio_del_nicho(self):
+        respuesta = self.client.post(self.url, self._cuerpo(), format="json")
+
+        self.assertEqual(respuesta.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(respuesta.data["categoria"], "PLOMERIA")
+        self.assertEqual(respuesta.data["categoria_nombre"], "Plomeria")
+
+    def test_400_si_el_oficio_no_es_del_nicho(self):
+        """CasaLista no es un marketplace de servicios en general."""
+        respuesta = self.client.post(
+            self.url, self._cuerpo(categoria="CLASES_DE_GUITARRA"), format="json"
+        )
+        self.assertEqual(respuesta.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_400_si_la_visita_dura_menos_de_una_hora(self):
+        respuesta = self.client.post(
+            self.url, self._cuerpo(duracion_minutos=30), format="json"
+        )
+
+        self.assertEqual(respuesta.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(respuesta.data["error"]["codigo"], "CAT-05")
+
+    def test_400_si_la_visita_dura_mas_de_cuatro_horas(self):
+        respuesta = self.client.post(
+            self.url, self._cuerpo(duracion_minutos=360), format="json"
+        )
+
+        self.assertEqual(respuesta.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(respuesta.data["error"]["codigo"], "CAT-05")
+
+    def test_400_si_no_describe_el_servicio(self):
+        respuesta = self.client.post(
+            self.url, self._cuerpo(descripcion="arreglo"), format="json"
+        )
+
+        self.assertEqual(respuesta.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(respuesta.data["error"]["codigo"], "CAT-05")
+
+    def test_409_si_repite_el_nombre_de_un_servicio(self):
+        self.client.post(self.url, self._cuerpo(), format="json")
+
+        respuesta = self.client.post(self.url, self._cuerpo(), format="json")
+
+        self.assertEqual(respuesta.status_code, status.HTTP_409_CONFLICT)
+        self.assertEqual(respuesta.data["error"]["codigo"], "CAT-04")
+
+    def test_404_si_la_cuenta_no_es_profesional(self):
+        self.client.force_authenticate(user=crear_cliente().usuario)
+        respuesta = self.client.post(self.url, self._cuerpo(), format="json")
+        self.assertEqual(respuesta.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_la_busqueda_filtra_por_oficio(self):
+        crear_servicio(self.profesional, categoria="CERRAJERIA")
+        otro = crear_profesional(nombre="Solo pintura", zonas="Laureles")
+        crear_servicio(otro, categoria="PINTURA")
+
+        respuesta = self.client.get(
+            reverse("catalogo:profesionales"), {"categoria": "PINTURA"}
+        )
+
+        nombres = [p["nombre"] for p in respuesta.data["resultados"]]
+        self.assertEqual(nombres, ["Solo pintura"])

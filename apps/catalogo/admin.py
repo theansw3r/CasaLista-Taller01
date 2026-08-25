@@ -1,5 +1,3 @@
-"""Admin del modulo Catalogo."""
-
 from django.contrib import admin
 
 from apps.catalogo.models import Servicio

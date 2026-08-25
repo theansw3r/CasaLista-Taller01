@@ -1,0 +1,389 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: #f4f6f8;
+  color: #1f2933;
+  line-height: 1.5;
+}
+
+.contenedor {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ---------- Encabezado ---------- */
+header {
+  background: #14532d;
+  color: #fff;
+  padding: 18px 0;
+  margin-bottom: 28px;
+}
+
+.barra {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  font-size: 22px;
+  letter-spacing: 0.5px;
+}
+
+.sesion {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ---------- Tarjetas ---------- */
+.tarjeta {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 22px;
+  margin-bottom: 20px;
+}
+
+.tarjeta h2 {
+  font-size: 17px;
+  margin-bottom: 14px;
+  color: #14532d;
+}
+
+/* ---------- Formularios ---------- */
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #52606d;
+  margin-bottom: 12px;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 9px 11px;
+  margin-top: 4px;
+  border: 1px solid #cbd2d9;
+  border-radius: 5px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid #14532d;
+  outline-offset: -1px;
+}
+
+input[readonly] {
+  background: #f4f6f8;
+  color: #7b8794;
+}
+
+.fila {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.fila select {
+  flex: 1;
+}
+
+/* ---------- Botones ---------- */
+.boton {
+  background: #fff;
+  border: 1px solid #14532d;
+  color: #14532d;
+  padding: 9px 16px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.boton:hover {
+  background: #f0fdf4;
+}
+
+.boton.principal {
+  background: #14532d;
+  color: #fff;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.boton.principal:hover {
+  background: #166534;
+}
+
+.boton.peligro {
+  border-color: #b91c1c;
+  color: #b91c1c;
+}
+
+.boton.peligro:hover {
+  background: #fef2f2;
+}
+
+.boton.pequeno {
+  padding: 5px 12px;
+  font-size: 13px;
+}
+
+.boton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Pestanas y menu ---------- */
+.pestanas,
+.menu {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.menu {
+  margin-bottom: 20px;
+}
+
+.pestana,
+.opcion {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #7b8794;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.pestana.activa,
+.opcion.activa {
+  color: #14532d;
+  border-bottom-color: #14532d;
+}
+
+/* ---------- Listas ---------- */
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.item {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 13px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.item:hover {
+  border-color: #14532d;
+}
+
+.item.seleccionado {
+  border-color: #14532d;
+  background: #f0fdf4;
+}
+
+.item.estatico {
+  cursor: default;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.item.estatico:hover {
+  border-color: #e2e8f0;
+}
+
+.item-titulo {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.item-detalle {
+  font-size: 13px;
+  color: #7b8794;
+  margin-top: 2px;
+}
+
+.item-precio {
+  font-weight: 600;
+  color: #14532d;
+  white-space: nowrap;
+}
+
+/* ---------- Reservas ---------- */
+.cabecera-reserva {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.acciones {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.etiqueta {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.4px;
+}
+
+.etiqueta.PENDIENTE {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.etiqueta.CONFIRMADA {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.etiqueta.COMPLETADA {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.etiqueta.CANCELADA {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.detalles-reserva {
+  font-size: 13px;
+  color: #52606d;
+  margin-top: 10px;
+  border-top: 1px solid #f0f2f5;
+  padding-top: 10px;
+}
+
+/* ---------- Utilidades ---------- */
+.oculto {
+  display: none !important;
+}
+
+.nota,
+.pista {
+  font-size: 12px;
+  color: #7b8794;
+  margin-top: 8px;
+}
+
+.vacio {
+  color: #7b8794;
+  font-size: 14px;
+  padding: 14px 0;
+}
+
+.resumen {
+  background: #f4f6f8;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 14px;
+  margin: 6px 0 14px;
+}
+
+.resumen .total {
+  font-weight: 700;
+  color: #14532d;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #dde3e8;
+}
+
+/* ---------- Avisos ---------- */
+.avisos {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+  max-width: 380px;
+}
+
+.aviso {
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.aviso.ok {
+  background: #15803d;
+}
+
+.aviso.error {
+  background: #b91c1c;
+}
+
+.aviso .codigo {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.85;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+/* ---------- Casillas de zonas ---------- */
+.casillas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 6px;
+  font-weight: 400;
+}
+
+.casilla {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 14px;
+  color: #1f2933;
+  cursor: pointer;
+}
+
+.casilla input {
+  width: auto;
+  margin: 0;
+}
+
+/* ---------- Aviso de verificacion pendiente ---------- */
+.tarjeta.alerta {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #92400e;
+  font-size: 14px;
+}

@@ -1,14 +1,3 @@
-"""
-Pruebas de la capa de presentacion.
-
-Aqui no se vuelven a probar las reglas: se comprueba la TRADUCCION. Que una
-regla violada en el dominio salga por HTTP con el codigo correcto y con el
-cuerpo de error acordado.
-
-Es la prueba de que el manejador central de excepciones funciona: las vistas
-no tienen un solo try/except y aun asi cada error sale con su codigo.
-"""
-
 from datetime import timedelta
 
 from django.urls import reverse
@@ -27,7 +16,6 @@ from apps.reservas.models import BloqueDisponibilidad, Reserva
 
 
 class CrearReservaAPITest(APITestCase):
-    """POST /api/v1/reservas/ con sus cuatro codigos de respuesta."""
 
     def setUp(self):
         self.escenario = escenario_basico()
@@ -44,7 +32,6 @@ class CrearReservaAPITest(APITestCase):
         cuerpo.update(cambios)
         return cuerpo
 
-    # --- 201 -----------------------------------------------------------
     def test_201_crea_la_reserva(self):
         respuesta = self.client.post(self.url, self._cuerpo(), format="json")
 
@@ -57,7 +44,6 @@ class CrearReservaAPITest(APITestCase):
         respuesta = self.client.post(self.url, self._cuerpo(), format="json")
         self.assertIn("X-Request-ID", respuesta.headers)
 
-    # --- 400 -----------------------------------------------------------
     def test_400_si_falta_un_campo(self):
         cuerpo = self._cuerpo()
         del cuerpo["direccion"]
@@ -83,7 +69,6 @@ class CrearReservaAPITest(APITestCase):
         )
         self.assertEqual(respuesta.status_code, status.HTTP_400_BAD_REQUEST)
 
-    # --- 404 -----------------------------------------------------------
     def test_404_si_la_franja_no_existe(self):
         respuesta = self.client.post(
             self.url, self._cuerpo(bloque_id=999999), format="json"
@@ -100,7 +85,6 @@ class CrearReservaAPITest(APITestCase):
         )
         self.assertEqual(respuesta.status_code, status.HTTP_404_NOT_FOUND)
 
-    # --- 409 -----------------------------------------------------------
     def test_409_rn01_si_la_franja_ya_esta_tomada(self):
         self.client.post(self.url, self._cuerpo(), format="json")
 
@@ -144,15 +128,12 @@ class CrearReservaAPITest(APITestCase):
         )
         self.assertEqual(respuesta.status_code, status.HTTP_409_CONFLICT)
 
-    # --- 401 -----------------------------------------------------------
     def test_401_sin_autenticar(self):
         self.client.force_authenticate(user=None)
         respuesta = self.client.post(self.url, self._cuerpo(), format="json")
         self.assertEqual(respuesta.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    # --- Forma del error -----------------------------------------------
     def test_todos_los_errores_tienen_la_misma_forma(self):
-        """Da igual si el error lo genero DRF o el dominio."""
         de_drf = self.client.post(self.url, {}, format="json")
         del_dominio = self.client.post(
             self.url, self._cuerpo(bloque_id=999999), format="json"
@@ -189,7 +170,6 @@ class ConsultarReservasAPITest(APITestCase):
         self.assertEqual(len(respuesta.data["resultados"]), 1)
 
     def test_los_listados_vienen_paginados(self):
-        """Ningun listado devuelve una coleccion sin limite."""
         respuesta = self.client.get(reverse("reservas:reservas"))
 
         for clave in ("total", "pagina", "paginas", "resultados"):

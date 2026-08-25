@@ -1,16 +1,3 @@
-"""
-Datos de demostracion para la sustentacion.
-
-Se apoya en los MISMOS servicios que usa la API. No crea reservas con
-`Reserva.objects.create(...)`: llama a `ReservaService`, que llama al Builder,
-que valida las reglas. Es la prueba practica de que la capa de aplicacion es
-independiente de HTTP: el mismo caso de uso corre desde una peticion REST y
-desde una linea de comandos, sin duplicar una sola regla.
-
-    python manage.py sembrar_demo
-    python manage.py sembrar_demo --reiniciar
-"""
-
 from datetime import timedelta
 from decimal import Decimal
 
@@ -56,15 +43,12 @@ class Command(BaseCommand):
         profesional = self._crear_profesional()
         servicios = self._crear_catalogo(profesional)
         cliente = self._crear_cliente()
-        # Se abren tres franjas y solo se reserva la primera: las otras dos
-        # quedan libres para poder demostrar el flujo completo en vivo.
         bloques = self._abrir_agenda(profesional, cuantas=3)
         reserva = self._crear_reserva(cliente, bloques[0], servicios)
         pago = self._pagar(cliente, reserva)
 
         self._resumen(profesional, cliente, bloques, reserva, pago)
 
-    # ------------------------------------------------------------------
     @transaction.atomic
     def _limpiar(self) -> None:
         Pago.objects.all().delete()
@@ -88,30 +72,51 @@ class Command(BaseCommand):
                 contrasena=CONTRASENA,
                 nombre="Andres Ruiz - Plomeria",
                 documento="1017welder",
+                descripcion=(
+                    "Plomero con 12 anos de experiencia en reparacion de fugas, "
+                    "instalacion sanitaria y redes hidraulicas de vivienda."
+                ),
                 zonas_cobertura=("Laureles", "Belen", "Envigado"),
             )
         )
-        # RN-07: sin este paso el profesional no puede recibir reservas. En
-        # produccion lo hace un administrador desde el panel.
         profesional.verificado = True
         profesional.save(update_fields=["verificado"])
         return profesional
 
     def _crear_catalogo(self, profesional: Profesional) -> list[Servicio]:
         catalogo = [
-            ("Reparacion de fuga en cocina", Decimal("85000"), 60),
-            ("Cambio de sifon de lavamanos", Decimal("55000"), 45),
-            ("Revision general de tuberia", Decimal("120000"), 90),
+            (
+                "Reparacion de fuga en cocina",
+                "Deteccion y reparacion de fugas en tuberia de cocina. Incluye "
+                "materiales basicos y prueba de estanqueidad.",
+                Decimal("85000"),
+                60,
+            ),
+            (
+                "Cambio de sifon de lavamanos",
+                "Retiro del sifon antiguo e instalacion de uno nuevo, con "
+                "sellado y verificacion de drenaje.",
+                Decimal("55000"),
+                60,
+            ),
+            (
+                "Revision general de tuberia",
+                "Inspeccion completa de la red hidraulica del apartamento con "
+                "informe de hallazgos y recomendaciones.",
+                Decimal("120000"),
+                120,
+            ),
         ]
         servicios = []
-        for nombre, precio, minutos in catalogo:
+        for nombre, descripcion, precio, minutos in catalogo:
             servicio, _ = Servicio.objects.get_or_create(
                 profesional=profesional,
                 nombre=nombre,
                 defaults={
+                    "categoria": Servicio.Oficio.PLOMERIA,
                     "precio_base": precio,
                     "duracion_minutos": minutos,
-                    "descripcion": "Servicio de demostracion.",
+                    "descripcion": descripcion,
                 },
             )
             servicios.append(servicio)
@@ -133,11 +138,6 @@ class Command(BaseCommand):
     def _abrir_agenda(
         self, profesional: Profesional, cuantas: int = 3
     ) -> list[BloqueDisponibilidad]:
-        """Publica `cuantas` franjas de dos horas en dias consecutivos.
-
-        Se busca un hueco libre antes de cada una para poder correr el comando
-        varias veces sin chocar con AGD-03 (franjas solapadas).
-        """
         agenda = AgendaService()
         bloques = []
         inicio = (timezone.localtime() + timedelta(days=1)).replace(
@@ -185,7 +185,6 @@ class Command(BaseCommand):
             )
         )
 
-    # ------------------------------------------------------------------
     def _resumen(self, profesional, cliente, bloques, reserva, pago) -> None:
         reserva.refresh_from_db()
         self.stdout.write(self.style.SUCCESS("\nDatos de demo listos.\n"))

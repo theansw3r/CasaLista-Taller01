@@ -1,11 +1,3 @@
-"""
-Pruebas del Builder: una por invariante.
-
-El Builder es el guardian de las reglas, asi que cada regla del Business Case
-que le corresponde tiene su prueba. Todas siguen la misma forma: se prepara un
-escenario que viola UNA regla y se comprueba que salta esa regla y no otra.
-"""
-
 from datetime import timedelta
 from decimal import Decimal
 
@@ -39,7 +31,6 @@ class ReservaBuilderTest(TestCase):
         self.escenario = escenario_basico()
 
     def _builder(self, **cambios) -> ReservaBuilder:
-        """Builder ya armado con un escenario valido, para tocar un solo dato."""
         datos = {**self.escenario, **cambios}
         builder = (
             ReservaBuilder()
@@ -51,7 +42,6 @@ class ReservaBuilderTest(TestCase):
             builder.agregar_servicio(datos["servicio"], datos.get("cantidad", 1))
         return builder
 
-    # --- Camino feliz --------------------------------------------------
     def test_construye_la_reserva_y_ocupa_el_bloque(self):
         reserva = self._builder().build()
 
@@ -65,7 +55,6 @@ class ReservaBuilderTest(TestCase):
         )
 
     def test_congela_el_precio_del_servicio(self):
-        """Si el precio cambia despues, la reserva conserva el que se acordo."""
         reserva = self._builder().build()
         servicio = self.escenario["servicio"]
 
@@ -81,8 +70,6 @@ class ReservaBuilderTest(TestCase):
         self.assertEqual(reserva.profesional_id, self.escenario["profesional"].pk)
 
     def test_usa_la_estrategia_de_tarifa_que_se_le_inyecte(self):
-        """La misma reserva cuesta distinto segun la estrategia."""
-        # Un sabado a las 20:00 dispara los dos recargos: 1 + 0.20 + 0.15.
         sabado = timezone.localtime() + timedelta(days=(5 - timezone.localtime().weekday()) % 7 + 7)
         inicio = sabado.replace(hour=20, minute=0, second=0, microsecond=0)
         bloque = BloqueDisponibilidad.objects.create(
@@ -98,9 +85,8 @@ class ReservaBuilderTest(TestCase):
         )
 
         self.assertEqual(reserva.tarifa_aplicada, "DINAMICA")
-        self.assertEqual(reserva.total, Decimal("67500.00"))  # 50000 * 1.35
+        self.assertEqual(reserva.total, Decimal("67500.00"))
 
-    # --- Datos incompletos ---------------------------------------------
     def test_exige_cliente(self):
         builder = ReservaBuilder().en_bloque(self.escenario["bloque"])
         builder.agregar_servicio(self.escenario["servicio"])
@@ -122,7 +108,6 @@ class ReservaBuilderTest(TestCase):
         with self.assertRaises(CantidadInvalida):
             self._builder(cantidad=0).build()
 
-    # --- Reglas del Business Case --------------------------------------
     def test_rn02_no_mezcla_servicios_de_dos_profesionales(self):
         otro = crear_profesional(nombre="Otro profesional")
         builder = self._builder()
@@ -156,7 +141,6 @@ class ReservaBuilderTest(TestCase):
             self._builder(cliente=segundo_cliente).build()
 
     def test_rn01_no_deja_reserva_a_medias_si_falla(self):
-        """Una construccion fallida no debe dejar rastro en la base."""
         self._builder().build()
         reservas_antes = Reserva.objects.count()
 
@@ -170,7 +154,6 @@ class ReservaBuilderTest(TestCase):
         with self.assertRaises(DuracionExcedeBloque) as capturado:
             self._builder(servicio=largo).build()
 
-        # El contexto del error le dice al cliente exactamente que sobro.
         self.assertEqual(capturado.exception.contexto["minutos_solicitados"], 180)
         self.assertEqual(capturado.exception.contexto["minutos_disponibles"], 120)
 

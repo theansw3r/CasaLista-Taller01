@@ -1,5 +1,3 @@
-"""Admin del modulo Agenda y Reservas."""
-
 from django.contrib import admin
 
 from apps.reservas.models import BloqueDisponibilidad, DetalleReserva, Reserva
@@ -8,8 +6,6 @@ from apps.reservas.models import BloqueDisponibilidad, DetalleReserva, Reserva
 class DetalleReservaInline(admin.TabularInline):
     model = DetalleReserva
     extra = 0
-    # Los detalles se congelan al reservar: editarlos a mano cambiaria el
-    # precio de una reserva ya acordada.
     readonly_fields = ["servicio", "cantidad", "precio_unitario", "duracion_unitaria_minutos"]
     can_delete = False
 

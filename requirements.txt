@@ -1,15 +1,5 @@
-# --- Nucleo ----------------------------------------------------------------
 Django>=5.2,<6.0
 djangorestframework>=3.15
-
-# --- Autenticacion sin estado (necesaria para el API Gateway) --------------
 djangorestframework-simplejwt>=5.3
-
-# --- Contrato OpenAPI (lo consume el Gateway para generar sus rutas) -------
-drf-spectacular>=0.27
-
-# --- Soporte al front end de la sustentacion -------------------------------
 django-cors-headers>=4.4
-
-# --- Configuracion por entorno ---------------------------------------------
 python-dotenv>=1.0

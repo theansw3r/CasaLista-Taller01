@@ -1,5 +1,3 @@
-"""Comandos del modulo Pagos."""
-
 from dataclasses import dataclass
 
 

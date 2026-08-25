@@ -1,5 +1,3 @@
-"""Rutas del modulo Cuentas (prefijo /api/v1/cuentas/)."""
-
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -18,8 +16,6 @@ urlpatterns = [
         RegistrarProfesionalView.as_view(),
         name="registro-profesional",
     ),
-    # Autenticacion sin estado. El token es lo que el API Gateway valida en el
-    # borde antes de dejar pasar la peticion (ver 05-API-Gateway.md).
     path("token/", TokenObtainPairView.as_view(), name="token"),
     path("token/refrescar/", TokenRefreshView.as_view(), name="token-refrescar"),
     path("perfil/", PerfilView.as_view(), name="perfil"),
