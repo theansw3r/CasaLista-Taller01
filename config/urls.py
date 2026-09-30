@@ -13,6 +13,8 @@ urlpatterns = [
     path(f"{API}cuentas/", include("apps.cuentas.api.urls")),
     path(f"{API}catalogo/", include("apps.catalogo.api.urls")),
     path(f"{API}reservas/", include("apps.reservas.api.urls")),
+    # Legacy: sigue funcionando mientras dure la migracion a /api/v2/pagos/.
     path(f"{API}pagos/", include("apps.pagos.api.urls")),
     path(f"{API}salud/", SaludView.as_view(), name="salud"),
+    path("interno/", include("apps.reservas.api.urls_internas")),
 ]

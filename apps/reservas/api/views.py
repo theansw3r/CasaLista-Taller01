@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.comun.api.paginacion import respuesta_paginada
+from apps.comun.api.permisos import EsServicioInterno
 from apps.reservas.api.serializers import (
     AbrirDisponibilidadSerializer,
     BloqueSerializer,
@@ -15,6 +16,7 @@ from apps.reservas.api.serializers import (
 from apps.reservas.services import (
     AgendaService,
     CancelacionReservaService,
+    ConfirmacionReservaService,
     ConsultaReservasService,
     ReservaService,
 )
@@ -110,3 +112,19 @@ class ReservasRecibidasView(APIView):
     def get(self, request):
         reservas = self.servicio().reservas_recibidas(request.user.pk)
         return respuesta_paginada(self, request, reservas, ReservaSerializer)
+
+
+class ConfirmarReservaInternaView(APIView):
+    """POST /interno/reservas/<id>/confirmacion/ -> la usa el servicio de pagos.
+
+    Nginx no expone /interno/ hacia afuera; ademas pide el token de servicio.
+    """
+
+    authentication_classes = []
+    permission_classes = [EsServicioInterno]
+    throttle_classes = []
+    servicio = ConfirmacionReservaService
+
+    def post(self, request, reserva_id: int):
+        reserva = self.servicio().confirmar(reserva_id)
+        return Response(ReservaSerializer(reserva).data, status=status.HTTP_200_OK)

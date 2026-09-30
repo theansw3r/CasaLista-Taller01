@@ -155,6 +155,10 @@ TARIFA_TYPE = variable("TARIFA_TYPE", "BASE")
 
 PASARELA_PAGO_TYPE = variable("PASARELA_PAGO_TYPE", "SIMULADA")
 
+# Strangler de pagos. El microservicio (Flask) manda este token para
+# confirmar reservas por /interno/. Vacio = nadie puede usar esa ruta.
+TOKEN_SERVICIO_PAGOS = variable("TOKEN_SERVICIO_PAGOS", "")
+
 COMISION_PLATAFORMA = Decimal(variable("COMISION_PLATAFORMA", "0.12"))
 
 HORAS_CANCELACION_SIN_PENALIZACION = int(variable("HORAS_CANCELACION_LIBRE", "24"))
