@@ -1,0 +1,78 @@
+# CasaLista con el patron Strangler:
+#   - django : monolito legacy (/api/v1/, admin, interfaz)
+#   - pagos  : microservicio Flask con la funcionalidad estrangulada (/api/v2/pagos/)
+#   - db     : Postgres con dos bases, una para cada servicio
+#   - nginx  : unica puerta de entrada, reparte el trafico segun la URL
+#
+#   docker compose up --build
+#   http://localhost:8080
+
+x-token-servicio: &token-servicio
+  TOKEN_SERVICIO_PAGOS: ${TOKEN_SERVICIO_PAGOS:-cambiar-este-token-en-produccion}
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: casalista
+      POSTGRES_USER: casalista
+      POSTGRES_PASSWORD: casalista
+    volumes:
+      - datos_postgres:/var/lib/postgresql/data
+      - ./docker/postgres:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U casalista -d casalista"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  django:
+    build: .
+    environment:
+      <<: *token-servicio
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-inseguro-solo-para-desarrollo}
+      # "django" porque asi lo llama el servicio de pagos dentro de la red.
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,django
+      DJANGO_TRAS_GATEWAY: "1"
+      DB_ENGINE: postgres
+      DB_NAME: casalista
+      DB_USER: casalista
+      DB_PASSWORD: casalista
+      DB_HOST: db
+      DB_PORT: "5432"
+      # El front deja de pagarle al monolito y le paga a Flask.
+      URL_PAGOS: /api/v2/pagos/
+    volumes:
+      - estaticos:/app/staticfiles
+    depends_on:
+      db:
+        condition: service_healthy
+
+  pagos:
+    build: ./servicio_pagos
+    environment:
+      <<: *token-servicio
+      DATABASE_URL: postgresql+psycopg://casalista:casalista@db:5432/casalista_pagos
+      URL_RESERVAS: http://django:8000
+      PASARELA_PAGO_TYPE: SIMULADA
+    depends_on:
+      db:
+        condition: service_healthy
+      django:
+        condition: service_started
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - estaticos:/static:ro
+    depends_on:
+      - django
+      - pagos
+
+volumes:
+  datos_postgres:
+  estaticos:
