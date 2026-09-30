@@ -159,6 +159,10 @@ PASARELA_PAGO_TYPE = variable("PASARELA_PAGO_TYPE", "SIMULADA")
 # confirmar reservas por /interno/. Vacio = nadie puede usar esa ruta.
 TOKEN_SERVICIO_PAGOS = variable("TOKEN_SERVICIO_PAGOS", "")
 
+# A donde paga el front. Con runserver sigue siendo el monolito (v1); en
+# docker-compose se cambia a /api/v2/pagos/, que Nginx manda a Flask.
+URL_PAGOS = variable("URL_PAGOS", "/api/v1/pagos/")
+
 COMISION_PLATAFORMA = Decimal(variable("COMISION_PLATAFORMA", "0.12"))
 
 HORAS_CANCELACION_SIN_PENALIZACION = int(variable("HORAS_CANCELACION_LIBRE", "24"))

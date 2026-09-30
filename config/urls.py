@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
@@ -7,7 +8,14 @@ from apps.comun.api.views import IndiceView, SaludView
 API = "api/v1/"
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="index.html"), name="inicio"),
+    path(
+        "",
+        TemplateView.as_view(
+            template_name="index.html",
+            extra_context={"url_pagos": settings.URL_PAGOS},
+        ),
+        name="inicio",
+    ),
     path("admin/", admin.site.urls),
     path("api/", IndiceView.as_view(), name="indice"),
     path(f"{API}cuentas/", include("apps.cuentas.api.urls")),
