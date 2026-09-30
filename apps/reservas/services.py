@@ -165,6 +165,23 @@ class ConsultaReservasService:
             ) from None
 
 
+class ConfirmacionReservaService:
+    """RN-03 desde afuera: la llama el microservicio de pagos cuando la
+    pasarela aprueba. Antes esto pasaba dentro de PagoService."""
+
+    def confirmar(self, reserva_id: int) -> Reserva:
+        with transaction.atomic():
+            try:
+                reserva = Reserva.objects.select_for_update().get(pk=reserva_id)
+            except Reserva.DoesNotExist:
+                raise ReservaNoEncontrada(
+                    f"No existe la reserva {reserva_id}.", reserva_id=reserva_id
+                ) from None
+            CicloDeVidaReserva.confirmar(reserva)
+            reserva.save(update_fields=["estado", "actualizada_en"])
+        return reserva
+
+
 class CancelacionReservaService:
 
     def __init__(

@@ -45,6 +45,7 @@ class IndiceService:
                 "disponibilidad": "/api/v1/reservas/disponibilidad/",
                 "reservas": "/api/v1/reservas/",
                 "pagos": "/api/v1/pagos/",
+                "pagos_v2": "/api/v2/pagos/",
                 "salud": "/api/v1/salud/",
             },
         }

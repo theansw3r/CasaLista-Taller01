@@ -1,7 +1,8 @@
-# CasaLista — Entrega 1
+# CasaLista
 
-Marketplace de reserva de servicios para el hogar. Entrega 1 de Arquitectura
-de Software: núcleo de negocio + API con Django REST Framework.
+Marketplace de reserva de servicios para el hogar. Arquitectura de Software:
+núcleo de negocio + API con Django REST Framework (Entrega 1), y el módulo de
+pagos migrado a un microservicio en Flask con el patrón Strangler (Taller 2).
 
 ## Instalación
 
@@ -24,6 +25,35 @@ mano).
 ```bash
 python manage.py test    # corre las pruebas
 ```
+
+## Con Docker (monolito + microservicio de pagos)
+
+```bash
+docker compose up --build
+docker compose exec django python manage.py sembrar_demo
+```
+
+Todo entra por Nginx en `http://localhost:8080/`:
+
+| Ruta | Va a |
+|---|---|
+| `/api/v2/pagos/` | microservicio de pagos (Flask) |
+| `/api/v1/...`, `/admin/`, `/` | monolito (Django) |
+| `/interno/...` | bloqueada, solo se usa entre contenedores |
+
+En Docker el front paga contra `/api/v2/pagos/`. Con `runserver` sigue
+pagando contra `/api/v1/pagos/`, que todavía existe (lo controla `URL_PAGOS`).
+
+Las pruebas del servicio de pagos se corren aparte:
+
+```bash
+cd servicio_pagos
+pip install -r requirements-dev.txt
+pytest
+```
+
+La justificación de por qué se sacó pagos y cómo quedó separado está en la
+página *Migración a Microservicios (Strangler Pattern)* de la Wiki.
 
 ## Usar la aplicación
 
@@ -68,7 +98,10 @@ apps/
   cuentas/     # Usuario, Cliente, Profesional
   catalogo/    # Servicio
   reservas/    # BloqueDisponibilidad, Reserva, DetalleReserva  (acá está el Builder)
-  pagos/       # Pago  (acá está la Factory de pasarelas)
+  pagos/       # Pago  (legacy, /api/v1/pagos/)
+servicio_pagos/  # microservicio Flask que reemplaza a apps/pagos (/api/v2/pagos/)
+nginx/           # nginx.conf: reparte el tráfico entre Django y Flask
+docker/          # script que crea la base de datos de pagos en Postgres
 ```
 
 Cada app tiene: `models.py` (solo datos), `dominio/` (reglas de negocio y el

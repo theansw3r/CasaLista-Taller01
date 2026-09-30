@@ -1,4 +1,8 @@
 const API = "/api/v1";
+// Pagos se saco del monolito a un servicio en Flask (/api/v2/pagos/). Django
+// dice en el HTML a cual version pagar: v1 si se corre solo con runserver,
+// v2 cuando esta Nginx adelante.
+const URL_PAGOS = document.body.dataset.urlPagos || API + "/pagos/";
 
 const estado = {
   token: localStorage.getItem("token") || null,
@@ -46,7 +50,8 @@ async function pedir(ruta, opciones = {}) {
   const cabeceras = { "Content-Type": "application/json" };
   if (estado.token) cabeceras["Authorization"] = "Bearer " + estado.token;
 
-  const respuesta = await fetch(API + ruta, { ...opciones, headers: cabeceras });
+  const url = ruta.startsWith("/api/") ? ruta : API + ruta;
+  const respuesta = await fetch(url, { ...opciones, headers: cabeceras });
 
   if (respuesta.status === 204) return null;
 
@@ -395,7 +400,7 @@ function pintarReserva(reserva, conAcciones) {
 }
 
 async function pagarReserva(id) {
-  const pago = await pedir("/pagos/", {
+  const pago = await pedir(URL_PAGOS, {
     method: "POST",
     body: JSON.stringify({ reserva_id: id, medio: "TARJETA" }),
   });

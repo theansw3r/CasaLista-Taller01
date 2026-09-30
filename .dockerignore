@@ -1,0 +1,13 @@
+.git
+.venv
+venv
+**/__pycache__
+*.pyc
+.env
+db.sqlite3
+staticfiles/
+docs/
+servicio_pagos/
+nginx/
+docker/
+docker-compose.yml
