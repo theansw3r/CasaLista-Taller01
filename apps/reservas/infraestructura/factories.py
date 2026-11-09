@@ -3,6 +3,7 @@ from apps.reservas.dominio.puertos import CalculadorTarifa, Notificador
 from apps.reservas.dominio.tarifas import TarifaBase, TarifaDinamica
 from apps.reservas.infraestructura.notificaciones import (
     NotificadorConsola,
+    NotificadorAsincrono,
     NotificadorEmail,
 )
 
@@ -12,6 +13,7 @@ class NotificadorFactory(FactoryPorEntorno):
     variable_de_entorno = "NOTIFICADOR_TYPE"
     valor_por_defecto = "MOCK"
     registro = {
+        "ASYNC": NotificadorAsincrono,
         "MOCK": NotificadorConsola,
         "REAL": NotificadorEmail,
     }

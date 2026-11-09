@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _
 import logging
 
 from rest_framework.response import Response
@@ -54,7 +55,7 @@ def _mensaje_legible(detalle) -> str:
     if isinstance(detalle, dict):
         if "detail" in detalle:
             return str(detalle["detail"])
-        return "La peticion tiene campos invalidos."
+        return _("La peticion tiene campos invalidos.")
     if isinstance(detalle, list) and detalle:
         return str(detalle[0])
     return str(detalle)

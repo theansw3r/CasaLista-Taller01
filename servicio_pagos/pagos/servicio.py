@@ -1,3 +1,4 @@
+from pagos.i18n import gettext as _, marcar as _lazy
 import logging
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
@@ -19,6 +20,12 @@ from pagos.pasarelas import pasarela_para
 logger = logging.getLogger(__name__)
 
 CENTAVOS = Decimal("0.01")
+ETIQUETAS_ESTADO = {
+    "PENDIENTE": _lazy("Pendiente de pago"),
+    "CONFIRMADA": _lazy("Confirmada"),
+    "COMPLETADA": _lazy("Completada"),
+    "CANCELADA": _lazy("Cancelada"),
+}
 
 
 def a_dinero(valor) -> Decimal:
@@ -76,9 +83,9 @@ class PagoService:
     @staticmethod
     def _exigir_cobrable(reserva: dict) -> None:
         if reserva.get("estado") != "PENDIENTE":
-            estado = str(reserva.get("estado", "")).lower()
+            estado = _(ETIQUETAS_ESTADO.get(reserva.get("estado"), str(reserva.get("estado", "")))).lower()
             raise ReservaNoCobrable(
-                f"La reserva #{reserva.get('id')} esta {estado} y no admite pago.",
+                _("La reserva #%(v0)s esta %(v1)s y no admite pago.") % {'v0': reserva.get('id'), 'v1': estado},
                 estado_actual=reserva.get("estado"),
             )
 
@@ -147,7 +154,7 @@ class ConsultaPagosService:
     ) -> tuple[Pago, str]:
         pago = db.session.get(Pago, pago_id)
         if pago is None:
-            raise PagoNoEncontrado(f"No existe el pago {pago_id}.", pago_id=pago_id)
+            raise PagoNoEncontrado(_("No existe el pago %(v0)s.") % {'v0': pago_id}, pago_id=pago_id)
         # Igual que en v1: si la reserva es de otro cliente, Django responde 403.
         reserva = self.reservas.obtener(pago.reserva_id, autorizacion, id_peticion)
         return pago, reserva["estado"]

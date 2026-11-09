@@ -23,3 +23,17 @@ class ReservaAdmin(admin.ModelAdmin):
     search_fields = ["cliente__nombre", "profesional__nombre"]
     readonly_fields = ["total", "tarifa_aplicada", "penalizacion", "creada_en"]
     inlines = [DetalleReservaInline]
+
+
+from apps.reservas.models import NotificacionPendiente
+
+@admin.register(NotificacionPendiente)
+class NotificacionPendienteAdmin(admin.ModelAdmin):
+    list_display = ("id", "reserva", "idioma", "creada_en", "enviada_en")
+    readonly_fields = ("reserva", "idioma", "creada_en", "enviada_en")
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

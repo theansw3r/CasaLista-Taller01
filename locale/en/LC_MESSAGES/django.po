@@ -1,0 +1,636 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CasaLista Entrega 2\n"
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "%(v0)s='%(v1)s' no es un valor valido. Opciones disponibles: %(v2)s."
+msgstr "%(v0)s='%(v1)s' is not a valid value. Available options: %(v2)s."
+
+msgid "1 reserva genera 0..1 pago."
+msgstr "1 booking generates 0..1 payment."
+
+msgid "1. Busca un profesional en tu zona"
+msgstr "1. Find a professional in your area"
+
+msgid "2. Elige los servicios"
+msgstr "2. Choose your services"
+
+msgid "3. Elige un horario disponible"
+msgstr "3. Choose an available time"
+
+msgid "4. Confirma la reserva"
+msgstr "4. Confirm your booking"
+
+msgid "Abrir un horario"
+msgstr "Add availability"
+
+msgid "Accede para gestionar tus reservas y servicios."
+msgstr "Sign in to manage your bookings and services."
+
+msgid "Agregacion: 1 profesional ofrece 1..* servicios."
+msgstr "Aggregation: 1 professional offers 1..* services."
+
+msgid "Aplicar"
+msgstr "Apply"
+
+msgid "Bloque de disponibilidad"
+msgstr "Availability slot"
+
+msgid "Bloques de disponibilidad"
+msgstr "Availability slots"
+
+msgid "Buscar"
+msgstr "Search"
+
+msgid "CasaLista - Catalogo"
+msgstr "CasaLista - Catalogue"
+
+msgid "CasaLista - Cuentas"
+msgstr "CasaLista - Accounts"
+
+msgid "CasaLista - Pagos"
+msgstr "CasaLista - Payments"
+
+msgid "CasaLista - Reservas"
+msgstr "CasaLista - Bookings"
+
+msgid ""
+"CasaLista solo agenda los cinco oficios del listado, con visitas de entre 1 "
+"y 4 horas."
+msgstr ""
+"CasaLista only schedules the five listed trades, with visits lasting 1 to 4 "
+"hours."
+
+msgid ""
+"CasaLista solo agenda visitas de hasta %(v0)s minutos (cuatro horas). Un "
+"trabajo mas largo se divide en varias visitas."
+msgstr ""
+"CasaLista schedules visits of up to %(v0)s minutes (four hours). Longer jobs"
+" require several visits."
+
+msgid "Cerrajeria"
+msgstr "Locksmithing"
+
+msgid "Como se presenta: oficio, experiencia, que trabajos hace."
+msgstr "Profile: trade, experience and services offered."
+
+msgid "Consultando el clima…"
+msgstr "Checking the weather…"
+
+msgid "Contrasena"
+msgstr "Password"
+
+msgid "Contrasena (minimo 8 caracteres)"
+msgstr "Password (at least 8 characters)"
+
+msgid "Correo"
+msgstr "Email"
+
+msgid "Cuenta de acceso. Un usuario tiene como maximo un perfil de cliente."
+msgstr "Login account. A user can have at most one customer profile."
+
+msgid "Datos de Open-Meteo"
+msgstr "Data by Open-Meteo"
+
+msgid "Debe ser un numero entero mayor o igual a 1."
+msgstr "Must be an integer greater than or equal to 1."
+
+msgid "Debe ser uno de: %(medios)s."
+msgstr "Must be one of: %(medios)s."
+
+msgid ""
+"Describe el servicio con al menos %(v0)s caracteres: el cliente decide con "
+"esa informacion."
+msgstr ""
+"Describe the service in at least %(v0)s characters so customers can make an "
+"informed choice."
+
+msgid "Describe tu experiencia"
+msgstr "Tell us about your experience"
+
+msgid "Detalle de reserva"
+msgstr "Booking detail"
+
+msgid "Detalles de reserva"
+msgstr "Booking details"
+
+msgid "Dia"
+msgstr "Date"
+
+msgid "Direccion de la visita"
+msgstr "Visit address"
+
+msgid "Documento de identidad"
+msgstr "Identity document"
+
+msgid "Documento de identidad. Lo usa el administrador para verificar."
+msgstr "Identity document used by the administrator for verification."
+
+msgid "Duracion (horas)"
+msgstr "Duration (hours)"
+
+msgid "Duracion (minutos)"
+msgstr "Duration (minutes)"
+
+msgid "Duracion de la visita: entre 1 y 4 horas (Business Case 1.1)."
+msgstr "Visit duration: between 1 and 4 hours (Business Case 1.1)."
+
+msgid "EMPIEZA AQUÍ"
+msgstr "START HERE"
+
+msgid "El cliente no tiene correo"
+msgstr "The customer has no email address"
+
+msgid "El clima en Medellín"
+msgstr "Weather in Medellín"
+
+msgid "El clima no está disponible. Puedes continuar tu reserva."
+msgstr "Weather is unavailable. You can continue your booking."
+
+msgid ""
+"El cobro se aprobo pero la reserva no se pudo confirmar. El pago quedo "
+"registrado para conciliarlo."
+msgstr ""
+"The payment was approved but the booking could not be confirmed. The payment"
+" was recorded for reconciliation."
+
+msgid "El cuerpo de la peticion debe ser un objeto JSON."
+msgstr "The request body must be a JSON object."
+
+msgid "El monto minimo con tarjeta es $ %(v0)s."
+msgstr "The minimum card payment is $ %(v0)s."
+
+msgid "El pago solicitado no existe."
+msgstr "The requested payment does not exist."
+
+msgid "El profesional %(v0)s no cubre la zona '%(v1)s'."
+msgstr "Professional %(v0)s does not cover the area '%(v1)s'."
+
+msgid "El profesional %(v0)s todavia no esta verificado."
+msgstr "Professional %(v0)s is not verified yet."
+
+msgid "El profesional no esta habilitado para esta reserva."
+msgstr "The professional is not eligible for this booking."
+
+msgid "El profesional solicitado no existe."
+msgstr "The requested professional does not exist."
+
+msgid "El profesional ya tiene una franja publicada en ese horario."
+msgstr "The professional already has an availability slot at that time."
+
+msgid "El recurso solicitado no existe."
+msgstr "The requested resource does not exist."
+
+msgid "El servicio '%(v0)s' ya no esta disponible."
+msgstr "Service '%(v0)s' is no longer available."
+
+msgid "El servicio no cumple los estandares de CasaLista."
+msgstr "The service does not meet CasaLista standards."
+
+msgid "El servicio solicitado no existe."
+msgstr "The requested service does not exist."
+
+msgid "El servicio ya no esta disponible."
+msgstr "The service is no longer available."
+
+msgid "Electricidad"
+msgstr "Electrical work"
+
+msgid ""
+"Encuentra profesionales verificados, elige tu horario y reserva servicios "
+"para tu hogar en un solo lugar."
+msgstr ""
+"Find verified professionals, choose a time and book home services in one "
+"place."
+
+msgid "Entrar"
+msgstr "Sign in"
+
+msgid "Error interno del servicio de pagos."
+msgstr "Internal payment service error."
+
+msgid "Esta reserva ya tiene un pago registrado."
+msgstr "This booking already has a registered payment."
+
+msgid "Esta ruta solo la pueden usar los servicios internos de CasaLista."
+msgstr "Only internal CasaLista services may use this route."
+
+msgid "Falta indicar el cliente de la reserva."
+msgstr "The booking customer is required."
+
+msgid "Falta indicar la franja de agenda."
+msgstr "An availability slot is required."
+
+msgid "Falta la direccion o la zona de la visita."
+msgstr "The visit address or area is missing."
+
+msgid "Faltan datos obligatorios para construir la reserva."
+msgstr "Required booking information is missing."
+
+msgid "Hecho para simplificar tu día."
+msgstr "Made to simplify your day."
+
+msgid "Hora de inicio"
+msgstr "Start time"
+
+msgid "Identificador que devuelve la pasarela. Es la prueba del cobro."
+msgstr "Identifier returned by the payment gateway as proof of payment."
+
+msgid "Idioma"
+msgstr "Language"
+
+msgid "Información para tu visita"
+msgstr "Information for your visit"
+
+msgid "Iniciar sesion"
+msgstr "Sign in"
+
+msgid ""
+"Integración pendiente: falta identificar el equipo aliado y su contrato de "
+"API."
+msgstr ""
+"Integration pending: the partner team and its API contract have not been "
+"identified."
+
+msgid "La cantidad de '%(v0)s' debe ser mayor que cero."
+msgstr "The quantity of '%(v0)s' must be greater than zero."
+
+msgid "La cantidad de un servicio debe ser mayor que cero."
+msgstr "The quantity of a service must be greater than zero."
+
+msgid "La cuenta autenticada no tiene un perfil de cliente."
+msgstr "The authenticated account has no customer profile."
+
+msgid "La cuenta autenticada no tiene un perfil de profesional."
+msgstr "The authenticated account has no professional profile."
+
+msgid "La franja debe terminar despues de empezar."
+msgstr "The time slot must end after it starts."
+
+msgid "La franja elegida pertenece a otro profesional."
+msgstr "The selected time slot belongs to another professional."
+
+msgid "La franja horaria solicitada no existe."
+msgstr "The requested time slot does not exist."
+
+msgid "La franja horaria ya fue tomada."
+msgstr "This time slot has already been booked."
+
+msgid "La franja horaria ya tiene una reserva activa."
+msgstr "This time slot already has an active booking."
+
+msgid "La franja pertenece a otro profesional."
+msgstr "The time slot belongs to another professional."
+
+msgid "La franja se solapa con otra ya publicada."
+msgstr "The time slot overlaps an existing one."
+
+msgid "La operacion viola una regla de negocio."
+msgstr "The operation violates a business rule."
+
+msgid "La pasarela de pagos no esta respondiendo."
+msgstr "The payment gateway is not responding."
+
+msgid "La pasarela rechazo el pago."
+msgstr "The payment gateway declined the payment."
+
+msgid "La peticion tiene campos invalidos."
+msgstr "The request contains invalid fields."
+
+msgid "La reserva #%(v0)s esta %(v1)s y no admite pago."
+msgstr "Booking #%(v0)s is %(v1)s and cannot accept payment."
+
+msgid "La reserva debe incluir al menos un servicio."
+msgstr "A booking must include at least one service."
+
+msgid "La reserva no admite esa operacion en su estado actual."
+msgstr "The booking cannot perform this operation in its current state."
+
+msgid "La reserva no esta en un estado que admita pago."
+msgstr "The booking is not in a state that accepts payment."
+
+msgid "La reserva pertenece a otro cliente."
+msgstr "The booking belongs to another customer."
+
+msgid "La reserva solicitada no existe."
+msgstr "The requested booking does not exist."
+
+msgid "Las credenciales de autenticacion no se proveyeron."
+msgstr "Authentication credentials were not provided."
+
+msgid "Lo calcula la estrategia de tarifa al construir la reserva."
+msgstr "Calculated by the pricing strategy when the booking is built."
+
+msgid "Lo recalcula el modulo de Reputacion (Entrega 2)."
+msgstr "Recalculated by the Reputation module (Delivery 2)."
+
+msgid "Los servicios no caben en la franja elegida."
+msgstr "The services do not fit in the selected time slot."
+
+msgid "Los servicios requieren %(v0)s minutos y la franja solo tiene %(v1)s."
+msgstr ""
+"The services require %(v0)s minutes but the time slot only has %(v1)s."
+
+msgid "Menos pendientes."
+msgstr "Less on your to-do list."
+
+msgid "Mis horarios"
+msgstr "My availability"
+
+msgid "Mis reservas"
+msgstr "My bookings"
+
+msgid "Mis servicios"
+msgstr "My services"
+
+msgid "Más tiempo para ti."
+msgstr "More time for you."
+
+msgid "NUESTRA RED"
+msgstr "OUR NETWORK"
+
+msgid "No existe el pago %(v0)s."
+msgstr "Payment %(v0)s does not exist."
+
+msgid "No existe el servicio %(v0)s."
+msgstr "Service %(v0)s does not exist."
+
+msgid "No existe la franja de agenda %(v0)s."
+msgstr "Availability slot %(v0)s does not exist."
+
+msgid "No existe la reserva %(v0)s."
+msgstr "Booking %(v0)s does not exist."
+
+msgid "No existe un profesional verificado con id %(v0)s."
+msgstr "No verified professional with ID %(v0)s exists."
+
+msgid "No puedes publicar dos horarios que se crucen (AGD-03)."
+msgstr "You cannot publish overlapping time slots (AGD-03)."
+
+msgid "No se pudo consultar la reserva. Intente de nuevo en un momento."
+msgstr "The booking could not be retrieved. Please try again shortly."
+
+msgid "No tiene permiso sobre este recurso."
+msgstr "You do not have permission for this resource."
+
+msgid "No tienes un servicio con id %(v0)s."
+msgstr "You do not have a service with ID %(v0)s."
+
+msgid "Nombre"
+msgstr "Name"
+
+msgid "Nombre del servicio"
+msgstr "Service name"
+
+msgid "Nombre o razon social"
+msgstr "Name or business name"
+
+msgid "Oficio"
+msgstr "Trade"
+
+msgid "Oficio al que pertenece. Solo los cinco del nicho."
+msgstr "Trade category. Only the five supported trades are allowed."
+
+msgid "PLANEA TU VISITA"
+msgstr "PLAN YOUR VISIT"
+
+msgid "PSE (debito bancario)"
+msgstr "PSE (bank debit)"
+
+msgid "Pendiente de pago"
+msgstr "Awaiting payment"
+
+msgid "Pintura"
+msgstr "Painting"
+
+msgid "Plomeria"
+msgstr "Plumbing"
+
+msgid "Precio"
+msgstr "Price"
+
+msgid "Precio publicado. Se congela en la linea al reservar."
+msgstr "Published price, frozen in the booking line when booked."
+
+msgid "Publicar horario"
+msgstr "Publish availability"
+
+msgid "Publicar servicio"
+msgstr "Publish service"
+
+msgid "Publicar un servicio"
+msgstr "Publish a service"
+
+msgid "Que estrategia se uso. Sin esto un total no se puede auditar."
+msgstr "The pricing strategy used, required to audit the total."
+
+msgid "Que incluye la visita"
+msgstr "What the visit includes"
+
+msgid "Que incluye la visita. El cliente decide con esto."
+msgstr "What the visit includes, to help the customer choose."
+
+msgid "Que pasarela lo proceso. Sin esto no se puede conciliar."
+msgstr "The payment gateway used, required for reconciliation."
+
+msgid "Quitar la verificacion"
+msgstr "Remove verification"
+
+msgid "RN-04: monto retenido si el cliente cancela."
+msgstr "RN-04: amount retained if the customer cancels."
+
+msgid "RN-07: solo un profesional verificado puede recibir reservas."
+msgstr "RN-07: only verified professionals can receive bookings."
+
+msgid "Registrarme"
+msgstr "Create account"
+
+msgid "Registrarme como profesional"
+msgstr "Register as a professional"
+
+msgid "Reparacion de electrodomesticos"
+msgstr "Appliance repair"
+
+msgid "Reservar"
+msgstr "Book now"
+
+msgid "Reservas que me hicieron"
+msgstr "Received bookings"
+
+msgid "Saltar al contenido"
+msgstr "Skip to content"
+
+msgid "Se copia del total de la reserva al momento de cobrar."
+msgstr "Copied from the booking total at the time of payment."
+
+msgid "Servicios del equipo aliado"
+msgstr "Partner team services"
+
+msgid "Servicios para el hogar · Valle de Aburrá"
+msgstr "Home services · Aburrá Valley"
+
+msgid "Solo aparecen profesionales verificados que cubren la zona (RN-07)."
+msgstr "Only verified professionals who cover the area are shown (RN-07)."
+
+msgid "Soy cliente"
+msgstr "I'm a customer"
+
+msgid "Soy profesional"
+msgstr "I'm a professional"
+
+msgid "TU HOGAR, EN BUENAS MANOS"
+msgstr "YOUR HOME, IN GOOD HANDS"
+
+msgid "Tarjeta de credito o debito"
+msgstr "Credit or debit card"
+
+msgid "Telefono"
+msgstr "Phone"
+
+msgid "Todas las zonas"
+msgstr "All areas"
+
+msgid "Todos los oficios"
+msgstr "All trades"
+
+msgid "Todos los servicios de una reserva deben ser del mismo profesional."
+msgstr "All services in a booking must belong to the same professional."
+
+msgid "Trabajos que necesitan diagnostico antes de cotizar en firme."
+msgstr "Jobs that require a diagnosis before a final quotation."
+
+msgid "Tu próxima visita, sin complicaciones."
+msgstr "Your next visit, made simple."
+
+msgid ""
+"Un administrador debe verificar tu cuenta antes de que aparezcas en las "
+"busquedas (regla RN-07)."
+msgstr ""
+"An administrator must verify your account before it appears in searches "
+"(rule RN-07)."
+
+msgid "Una reserva %(v0)s no puede pasar a %(v1)s."
+msgstr "A %(v0)s booking cannot transition to %(v1)s."
+
+msgid "Una visita no puede durar menos de %(v0)s minutos."
+msgstr "A visit cannot last less than %(v0)s minutes."
+
+msgid "Verificar los profesionales seleccionados"
+msgstr "Verify selected professionals"
+
+msgid "Ya existe una cuenta registrada con ese correo."
+msgstr "An account with this email address already exists."
+
+msgid "Ya publicaste un servicio con ese nombre."
+msgstr "You have already published a service with this name."
+
+msgid "Ya tienes un servicio llamado '%(v0)s'."
+msgstr "You already have a service named '%(v0)s'."
+
+msgid "Zona"
+msgstr "Area"
+
+msgid "Zonas atendidas separadas por coma. Ej: Laureles,Belen,Envigado"
+msgstr "Covered areas separated by commas. E.g. Laureles,Belen,Envigado"
+
+msgid "Zonas donde trabajas"
+msgstr "Areas you cover"
+
+msgid "✓ Agenda a tu medida"
+msgstr "✓ A schedule that suits you"
+
+msgid "✓ Precios claros"
+msgstr "✓ Clear pricing"
+
+msgid "✓ Profesionales verificados"
+msgstr "✓ Verified professionals"
+
+msgid "Aprobado"
+msgstr "Approved"
+
+msgid "Cancelada"
+msgstr "Cancelled"
+
+msgid "CasaLista - Reserva #%(id)s creada"
+msgstr "CasaLista - Booking #%(id)s created"
+
+msgid "Cliente"
+msgstr "Customer"
+
+msgid "Clientes"
+msgstr "Customers"
+
+msgid "Completada"
+msgstr "Completed"
+
+msgid "Confirmada"
+msgstr "Confirmed"
+
+msgid ""
+"Hola %(cliente)s,\n"
+"\n"
+"Tu reserva con %(profesional)s quedó registrada.\n"
+"Fecha: %(fecha)s\n"
+"Dirección: %(direccion)s (%(zona)s)\n"
+"Total: COP %(total)s\n"
+"Estado: %(estado)s\n"
+"\n"
+"Te avisaremos cuando confirmemos el pago."
+msgstr ""
+"Hello %(cliente)s,\n"
+"\n"
+"Your booking with %(profesional)s has been registered.\n"
+"Date: %(fecha)s\n"
+"Address: %(direccion)s (%(zona)s)\n"
+"Total: COP %(total)s\n"
+"Status: %(estado)s\n"
+"\n"
+"We will notify you when payment is confirmed."
+
+msgid "La ruta no existe en el servicio de pagos."
+msgstr "The route does not exist in the payment service."
+
+msgid "Libre"
+msgstr "Available"
+
+msgid "Metodo no permitido en esta ruta."
+msgstr "Method not allowed on this route."
+
+msgid "Ocupado"
+msgstr "Booked"
+
+msgid "Pago"
+msgstr "Payment"
+
+msgid "Pagos"
+msgstr "Payments"
+
+msgid "Pendiente"
+msgstr "Pending"
+
+msgid "Profesional"
+msgstr "Professional"
+
+msgid "Profesionales"
+msgstr "Professionals"
+
+msgid "Rechazado"
+msgstr "Declined"
+
+msgid "Reembolsado"
+msgstr "Refunded"
+
+msgid "Reserva"
+msgstr "Booking"
+
+msgid "Reservas"
+msgstr "Bookings"
+
+msgid "Servicio"
+msgstr "Service"
+
+msgid "Servicios"
+msgstr "Services"

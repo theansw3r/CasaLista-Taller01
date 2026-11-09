@@ -1,0 +1,14 @@
+d359099b0f7894215c7dfda4f10534088083a624|jose|jmbarrienp@eafit.edu.co|2026-09-30T07:54:41-05:00|merge: integra el taller 2 (strangler de pagos a Flask)
+977c08823fc79597c0b65f8dfe1f22458898337e|jose|jmbarrienp@eafit.edu.co|2026-09-30T07:20:36-05:00|docs: explica como levantar el monolito y el servicio de pagos con Docker
+de3fb60768ca5d9d078b7b97fbadf1b80bb5c0e4|jose|jmbarrienp@eafit.edu.co|2026-09-30T07:20:17-05:00|feat(front): paga contra /api/v2/pagos/ cuando corre detras de Nginx
+9d53289a1c9472969db1ab6a37c6dac47fcf5486|jose|jmbarrienp@eafit.edu.co|2026-09-30T07:20:17-05:00|build(compose): levanta Postgres, Django, Flask y Nginx juntos
+bb2b2287167a325293e125712db70758ff1cf84d|jose|jmbarrienp@eafit.edu.co|2026-09-30T07:20:16-05:00|feat(nginx): bifurca el trafico entre Django y Flask segun la URL
+2e4517b57a23328976bf9fc83219ca6e8e171131|jose|jmbarrienp@eafit.edu.co|2026-09-30T07:20:16-05:00|build(docker): agrega Dockerfile del monolito y uno aparte para Flask
+1683ea3f20a677776fc1586f9a3605ca901256aa|jose|jmbarrienp@eafit.edu.co|2026-09-30T07:14:16-05:00|feat(reservas): agrega ruta interna para que pagos confirme la reserva
+d875cdcc4a221c36d2d344fffda6629576f5e806|jose|jmbarrienp@eafit.edu.co|2026-09-30T07:12:34-05:00|test(pagos-v2): cubre el cobro, la consulta y los errores del servicio
+62de6512f3054815c607d1a0194274d045b78404|jose|jmbarrienp@eafit.edu.co|2026-09-30T07:12:34-05:00|feat(pagos-v2): crea el microservicio de pagos en Flask
+957dd911b60aa395ec972e87b070b40dbbc9326e|theansw3r|barrientosjosemanuel13@gmail.com|2026-08-25T14:19:08-05:00|Agrega front end, estandares del catalogo y panel del profesional
+06c1ca4b15ee7cb61ac0711a7b22276602084d28|theansw3r|barrientosjosemanuel13@gmail.com|2026-08-23T17:02:54-05:00|Recorta la documentacion a lo que pide el enunciado
+3543aabfa67235a59d43a5b628751f5de2386ebf|theansw3r|barrientosjosemanuel13@gmail.com|2026-08-23T16:53:29-05:00|Wiki: corrige el conteo de servicios (son diez, no nueve)
+db4e1a0f42d1d9ada4389d4892b7436bc2356bed|theansw3r|barrientosjosemanuel13@gmail.com|2026-08-23T16:52:46-05:00|Pagina todos los listados de la API
+996a77a0613bf64fa5dfb26a34b554eb082584e1|theansw3r|barrientosjosemanuel13@gmail.com|2026-08-23T16:48:19-05:00|Entrega 1: nucleo de negocio y API con DRF

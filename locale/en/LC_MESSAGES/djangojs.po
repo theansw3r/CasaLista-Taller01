@@ -1,0 +1,174 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: CasaLista Entrega 2\n"
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid ""
+"%(temperatura)s °C · Precipitación: %(lluvia)s mm · Actualizado: %(hora)s "
+"(Bogotá)"
+msgstr ""
+"%(temperatura)s °C · Precipitation: %(lluvia)s mm · Updated: %(hora)s "
+"(Bogotá)"
+
+msgid "ACTIVO"
+msgstr "ACTIVE"
+
+msgid "BASE"
+msgstr "STANDARD"
+
+msgid "Bienvenido a CasaLista"
+msgstr "Welcome to CasaLista"
+
+msgid "Buscar servicio"
+msgstr "Find a service"
+
+msgid "CANCELADA"
+msgstr "CANCELLED"
+
+msgid "COMPLETADA"
+msgstr "COMPLETED"
+
+msgid "CONFIRMADA"
+msgstr "CONFIRMED"
+
+msgid "Cancelar"
+msgstr "Cancel"
+
+msgid "Cuenta creada."
+msgstr "Account created."
+
+msgid "Cuenta profesional creada. Queda pendiente de verificacion."
+msgstr "Professional account created. Verification is pending."
+
+msgid "DINAMICA"
+msgstr "DYNAMIC"
+
+msgid "Elige el dia y la hora de inicio."
+msgstr "Choose a date and start time."
+
+msgid "Horario publicado."
+msgstr "Availability published."
+
+msgid "INACTIVO"
+msgstr "INACTIVE"
+
+msgid "LIBRE"
+msgstr "AVAILABLE"
+
+msgid "Mi agenda"
+msgstr "My availability"
+
+msgid "Mis reservas"
+msgstr "My bookings"
+
+msgid "Mis servicios"
+msgstr "My services"
+
+msgid "No hay conexión con el servidor. Intenta de nuevo."
+msgstr "Cannot connect to the server. Please try again."
+
+msgid "OCUPADO"
+msgstr "BOOKED"
+
+msgid "Ocurrio un error inesperado."
+msgstr "An unexpected error occurred."
+
+msgid "PENDIENTE"
+msgstr "AWAITING PAYMENT"
+
+msgid "Pagar con tarjeta"
+msgstr "Pay by card"
+
+msgid "Pago aprobado (%(referencia)s). Reserva confirmada."
+msgstr "Payment approved (%(referencia)s). Booking confirmed."
+
+msgid "Reserva #%(id)s creada por %(total)s"
+msgstr "Booking #%(id)s created for %(total)s"
+
+msgid "Reserva cancelada sin penalizacion."
+msgstr "Booking cancelled without a fee."
+
+msgid "Reserva cancelada. Se retuvo %(monto)s por politica de cancelacion."
+msgstr ""
+"Booking cancelled. %(monto)s was retained under the cancellation policy."
+
+msgid "Servicio \"%(nombre)s\" publicado."
+msgstr "Service \"%(nombre)s\" published."
+
+msgid "Tu sesion expiro. Vuelve a iniciar sesion."
+msgstr "Your session expired. Please sign in again."
+
+msgid ""
+"¿Cancelar esta reserva? Se aplicará la política de cancelación según la "
+"anticipación de la visita."
+msgstr ""
+"Cancel this booking? The cancellation policy will apply based on the time "
+"remaining before the visit."
+
+msgid "Cubre:"
+msgstr "Coverage:"
+
+msgid "Disponible"
+msgstr "Available"
+
+msgid "Este profesional no tiene horarios libres."
+msgstr "This professional has no available time slots."
+
+msgid "Este profesional todavia no publico servicios."
+msgstr "This professional has not published any services yet."
+
+msgid "Nadie te ha reservado todavia."
+msgstr "You have not received any bookings yet."
+
+msgid "No hay profesionales verificados para esa busqueda."
+msgstr "No verified professionals match your search."
+
+msgid "Penalizacion aplicada:"
+msgstr "Cancellation fee:"
+
+msgid "Reserva"
+msgstr "Booking"
+
+msgid "Salir"
+msgstr "Sign out"
+
+msgid "Todavia no has publicado horarios."
+msgstr "You have not published any availability yet."
+
+msgid "Todavia no has publicado servicios."
+msgstr "You have not published any services yet."
+
+msgid "Todavia no tienes reservas."
+msgstr "You have no bookings yet."
+
+msgid "Total estimado:"
+msgstr "Estimated total:"
+
+msgid "Total:"
+msgstr "Total:"
+
+msgid ""
+"Tu cuenta está pendiente de verificación. Puedes publicar servicios y "
+"horarios; aparecerás en las búsquedas cuando un administrador te verifique."
+msgstr ""
+"Your account is awaiting verification. You can publish services and "
+"availability; you will appear in searches once an administrator verifies "
+"your account."
+
+msgid "minutos"
+msgstr "minutes"
+
+msgid "tarifa"
+msgstr "rate"
+
+msgid "Anterior"
+msgstr "Previous"
+
+msgid "Página %(actual)s de %(total)s"
+msgstr "Page %(actual)s of %(total)s"
+
+msgid "Siguiente"
+msgstr "Next"

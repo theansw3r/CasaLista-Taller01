@@ -1,8 +1,9 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 class ErrorDeDominio(Exception):
 
     codigo = "ERR-000"
     estado_http = 409
-    mensaje_por_defecto = "La operacion viola una regla de negocio."
+    mensaje_por_defecto = _lazy("La operacion viola una regla de negocio.")
 
     def __init__(self, mensaje: str = "", **contexto) -> None:
         super().__init__(mensaje or self.mensaje_por_defecto)
@@ -31,11 +32,11 @@ class RecursoNoEncontrado(ErrorDeDominio):
 
     codigo = "VAL-404"
     estado_http = 404
-    mensaje_por_defecto = "El recurso solicitado no existe."
+    mensaje_por_defecto = _lazy("El recurso solicitado no existe.")
 
 
 class AccesoNoAutorizado(ErrorDeDominio):
 
     codigo = "VAL-403"
     estado_http = 403
-    mensaje_por_defecto = "No tiene permiso sobre este recurso."
+    mensaje_por_defecto = _lazy("No tiene permiso sobre este recurso.")

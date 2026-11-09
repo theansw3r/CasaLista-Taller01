@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from apps.catalogo.dominio.excepciones import ServicioFueraDeEstandar
 
 
@@ -18,16 +19,13 @@ class EstandaresDeCasaLista:
     def exigir_duracion_de_visita(cls, minutos: int) -> None:
         if minutos < cls.DURACION_MINIMA_MINUTOS:
             raise ServicioFueraDeEstandar(
-                f"Una visita no puede durar menos de "
-                f"{cls.DURACION_MINIMA_MINUTOS} minutos.",
+                _("Una visita no puede durar menos de %(v0)s minutos.") % {'v0': cls.DURACION_MINIMA_MINUTOS},
                 minutos_recibidos=minutos,
                 minimo=cls.DURACION_MINIMA_MINUTOS,
             )
         if minutos > cls.DURACION_MAXIMA_MINUTOS:
             raise ServicioFueraDeEstandar(
-                f"CasaLista solo agenda visitas de hasta "
-                f"{cls.DURACION_MAXIMA_MINUTOS} minutos (cuatro horas). "
-                f"Un trabajo mas largo se divide en varias visitas.",
+                _("CasaLista solo agenda visitas de hasta %(v0)s minutos (cuatro horas). Un trabajo mas largo se divide en varias visitas.") % {'v0': cls.DURACION_MAXIMA_MINUTOS},
                 minutos_recibidos=minutos,
                 maximo=cls.DURACION_MAXIMA_MINUTOS,
             )
@@ -38,8 +36,6 @@ class EstandaresDeCasaLista:
         limpia = (descripcion or "").strip()
         if len(limpia) < cls.LARGO_MINIMO_DESCRIPCION:
             raise ServicioFueraDeEstandar(
-                f"Describe el servicio con al menos "
-                f"{cls.LARGO_MINIMO_DESCRIPCION} caracteres: el cliente decide "
-                f"con esa informacion.",
+                _("Describe el servicio con al menos %(v0)s caracteres: el cliente decide con esa informacion.") % {'v0': cls.LARGO_MINIMO_DESCRIPCION},
                 largo_recibido=len(limpia),
             )

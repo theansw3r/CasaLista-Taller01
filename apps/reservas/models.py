@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
@@ -11,8 +12,8 @@ from apps.cuentas.models import Cliente, Profesional
 class BloqueDisponibilidad(models.Model):
 
     class Estado(models.TextChoices):
-        LIBRE = "LIBRE", "Libre"
-        OCUPADO = "OCUPADO", "Ocupado"
+        LIBRE = "LIBRE", _lazy("Libre")
+        OCUPADO = "OCUPADO", _lazy("Ocupado")
 
     profesional = models.ForeignKey(
         Profesional, on_delete=models.CASCADE, related_name="bloques"
@@ -24,8 +25,8 @@ class BloqueDisponibilidad(models.Model):
     )
 
     class Meta:
-        verbose_name = "Bloque de disponibilidad"
-        verbose_name_plural = "Bloques de disponibilidad"
+        verbose_name = _lazy("Bloque de disponibilidad")
+        verbose_name_plural = _lazy("Bloques de disponibilidad")
         ordering = ["inicio"]
         constraints = [
             models.CheckConstraint(
@@ -53,10 +54,10 @@ class BloqueDisponibilidad(models.Model):
 class Reserva(models.Model):
 
     class Estado(models.TextChoices):
-        PENDIENTE = "PENDIENTE", "Pendiente de pago"
-        CONFIRMADA = "CONFIRMADA", "Confirmada"
-        COMPLETADA = "COMPLETADA", "Completada"
-        CANCELADA = "CANCELADA", "Cancelada"
+        PENDIENTE = "PENDIENTE", _lazy("Pendiente de pago")
+        CONFIRMADA = "CONFIRMADA", _lazy("Confirmada")
+        COMPLETADA = "COMPLETADA", _lazy("Completada")
+        CANCELADA = "CANCELADA", _lazy("Cancelada")
 
     cliente = models.ForeignKey(
         Cliente, on_delete=models.PROTECT, related_name="reservas"
@@ -77,25 +78,25 @@ class Reserva(models.Model):
         decimal_places=2,
         default=Decimal("0.00"),
         validators=[MinValueValidator(0)],
-        help_text="Lo calcula la estrategia de tarifa al construir la reserva.",
+        help_text=_lazy("Lo calcula la estrategia de tarifa al construir la reserva."),
     )
     tarifa_aplicada = models.CharField(
         max_length=20,
         default="BASE",
-        help_text="Que estrategia se uso. Sin esto un total no se puede auditar.",
+        help_text=_lazy("Que estrategia se uso. Sin esto un total no se puede auditar."),
     )
     penalizacion = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=Decimal("0.00"),
-        help_text="RN-04: monto retenido si el cliente cancela.",
+        help_text=_lazy("RN-04: monto retenido si el cliente cancela."),
     )
     creada_en = models.DateTimeField(auto_now_add=True)
     actualizada_en = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Reserva"
-        verbose_name_plural = "Reservas"
+        verbose_name = _lazy("Reserva")
+        verbose_name_plural = _lazy("Reservas")
         ordering = ["-creada_en"]
         indexes = [
             models.Index(fields=["cliente", "-creada_en"], name="idx_reserva_cliente"),
@@ -121,8 +122,8 @@ class DetalleReserva(models.Model):
     duracion_unitaria_minutos = models.PositiveIntegerField()
 
     class Meta:
-        verbose_name = "Detalle de reserva"
-        verbose_name_plural = "Detalles de reserva"
+        verbose_name = _lazy("Detalle de reserva")
+        verbose_name_plural = _lazy("Detalles de reserva")
         constraints = [
             models.CheckConstraint(
                 condition=models.Q(cantidad__gte=1),
@@ -132,3 +133,11 @@ class DetalleReserva(models.Model):
 
     def __str__(self) -> str:
         return f"{self.cantidad} x {self.servicio.nombre}"
+
+
+class NotificacionPendiente(models.Model):
+    """Outbox transaccional, único por confirmación de creación de reserva."""
+    reserva = models.OneToOneField(Reserva, on_delete=models.PROTECT, related_name="notificacion")
+    idioma = models.CharField(max_length=10, default="es")
+    creada_en = models.DateTimeField(auto_now_add=True)
+    enviada_en = models.DateTimeField(null=True, blank=True, db_index=True)

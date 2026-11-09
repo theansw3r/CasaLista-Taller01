@@ -1,31 +1,32 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from apps.comun.dominio.excepciones import RecursoNoEncontrado, ReglaDeNegocioViolada
 
 
 class PagoNoEncontrado(RecursoNoEncontrado):
     codigo = "PAG-01"
-    mensaje_por_defecto = "El pago solicitado no existe."
+    mensaje_por_defecto = _lazy("El pago solicitado no existe.")
 
 
 class ReservaYaPagada(ReglaDeNegocioViolada):
 
     codigo = "PAG-02"
-    mensaje_por_defecto = "Esta reserva ya tiene un pago registrado."
+    mensaje_por_defecto = _lazy("Esta reserva ya tiene un pago registrado.")
 
 
 class ReservaNoCobrable(ReglaDeNegocioViolada):
 
     codigo = "PAG-03"
-    mensaje_por_defecto = "La reserva no esta en un estado que admita pago."
+    mensaje_por_defecto = _lazy("La reserva no esta en un estado que admita pago.")
 
 
 class PagoRechazado(ReglaDeNegocioViolada):
 
     codigo = "PAG-04"
-    mensaje_por_defecto = "La pasarela rechazo el pago."
+    mensaje_por_defecto = _lazy("La pasarela rechazo el pago.")
 
 
 class PasarelaNoDisponible(ReglaDeNegocioViolada):
 
     codigo = "PAG-05"
     estado_http = 502
-    mensaje_por_defecto = "La pasarela de pagos no esta respondiendo."
+    mensaje_por_defecto = _lazy("La pasarela de pagos no esta respondiendo.")

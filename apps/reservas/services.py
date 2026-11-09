@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from django.db import transaction
 from django.utils import timezone
 
@@ -90,6 +91,7 @@ class ReservaService:
         self.calculador_tarifa = calculador_tarifa or CalculadorTarifaFactory.crear()
         self.nuevo_builder = builder_factory
 
+    @transaction.atomic
     def crear_reserva(self, comando: CrearReservaCommand) -> Reserva:
         cliente = ConsultaPerfilService.cliente_de(comando.usuario_id)
         bloque = self._obtener_bloque(comando.bloque_id)
@@ -119,7 +121,7 @@ class ReservaService:
             )
         except BloqueDisponibilidad.DoesNotExist:
             raise BloqueNoEncontrado(
-                f"No existe la franja de agenda {bloque_id}.", bloque_id=bloque_id
+                _("No existe la franja de agenda %(v0)s.") % {'v0': bloque_id}, bloque_id=bloque_id
             ) from None
 
     @staticmethod
@@ -128,7 +130,7 @@ class ReservaService:
             return Servicio.objects.select_related("profesional").get(pk=servicio_id)
         except Servicio.DoesNotExist:
             raise ServicioNoEncontrado(
-                f"No existe el servicio {servicio_id}.", servicio_id=servicio_id
+                _("No existe el servicio %(v0)s.") % {'v0': servicio_id}, servicio_id=servicio_id
             ) from None
 
 
@@ -147,7 +149,7 @@ class ConsultaReservasService:
         cliente = ConsultaPerfilService.cliente_de(usuario_id)
         if reserva.cliente_id != cliente.pk:
             raise AccesoNoAutorizado(
-                "La reserva pertenece a otro cliente.", reserva_id=reserva_id
+                _("La reserva pertenece a otro cliente."), reserva_id=reserva_id
             )
         return reserva
 
@@ -161,7 +163,7 @@ class ConsultaReservasService:
             )
         except Reserva.DoesNotExist:
             raise ReservaNoEncontrada(
-                f"No existe la reserva {reserva_id}.", reserva_id=reserva_id
+                _("No existe la reserva %(v0)s.") % {'v0': reserva_id}, reserva_id=reserva_id
             ) from None
 
 
@@ -175,7 +177,7 @@ class ConfirmacionReservaService:
                 reserva = Reserva.objects.select_for_update().get(pk=reserva_id)
             except Reserva.DoesNotExist:
                 raise ReservaNoEncontrada(
-                    f"No existe la reserva {reserva_id}.", reserva_id=reserva_id
+                    _("No existe la reserva %(v0)s.") % {'v0': reserva_id}, reserva_id=reserva_id
                 ) from None
             CicloDeVidaReserva.confirmar(reserva)
             reserva.save(update_fields=["estado", "actualizada_en"])

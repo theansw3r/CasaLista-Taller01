@@ -1,89 +1,104 @@
-{% load static %}
+{% load static i18n %}
+{% get_current_language as idioma %}
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{ idioma }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CasaLista</title>
-  <link rel="stylesheet" href="{% static 'css/estilos.css' %}?v=6">
+  <link rel="stylesheet" href="{% static 'css/estilos.css' %}?v=7">
 </head>
 <body data-url-pagos="{{ url_pagos }}">
 
+<a href="#contenido" class="saltar">{% translate "Saltar al contenido" %}</a>
 <header>
   <div class="contenedor barra">
-    <h1>CasaLista</h1>
-    <div id="sesion" class="sesion"></div>
+    <a class="marca" href="/" aria-label="CasaLista"><span class="marca-icono" aria-hidden="true">⌂</span> CasaLista<span class="marca-punto">.</span></a>
+    <div class="barra-acciones"><form action="{% url 'set_language' %}" method="post" class="idioma">
+      {% csrf_token %}<input name="next" type="hidden" value="/">
+      <label for="idioma">{% translate "Idioma" %}</label><select name="language" id="idioma">
+      <option value="es" {% if idioma == 'es' %}selected{% endif %}>Español</option>
+      <option value="en" {% if idioma == 'en' %}selected{% endif %}>English</option></select>
+      <button type="submit" class="boton pequeno">{% translate "Aplicar" %}</button></form>
+      <div id="sesion" class="sesion"></div></div>
   </div>
 </header>
 
-<main class="contenedor">
+<main class="contenedor" id="contenido">
+  <section class="bienvenida" aria-labelledby="titulo-principal">
+    <div class="presentacion"><p class="sobrelinea">{% translate "TU HOGAR, EN BUENAS MANOS" %}</p>
+    <h1 id="titulo-principal">{% translate "Menos pendientes." %}<br>{% translate "Más tiempo para ti." %}</h1>
+    <p class="introduccion">{% translate "Encuentra profesionales verificados, elige tu horario y reserva servicios para tu hogar en un solo lugar." %}</p>
+    <div class="confianza"><span>{% translate "✓ Profesionales verificados" %}</span><span>{% translate "✓ Precios claros" %}</span><span>{% translate "✓ Agenda a tu medida" %}</span></div></div>
+    <div class="ilustracion" aria-hidden="true"><div class="sol"></div><div class="casa"><div class="ventana"></div><div class="puerta"></div></div><span class="hoja hoja-a"></span><span class="hoja hoja-b"></span><span class="suelo"></span><span class="mini-tarjeta">✓</span></div>
+  </section>
+  <div class="encabezado-seccion"><span class="sobrelinea">{% translate "EMPIEZA AQUÍ" %}</span><p>{% translate "Tu próxima visita, sin complicaciones." %}</p></div>
 
   <!-- ============ ACCESO ============ -->
   <section id="pantalla-acceso">
     <div class="tarjeta">
       <div class="pestanas">
-        <button class="pestana activa" data-panel="panel-login">Iniciar sesion</button>
-        <button class="pestana" data-panel="panel-registro">Soy cliente</button>
-        <button class="pestana" data-panel="panel-registro-pro">Soy profesional</button>
+        <button class="pestana activa" data-panel="panel-login">{% translate "Iniciar sesion" %}</button>
+        <button class="pestana" data-panel="panel-registro">{% translate "Soy cliente" %}</button>
+        <button class="pestana" data-panel="panel-registro-pro">{% translate "Soy profesional" %}</button>
       </div>
 
-      <div id="panel-login" class="panel">
-        <label>Correo
-          <input type="email" id="login-correo">
+      <form id="panel-login" class="panel">
+        <label>{% translate "Correo" %}
+          <input type="email" id="login-correo" autocomplete="email" required>
         </label>
-        <label>Contrasena
-          <input type="password" id="login-clave">
+        <label>{% translate "Contrasena" %}
+          <input type="password" id="login-clave" autocomplete="current-password" required>
         </label>
-        <button class="boton principal" id="btn-login">Entrar</button>
-        <p class="pista">Datos de prueba: laura@correo.com / casalista2026</p>
-      </div>
+        <button class="boton principal" type="submit" id="btn-login">{% translate "Entrar" %}</button>
+        <p class="pista">{% translate "Accede para gestionar tus reservas y servicios." %}</p>
+      </form>
 
-      <div id="panel-registro" class="panel oculto">
-        <label>Nombre
-          <input type="text" id="reg-nombre">
+      <form id="panel-registro" class="panel oculto">
+        <label>{% translate "Nombre" %}
+          <input type="text" id="reg-nombre" required>
         </label>
-        <label>Correo
-          <input type="email" id="reg-correo">
+        <label>{% translate "Correo" %}
+          <input type="email" id="reg-correo" autocomplete="email" required>
         </label>
-        <label>Contrasena (minimo 8 caracteres)
-          <input type="password" id="reg-clave">
+        <label>{% translate "Contrasena (minimo 8 caracteres)" %}
+          <input type="password" id="reg-clave" minlength="8" autocomplete="new-password" required>
         </label>
-        <label>Telefono
-          <input type="text" id="reg-telefono">
+        <label>{% translate "Telefono" %}
+          <input type="text" id="reg-telefono" autocomplete="tel" maxlength="20">
         </label>
-        <button class="boton principal" id="btn-registro">Registrarme</button>
-      </div>
+        <button class="boton principal" type="submit" id="btn-registro">{% translate "Registrarme" %}</button>
+      </form>
 
-      <div id="panel-registro-pro" class="panel oculto">
-        <label>Nombre o razon social
-          <input type="text" id="pro-nombre">
+      <form id="panel-registro-pro" class="panel oculto">
+        <label>{% translate "Nombre o razon social" %}
+          <input type="text" id="pro-nombre" required>
         </label>
-        <label>Correo
-          <input type="email" id="pro-correo">
+        <label>{% translate "Correo" %}
+          <input type="email" id="pro-correo" autocomplete="email" required>
         </label>
-        <label>Contrasena (minimo 8 caracteres)
-          <input type="password" id="pro-clave">
+        <label>{% translate "Contrasena (minimo 8 caracteres)" %}
+          <input type="password" id="pro-clave" minlength="8" autocomplete="new-password" required>
         </label>
-        <label>Documento de identidad
-          <input type="text" id="pro-documento">
+        <label>{% translate "Documento de identidad" %}
+          <input type="text" id="pro-documento" required>
         </label>
-        <label>Describe tu experiencia
+        <label>{% translate "Describe tu experiencia" %}
           <input type="text" id="pro-descripcion">
         </label>
-        <label>Zonas donde trabajas
+        <fieldset><legend>{% translate "Zonas donde trabajas" %}</legend>
           <div class="casillas" id="pro-zonas">
             <label class="casilla"><input type="checkbox" value="Laureles"> Laureles</label>
             <label class="casilla"><input type="checkbox" value="Belen"> Belen</label>
             <label class="casilla"><input type="checkbox" value="Envigado"> Envigado</label>
             <label class="casilla"><input type="checkbox" value="Sabaneta"> Sabaneta</label>
           </div>
-        </label>
-        <button class="boton principal" id="btn-registro-pro">Registrarme como profesional</button>
+        </fieldset>
+        <button class="boton principal" type="submit" id="btn-registro-pro">{% translate "Registrarme como profesional" %}</button>
         <p class="pista">
-          Un administrador debe verificar tu cuenta antes de que aparezcas en las
-          busquedas (regla RN-07).
+          {% translate "Un administrador debe verificar tu cuenta antes de que aparezcas en las busquedas (regla RN-07)." %}
         </p>
-      </div>
+      </form>
     </div>
   </section>
 
@@ -96,49 +111,49 @@
     <div id="vista-buscar" class="vista">
 
       <div class="tarjeta">
-        <h2>1. Busca un profesional en tu zona</h2>
+        <h2>{% translate "1. Busca un profesional en tu zona" %}</h2>
         <div class="fila">
-          <select id="buscar-oficio">
-            <option value="">Todos los oficios</option>
-            <option value="PLOMERIA">Plomeria</option>
-            <option value="ELECTRICIDAD">Electricidad</option>
-            <option value="ELECTRODOMESTICOS">Reparacion de electrodomesticos</option>
-            <option value="PINTURA">Pintura</option>
-            <option value="CERRAJERIA">Cerrajeria</option>
+          <select id="buscar-oficio" aria-label="{% translate 'Oficio' %}">
+            <option value="">{% translate "Todos los oficios" %}</option>
+            <option value="PLOMERIA">{% translate "Plomeria" %}</option>
+            <option value="ELECTRICIDAD">{% translate "Electricidad" %}</option>
+            <option value="ELECTRODOMESTICOS">{% translate "Reparacion de electrodomesticos" %}</option>
+            <option value="PINTURA">{% translate "Pintura" %}</option>
+            <option value="CERRAJERIA">{% translate "Cerrajeria" %}</option>
           </select>
-          <select id="buscar-zona">
-            <option value="">Todas las zonas</option>
+          <select id="buscar-zona" aria-label="{% translate 'Zona' %}">
+            <option value="">{% translate "Todas las zonas" %}</option>
             <option>Laureles</option>
             <option>Belen</option>
             <option>Envigado</option>
             <option>Sabaneta</option>
           </select>
-          <button class="boton" id="btn-buscar">Buscar</button>
+          <button class="boton" id="btn-buscar">{% translate "Buscar" %}</button>
         </div>
-        <p class="nota">Solo aparecen profesionales verificados que cubren la zona (RN-07).</p>
+        <p class="nota">{% translate "Solo aparecen profesionales verificados que cubren la zona (RN-07)." %}</p>
         <div id="lista-profesionales" class="lista"></div>
       </div>
 
       <div class="tarjeta oculto" id="bloque-servicios">
-        <h2>2. Elige los servicios</h2>
+        <h2>{% translate "2. Elige los servicios" %}</h2>
         <div id="lista-servicios" class="lista"></div>
       </div>
 
       <div class="tarjeta oculto" id="bloque-agenda">
-        <h2>3. Elige un horario disponible</h2>
+        <h2>{% translate "3. Elige un horario disponible" %}</h2>
         <div id="lista-bloques" class="lista"></div>
       </div>
 
       <div class="tarjeta oculto" id="bloque-confirmar">
-        <h2>4. Confirma la reserva</h2>
-        <label>Direccion de la visita
-          <input type="text" id="reserva-direccion">
+        <h2>{% translate "4. Confirma la reserva" %}</h2>
+        <label>{% translate "Direccion de la visita" %}
+          <input type="text" id="reserva-direccion" maxlength="180" autocomplete="street-address" required>
         </label>
-        <label>Zona
+        <label>{% translate "Zona" %}
           <input type="text" id="reserva-zona" readonly>
         </label>
         <div class="resumen" id="resumen-reserva"></div>
-        <button class="boton principal" id="btn-reservar">Reservar</button>
+        <button class="boton principal" id="btn-reservar">{% translate "Reservar" %}</button>
       </div>
 
     </div>
@@ -146,7 +161,7 @@
     <!-- ---------- CLIENTE: MIS RESERVAS ---------- -->
     <div id="vista-reservas" class="vista oculto">
       <div class="tarjeta">
-        <h2>Mis reservas</h2>
+        <h2>{% translate "Mis reservas" %}</h2>
         <div id="lista-reservas" class="lista"></div>
       </div>
     </div>
@@ -156,39 +171,38 @@
       <div id="aviso-verificacion"></div>
 
       <div class="tarjeta">
-        <h2>Publicar un servicio</h2>
-        <label>Oficio
+        <h2>{% translate "Publicar un servicio" %}</h2>
+        <label>{% translate "Oficio" %}
           <select id="serv-categoria">
-            <option value="PLOMERIA">Plomeria</option>
-            <option value="ELECTRICIDAD">Electricidad</option>
-            <option value="ELECTRODOMESTICOS">Reparacion de electrodomesticos</option>
-            <option value="PINTURA">Pintura</option>
-            <option value="CERRAJERIA">Cerrajeria</option>
+            <option value="PLOMERIA">{% translate "Plomeria" %}</option>
+            <option value="ELECTRICIDAD">{% translate "Electricidad" %}</option>
+            <option value="ELECTRODOMESTICOS">{% translate "Reparacion de electrodomesticos" %}</option>
+            <option value="PINTURA">{% translate "Pintura" %}</option>
+            <option value="CERRAJERIA">{% translate "Cerrajeria" %}</option>
           </select>
         </label>
-        <label>Nombre del servicio
-          <input type="text" id="serv-nombre">
+        <label>{% translate "Nombre del servicio" %}
+          <input type="text" id="serv-nombre" maxlength="120" required>
         </label>
-        <label>Que incluye la visita
-          <input type="text" id="serv-descripcion">
+        <label>{% translate "Que incluye la visita" %}
+          <input type="text" id="serv-descripcion" maxlength="500" minlength="20" required>
         </label>
         <div class="fila">
-          <label style="flex:1">Precio
-            <input type="number" id="serv-precio" min="0">
+          <label style="flex:1">{% translate "Precio" %}
+            <input type="number" id="serv-precio" required min="0">
           </label>
-          <label style="flex:1">Duracion (minutos)
-            <input type="number" id="serv-duracion" min="60" max="240" step="30">
+          <label style="flex:1">{% translate "Duracion (minutos)" %}
+            <input type="number" id="serv-duracion" required min="60" max="240" step="30">
           </label>
         </div>
-        <button class="boton principal" id="btn-publicar-servicio">Publicar servicio</button>
+        <button class="boton principal" id="btn-publicar-servicio">{% translate "Publicar servicio" %}</button>
         <p class="nota">
-          CasaLista solo agenda los cinco oficios del listado, con visitas de
-          entre 1 y 4 horas.
+          {% translate "CasaLista solo agenda los cinco oficios del listado, con visitas de entre 1 y 4 horas." %}
         </p>
       </div>
 
       <div class="tarjeta">
-        <h2>Mis servicios</h2>
+        <h2>{% translate "Mis servicios" %}</h2>
         <div id="lista-mis-servicios" class="lista"></div>
       </div>
     </div>
@@ -196,38 +210,44 @@
     <!-- ---------- PROFESIONAL: AGENDA ---------- -->
     <div id="vista-mi-agenda" class="vista oculto">
       <div class="tarjeta">
-        <h2>Abrir un horario</h2>
+        <h2>{% translate "Abrir un horario" %}</h2>
         <div class="fila">
-          <label style="flex:1">Dia
-            <input type="date" id="agenda-dia">
+          <label style="flex:1">{% translate "Dia" %}
+            <input type="date" id="agenda-dia" required>
           </label>
-          <label style="flex:1">Hora de inicio
-            <input type="time" id="agenda-hora" value="09:00">
+          <label style="flex:1">{% translate "Hora de inicio" %}
+            <input type="time" id="agenda-hora" required value="09:00">
           </label>
-          <label style="flex:1">Duracion (horas)
-            <input type="number" id="agenda-horas" value="2" min="1" max="8">
+          <label style="flex:1">{% translate "Duracion (horas)" %}
+            <input type="number" id="agenda-horas" required value="2" min="1" max="8">
           </label>
         </div>
-        <button class="boton principal" id="btn-abrir-agenda">Publicar horario</button>
-        <p class="nota">No puedes publicar dos horarios que se crucen (AGD-03).</p>
+        <button class="boton principal" id="btn-abrir-agenda">{% translate "Publicar horario" %}</button>
+        <p class="nota">{% translate "No puedes publicar dos horarios que se crucen (AGD-03)." %}</p>
       </div>
 
       <div class="tarjeta">
-        <h2>Mis horarios</h2>
+        <h2>{% translate "Mis horarios" %}</h2>
         <div id="lista-mi-agenda" class="lista"></div>
       </div>
 
       <div class="tarjeta">
-        <h2>Reservas que me hicieron</h2>
+        <h2>{% translate "Reservas que me hicieron" %}</h2>
         <div id="lista-recibidas" class="lista"></div>
       </div>
     </div>
 
   </section>
+  <section class="complementos" aria-label="{% translate 'Información para tu visita' %}">
+    <article class="tarjeta contexto"><span class="sobrelinea">{% translate "PLANEA TU VISITA" %}</span><h2>{% translate "El clima en Medellín" %}</h2><p id="clima" role="status">{% translate "Consultando el clima…" %}</p><a href="https://open-meteo.com/" target="_blank" rel="noopener">{% translate "Datos de Open-Meteo" %}</a></article>
+    <article class="tarjeta contexto"><span class="sobrelinea">{% translate "NUESTRA RED" %}</span><h2>{% translate "Servicios del equipo aliado" %}</h2><p id="aliado" role="status">{% translate "Integración pendiente: falta identificar el equipo aliado y su contrato de API." %}</p></article>
+  </section>
 </main>
+<footer class="contenedor pie"><strong>CasaLista.</strong><p>{% translate "Servicios para el hogar · Valle de Aburrá" %}</p><span>{% translate "Hecho para simplificar tu día." %}</span></footer>
 
-<div id="avisos" class="avisos"></div>
+<div id="avisos" class="avisos" role="status" aria-live="polite" aria-atomic="true"></div>
 
-<script src="{% static 'js/app.js' %}?v=6"></script>
+<script src="{% url 'javascript-catalog' %}"></script>
+<script src="{% static 'js/app.js' %}?v=7"></script>
 </body>
 </html>

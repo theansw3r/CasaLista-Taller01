@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from django.utils import timezone
 
 from apps.reservas.dominio.excepciones import (
@@ -33,7 +34,7 @@ class ReglasAgenda:
     def exigir_rango_valido(cls, inicio, fin) -> None:
         if fin <= inicio:
             raise RangoHorarioInvalido(
-                "La franja debe terminar despues de empezar.",
+                _("La franja debe terminar despues de empezar."),
                 inicio=inicio.isoformat(),
                 fin=fin.isoformat(),
             )
@@ -45,7 +46,7 @@ class ReglasAgenda:
         ).exists()
         if hay_choque:
             raise BloquesSolapados(
-                "El profesional ya tiene una franja publicada en ese horario.",
+                _("El profesional ya tiene una franja publicada en ese horario."),
                 inicio=inicio.isoformat(),
                 fin=fin.isoformat(),
             )
@@ -54,14 +55,14 @@ class ReglasAgenda:
     def exigir_disponible(cls, bloque) -> None:
         if not cls.esta_libre(bloque):
             raise BloqueNoDisponible(
-                "La franja horaria ya fue tomada.", bloque_id=bloque.pk
+                _("La franja horaria ya fue tomada."), bloque_id=bloque.pk
             )
         ya_reservado = Reserva.objects.filter(
             bloque=bloque, estado__in=ESTADOS_QUE_OCUPAN_AGENDA
         ).exists()
         if ya_reservado:
             raise BloqueNoDisponible(
-                "La franja horaria ya tiene una reserva activa.", bloque_id=bloque.pk
+                _("La franja horaria ya tiene una reserva activa."), bloque_id=bloque.pk
             )
 
     @staticmethod

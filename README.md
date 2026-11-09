@@ -4,56 +4,82 @@ Marketplace de reserva de servicios para el hogar. Arquitectura de Software:
 núcleo de negocio + API con Django REST Framework (Entrega 1), y el módulo de
 pagos migrado a un microservicio en Flask con el patrón Strangler (Taller 2).
 
-## Instalación
+## Entrega 2
+
+La rama de trabajo incorpora Redis/Celery con outbox transaccional, integración
+Open-Meteo mediante Adapter/DIP, interfaz renovada y traducciones gettext ES/EN.
+El [estado y las evidencias](docs/entrega2/ESTADO_Y_EVIDENCIAS.md) distinguen lo
+verificado localmente de lo pendiente: aliado, AWS Academy/IP elástica y main.
+
+- [Auditoría inicial](docs/entrega2/AUDITORIA_INICIAL.md)
+- [Arquitectura y diagramas](docs/entrega2/ARQUITECTURA.md)
+- [Contratos de API](docs/entrega2/CONTRATOS_API.md)
+- [Despliegue y conservación de datos](docs/entrega2/DESPLIEGUE_AWS.md)
+
+## Con Docker Compose
+
+Para una instalación nueva (Python 3 para generar secretos, Docker Engine y Compose):
 
 ```bash
-python -m venv .venv
-.venv\Scripts\activate        # Linux/macOS: source .venv/bin/activate
-
-pip install -r requirements.txt
-copy .env.example .env        # Linux/macOS: cp .env.example .env
-
-python manage.py migrate
-python manage.py sembrar_demo
-python manage.py runserver
+python3 scripts/preparar_entorno.py
+docker compose config --quiet
+docker compose up -d --build --wait --wait-timeout 180
 ```
 
-`sembrar_demo` crea un profesional verificado, catálogo, agenda y hace una
-reserva de ejemplo (usa los mismos servicios que la API, no crea nada a
-mano).
+El generador no sobrescribe .env. Si actualiza una instalación existente,
+conserve credenciales y volúmenes; consulte la guía de despliegue antes de cambiar
+contraseñas. Los contenedores no publican base de datos ni Redis.
+La aplicación local está en http://localhost:8080/; Nginx publica solo loopback.
+
+Solo para una instalación con datos ficticios de demostración:
 
 ```bash
-python manage.py test    # corre las pruebas
-```
-
-## Con Docker (monolito + microservicio de pagos)
-
-```bash
-docker compose up --build
 docker compose exec django python manage.py sembrar_demo
 ```
 
-Todo entra por Nginx en `http://localhost:8080/`:
-
-| Ruta | Va a |
+| Ruta | Servicio |
 |---|---|
-| `/api/v2/pagos/` | microservicio de pagos (Flask) |
-| `/api/v1/...`, `/admin/`, `/` | monolito (Django) |
-| `/interno/...` | bloqueada, solo se usa entre contenedores |
+| `/api/v2/pagos/` | Flask, pagos simulados |
+| `/api/v1/...`, `/admin/`, `/`, `/i18n/`, `/jsi18n/` | Django |
+| `/api/v1/integraciones/clima/` | Django, Adapter de Open-Meteo real |
+| `/api/v1/integraciones/aliado/` | 503: falta equipo/contrato |
+| `/interno/...` | 404 público; comunicación directa entre servicios |
 
-En Docker el front paga contra `/api/v2/pagos/`. Con `runserver` sigue
-pagando contra `/api/v1/pagos/`, que todavía existe (lo controla `URL_PAGOS`).
+Celery procesa notificaciones después del commit; Beat recupera eventos
+pendientes cada minuto. El backend de correo es consola por defecto: no envía
+correos externos. Las traducciones compiladas se incluyen en ambas imágenes.
 
-Las pruebas del servicio de pagos se corren aparte:
+## Desarrollo y pruebas
+
+Python 3.12, con entorno virtual aislado:
 
 ```bash
-cd servicio_pagos
-pip install -r requirements-dev.txt
-pytest
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-dev.txt -r servicio_pagos/requirements-dev.txt
+python scripts/preparar_entorno.py
+python scripts/catalogos.py
+python manage.py migrate
+python manage.py test
+python -m pytest servicio_pagos -q
+python manage.py runserver
 ```
 
-La justificación de por qué se sacó pagos y cómo quedó separado está en la
-página *Migración a Microservicios (Strangler Pattern)* de la Wiki.
+En Windows use `.venv\Scripts\activate`. Con runserver se conserva SQLite y
+pagos v1; Compose usa PostgreSQL y Flask v2. La validación de filas concurrentes
+requiere PostgreSQL. No usar SQLite como prueba de bloqueo distribuido.
+
+Pruebas de integración sobre una instalación local de demo ya iniciada:
+
+```bash
+python scripts/verificar_http.py --datos-demo-locales
+```
+
+`scripts/verificar_resiliencia.py` detiene/recupera servicios exclusivamente en
+el proyecto Compose `casalista-entrega2-validacion`. No usarlo en AWS.
+Para agregar textos, marcarlos con gettext, ejecutar
+`python scripts/catalogos.py --extraer`, traducir las entradas PO y compilar
+con `python scripts/catalogos.py`; falla si falta alguna traducción.
 
 ## Usar la aplicación
 
@@ -117,6 +143,6 @@ Tres variables en `.env` controlan qué implementación usan las Factories:
 
 | Variable | Valores | Qué cambia |
 |---|---|---|
-| `NOTIFICADOR_TYPE` | `MOCK` / `REAL` | log en consola / correo real |
+| `NOTIFICADOR_TYPE` | `MOCK` / `REAL` / `ASYNC` | log / correo síncrono / outbox + Celery |
 | `TARIFA_TYPE` | `BASE` / `DINAMICA` | precio normal / con recargo nocturno y fin de semana |
-| `PASARELA_PAGO_TYPE` | `SIMULADA` / `TARJETA` / `PSE` | siempre aprueba / adaptador real |
+| `PASARELA_PAGO_TYPE` | `SIMULADA` / `TARJETA` / `PSE` | simulaciones locales; no efectúan cobros reales |

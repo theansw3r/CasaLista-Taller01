@@ -1,4 +1,5 @@
 from __future__ import annotations
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 
 from django.db import transaction
 
@@ -92,12 +93,12 @@ class ReservaBuilder:
 
     def _validar_datos_minimos(self) -> None:
         if self._cliente is None:
-            raise DatosDeReservaIncompletos("Falta indicar el cliente de la reserva.")
+            raise DatosDeReservaIncompletos(_("Falta indicar el cliente de la reserva."))
         if self._bloque is None:
-            raise DatosDeReservaIncompletos("Falta indicar la franja de agenda.")
+            raise DatosDeReservaIncompletos(_("Falta indicar la franja de agenda."))
         if not self._direccion or not self._zona:
             raise DatosDeReservaIncompletos(
-                "Falta la direccion o la zona de la visita."
+                _("Falta la direccion o la zona de la visita.")
             )
 
     def _validar_lineas(self) -> None:
@@ -106,7 +107,7 @@ class ReservaBuilder:
         for servicio, cantidad in self._lineas:
             if cantidad <= 0:
                 raise CantidadInvalida(
-                    f"La cantidad de '{servicio.nombre}' debe ser mayor que cero.",
+                    _("La cantidad de '%(v0)s' debe ser mayor que cero.") % {'v0': servicio.nombre},
                     servicio_id=servicio.pk,
                 )
             CalculadoraDeServicio.exigir_disponible(servicio)
@@ -124,7 +125,7 @@ class ReservaBuilder:
     def _validar_coherencia_del_bloque(self) -> None:
         if self._bloque.profesional_id != self._profesional.id:
             raise BloqueDeOtroProfesional(
-                "La franja elegida pertenece a otro profesional.",
+                _("La franja elegida pertenece a otro profesional."),
                 bloque_id=self._bloque.pk,
             )
 
@@ -136,8 +137,7 @@ class ReservaBuilder:
         disponible = ReglasAgenda.duracion_minutos(self._bloque)
         if solicitada > disponible:
             raise DuracionExcedeBloque(
-                f"Los servicios requieren {solicitada} minutos y la franja "
-                f"solo tiene {disponible}.",
+                _("Los servicios requieren %(v0)s minutos y la franja solo tiene %(v1)s.") % {'v0': solicitada, 'v1': disponible},
                 minutos_solicitados=solicitada,
                 minutos_disponibles=disponible,
             )

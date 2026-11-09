@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 import logging
 
 from django.db import transaction
@@ -53,8 +54,7 @@ class PagoService:
     def _exigir_cobrable(reserva: Reserva) -> None:
         if reserva.estado != Reserva.Estado.PENDIENTE:
             raise ReservaNoCobrable(
-                f"La reserva #{reserva.pk} esta "
-                f"{reserva.get_estado_display().lower()} y no admite pago.",
+                _("La reserva #%(v0)s esta %(v1)s y no admite pago.") % {'v0': reserva.pk, 'v1': reserva.get_estado_display().lower()},
                 estado_actual=reserva.estado,
             )
         if Pago.objects.filter(reserva=reserva).exists():
@@ -103,7 +103,7 @@ class ConsultaPagosService:
             pago = Pago.objects.select_related("reserva").get(pk=pago_id)
         except Pago.DoesNotExist:
             raise PagoNoEncontrado(
-                f"No existe el pago {pago_id}.", pago_id=pago_id
+                _("No existe el pago %(v0)s.") % {'v0': pago_id}, pago_id=pago_id
             ) from None
         self.consultas.detalle_de(usuario_id, pago.reserva_id)
         return pago

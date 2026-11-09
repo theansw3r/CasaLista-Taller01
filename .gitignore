@@ -22,3 +22,10 @@ db.sqlite3-journal
 # Servicio de pagos (Flask)
 .pytest_cache/
 servicio_pagos/instance/
+
+# Entornos y evidencias locales de Entrega 2
+.venv312/
+.evidencias-locales/
+*.pem
+*.key
+celerybeat-schedule*

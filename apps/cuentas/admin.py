@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from django.contrib import admin
 
 from apps.cuentas.models import Cliente, Profesional
@@ -20,12 +21,12 @@ class ProfesionalAdmin(admin.ModelAdmin):
     # El admin no decide nada: delega en el servicio, igual que una vista.
     servicio = VerificacionProfesionalService
 
-    @admin.action(description="Verificar los profesionales seleccionados")
+    @admin.action(description=_lazy("Verificar los profesionales seleccionados"))
     def verificar(self, request, queryset):
         cuantos = self.servicio().verificar(queryset)
         self.message_user(request, f"{cuantos} profesional(es) verificado(s).")
 
-    @admin.action(description="Quitar la verificacion")
+    @admin.action(description=_lazy("Quitar la verificacion"))
     def revocar(self, request, queryset):
         cuantos = self.servicio().revocar(queryset)
         self.message_user(request, f"{cuantos} profesional(es) sin verificar.")

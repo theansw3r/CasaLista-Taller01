@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from decimal import Decimal
 
 from apps.catalogo.dominio.excepciones import ServicioInactivo
@@ -18,6 +19,6 @@ class CalculadoraDeServicio:
     def exigir_disponible(servicio) -> None:
         if not servicio.activo:
             raise ServicioInactivo(
-                f"El servicio '{servicio.nombre}' ya no esta disponible.",
+                _("El servicio '%(v0)s' ya no esta disponible.") % {'v0': servicio.nombre},
                 servicio_id=servicio.pk,
             )

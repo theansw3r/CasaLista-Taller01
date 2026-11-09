@@ -23,11 +23,12 @@ function mostrar(id, visible) {
 }
 
 function pesos(valor) {
-  return "$ " + Number(valor).toLocaleString("es-CO");
+  return new Intl.NumberFormat(document.documentElement.lang, {style:"currency", currency:"COP", maximumFractionDigits:0}).format(Number(valor));
 }
 
 function fecha(iso) {
-  return new Date(iso).toLocaleDateString("es-CO", {
+  return new Date(iso).toLocaleDateString(document.documentElement.lang, {
+    timeZone: "America/Bogota",
     weekday: "short",
     day: "numeric",
     month: "short",
@@ -39,19 +40,29 @@ function fecha(iso) {
 function avisar(mensaje, tipo = "ok", codigo = null) {
   const div = document.createElement("div");
   div.className = "aviso " + tipo;
-  div.innerHTML =
-    (codigo ? `<span class="codigo">${codigo}</span>` : "") + mensaje;
+  if (codigo) {
+    const etiqueta = document.createElement("span");
+    etiqueta.className = "codigo";
+    etiqueta.textContent = codigo;
+    div.appendChild(etiqueta);
+  }
+  div.appendChild(document.createTextNode(mensaje));
   $("avisos").appendChild(div);
   setTimeout(() => div.remove(), 5000);
 }
 
 // ---------------------------------------------------------------- peticiones
 async function pedir(ruta, opciones = {}) {
-  const cabeceras = { "Content-Type": "application/json" };
+  const cabeceras = { "Content-Type": "application/json", "Accept-Language": document.documentElement.lang };
   if (estado.token) cabeceras["Authorization"] = "Bearer " + estado.token;
 
   const url = ruta.startsWith("/api/") ? ruta : API + ruta;
-  const respuesta = await fetch(url, { ...opciones, headers: cabeceras });
+  let respuesta;
+  try {
+    respuesta = await fetch(url, { ...opciones, headers: cabeceras, signal: AbortSignal.timeout(15000) });
+  } catch {
+    throw new Error(gettext("No hay conexión con el servidor. Intenta de nuevo."));
+  }
 
   if (respuesta.status === 204) return null;
 
@@ -62,7 +73,7 @@ async function pedir(ruta, opciones = {}) {
     // para que el usuario vuelva a entrar, en vez de quedar reintentando.
     if (respuesta.status === 401 && estado.token) {
       cerrarSesion();
-      const vencida = new Error("Tu sesion expiro. Vuelve a iniciar sesion.");
+      const vencida = new Error(gettext("Tu sesion expiro. Vuelve a iniciar sesion."));
       vencida.codigo = "SESION";
       throw vencida;
     }
@@ -70,7 +81,7 @@ async function pedir(ruta, opciones = {}) {
     // La API siempre responde errores con la misma forma:
     // {"error": {"codigo": "RN-01", "mensaje": "..."}}
     const error = cuerpo.error || {};
-    const problema = new Error(error.mensaje || "Ocurrio un error inesperado.");
+    const problema = new Error(error.mensaje || gettext("Ocurrio un error inesperado."));
     problema.codigo = error.codigo || "HTTP-" + respuesta.status;
     problema.contexto = error.contexto;
     throw problema;
@@ -78,11 +89,16 @@ async function pedir(ruta, opciones = {}) {
   return cuerpo;
 }
 
-async function intentar(accion) {
+async function intentar(accion, boton = document.activeElement) {
+  if (boton?.tagName !== "BUTTON") boton = null;
+  if (boton?.disabled) return;
+  if (boton) { boton.disabled = true; boton.setAttribute("aria-busy", "true"); }
   try {
     await accion();
   } catch (error) {
     avisar(error.message, "error", error.codigo);
+  } finally {
+    if (boton) { boton.disabled = false; boton.removeAttribute("aria-busy"); }
   }
 }
 
@@ -91,7 +107,8 @@ function cerrarSesion() {
   estado.token = null;
   estado.correo = null;
   estado.perfil = null;
-  localStorage.clear();
+  localStorage.removeItem("token");
+  localStorage.removeItem("correo");
   mostrar("pantalla-acceso", true);
   mostrar("pantalla-app", false);
   $("sesion").innerHTML = "";
@@ -107,19 +124,19 @@ async function iniciarSesion(correo, clave) {
   localStorage.setItem("token", datos.access);
   localStorage.setItem("correo", correo);
   await entrarAlaApp();
-  avisar("Bienvenido a CasaLista");
+  avisar(gettext("Bienvenido a CasaLista"));
 }
 
 async function entrarAlaApp() {
   // El perfil dice que roles tiene la cuenta. Segun eso se arma el menu:
-  // no tiene sentido mostrarle "Mi agenda" a alguien que solo es cliente.
+  // no tiene sentido mostrarle gettext("Mi agenda") a alguien que solo es cliente.
   estado.perfil = await pedir("/cuentas/perfil/");
 
   mostrar("pantalla-acceso", false);
   mostrar("pantalla-app", true);
 
-  $("sesion").innerHTML = `<span>${estado.correo}</span>
-    <button class="boton pequeno" id="btn-salir">Salir</button>`;
+  $("sesion").innerHTML = `<span>${esc(estado.correo)}</span>
+    <button class="boton pequeno" id="btn-salir">${gettext("Salir")}</button>`;
   $("btn-salir").onclick = cerrarSesion;
 
   armarMenu();
@@ -128,12 +145,12 @@ async function entrarAlaApp() {
 function armarMenu() {
   const opciones = [];
   if (estado.perfil.cliente) {
-    opciones.push({ vista: "vista-buscar", texto: "Buscar servicio" });
-    opciones.push({ vista: "vista-reservas", texto: "Mis reservas" });
+    opciones.push({ vista: "vista-buscar", texto: gettext("Buscar servicio") });
+    opciones.push({ vista: "vista-reservas", texto: gettext("Mis reservas") });
   }
   if (estado.perfil.profesional) {
-    opciones.push({ vista: "vista-mi-agenda", texto: "Mi agenda" });
-    opciones.push({ vista: "vista-mis-servicios", texto: "Mis servicios" });
+    opciones.push({ vista: "vista-mi-agenda", texto: gettext("Mi agenda") });
+    opciones.push({ vista: "vista-mis-servicios", texto: gettext("Mis servicios") });
   }
 
   $("menu").innerHTML = "";
@@ -157,22 +174,20 @@ function cambiarVista(vista) {
     .querySelectorAll(".opcion")
     .forEach((o) => o.classList.toggle("activa", o.dataset.vista === vista));
 
-  if (vista === "vista-buscar") intentar(buscarProfesionales);
-  if (vista === "vista-reservas") intentar(cargarReservas);
-  if (vista === "vista-mi-agenda") intentar(cargarMiAgenda);
-  if (vista === "vista-mis-servicios") intentar(cargarMisServicios);
+  if (vista === "vista-buscar") intentar(buscarProfesionales, null);
+  if (vista === "vista-reservas") intentar(cargarReservas, null);
+  if (vista === "vista-mi-agenda") intentar(cargarMiAgenda, null);
+  if (vista === "vista-mis-servicios") intentar(cargarMisServicios, null);
 }
 
 // ================================================================ CLIENTE
-async function buscarProfesionales() {
+async function buscarProfesionales(pagina = 1) {
   const filtros = new URLSearchParams();
   if ($("buscar-zona").value) filtros.set("zona", $("buscar-zona").value);
   if ($("buscar-oficio").value) filtros.set("categoria", $("buscar-oficio").value);
 
   const consulta = filtros.toString();
-  const datos = await pedir(
-    "/catalogo/profesionales/" + (consulta ? "?" + consulta : "")
-  );
+  const datos = await pedirPagina("/catalogo/profesionales/" + (consulta ? "?" + consulta : ""), pagina);
 
   const contenedor = $("lista-profesionales");
   contenedor.innerHTML = "";
@@ -182,23 +197,26 @@ async function buscarProfesionales() {
 
   if (!datos.resultados.length) {
     contenedor.innerHTML =
-      '<p class="vacio">No hay profesionales verificados para esa busqueda.</p>';
+      `<p class="vacio">${gettext("No hay profesionales verificados para esa busqueda.")}</p>`;
     return;
   }
 
   datos.resultados.forEach((pro) => {
     const item = document.createElement("div");
     item.className = "item";
+    item.tabIndex = 0;
+    item.setAttribute("role", "button");
     item.innerHTML = `
       <div>
-        <div class="item-titulo">${pro.nombre}</div>
-        ${pro.descripcion ? `<div class="item-detalle">${pro.descripcion}</div>` : ""}
-        <div class="item-detalle">Cubre: ${pro.zonas.join(", ")}</div>
+        <div class="item-titulo">${esc(pro.nombre)}</div>
+        ${pro.descripcion ? `<div class="item-detalle">${esc(pro.descripcion)}</div>` : ""}
+        <div class="item-detalle">${gettext("Cubre:")} ${pro.zonas.map(esc).join(", ")}</div>
       </div>
       <span class="item-precio">${pro.calificacion_promedio} ★</span>`;
     item.onclick = () => intentar(() => elegirProfesional(pro, item));
     contenedor.appendChild(item);
   });
+  paginar(contenedor, datos, buscarProfesionales);
 }
 
 async function elegirProfesional(pro, elemento) {
@@ -216,32 +234,35 @@ async function elegirProfesional(pro, elemento) {
   await cargarAgenda(pro.id);
 }
 
-async function cargarServicios(profesionalId) {
-  const datos = await pedir(`/catalogo/profesionales/${profesionalId}/servicios/`);
+async function cargarServicios(profesionalId, pagina = 1) {
+  const datos = await pedirPagina(`/catalogo/profesionales/${profesionalId}/servicios/`, pagina);
   const contenedor = $("lista-servicios");
   contenedor.innerHTML = "";
 
   if (!datos.resultados.length) {
     contenedor.innerHTML =
-      '<p class="vacio">Este profesional todavia no publico servicios.</p>';
+      `<p class="vacio">${gettext("Este profesional todavia no publico servicios.")}</p>`;
   }
 
   datos.resultados.forEach((servicio) => {
     const item = document.createElement("div");
     item.className = "item";
+    item.tabIndex = 0;
+    item.setAttribute("role", "button");
     item.innerHTML = `
       <div>
-        <div class="item-titulo">${servicio.nombre}</div>
-        <div class="item-detalle">${servicio.descripcion}</div>
-        <div class="item-detalle">${servicio.categoria_nombre} · ${
+        <div class="item-titulo">${esc(servicio.nombre)}</div>
+        <div class="item-detalle">${esc(servicio.descripcion)}</div>
+        <div class="item-detalle">${esc(servicio.categoria_nombre)} · ${
       servicio.duracion_minutos
-    } minutos</div>
+    } ${gettext("minutos")}</div>
       </div>
       <span class="item-precio">${pesos(servicio.precio_base)}</span>`;
     item.onclick = () => alternarServicio(servicio, item);
     contenedor.appendChild(item);
   });
 
+  paginar(contenedor, datos, n => cargarServicios(profesionalId, n));
   mostrar("bloque-servicios", true);
 }
 
@@ -257,25 +278,25 @@ function alternarServicio(servicio, elemento) {
   refrescarConfirmacion();
 }
 
-async function cargarAgenda(profesionalId) {
-  const datos = await pedir(
-    `/reservas/disponibilidad/?profesional_id=${profesionalId}`
-  );
+async function cargarAgenda(profesionalId, pagina = 1) {
+  const datos = await pedirPagina(`/reservas/disponibilidad/?profesional_id=${profesionalId}`, pagina);
   const contenedor = $("lista-bloques");
   contenedor.innerHTML = "";
 
   if (!datos.resultados.length) {
     contenedor.innerHTML =
-      '<p class="vacio">Este profesional no tiene horarios libres.</p>';
+      `<p class="vacio">${gettext("Este profesional no tiene horarios libres.")}</p>`;
   }
 
   datos.resultados.forEach((bloque) => {
     const item = document.createElement("div");
     item.className = "item";
+    item.tabIndex = 0;
+    item.setAttribute("role", "button");
     item.innerHTML = `
       <div>
         <div class="item-titulo">${fecha(bloque.inicio)}</div>
-        <div class="item-detalle">Disponible ${bloque.duracion_minutos} minutos</div>
+        <div class="item-detalle">${gettext("Disponible")} ${bloque.duracion_minutos} ${gettext("minutos")}</div>
       </div>`;
     item.onclick = () => {
       document
@@ -288,6 +309,7 @@ async function cargarAgenda(profesionalId) {
     contenedor.appendChild(item);
   });
 
+  paginar(contenedor, datos, n => cargarAgenda(profesionalId, n));
   mostrar("bloque-agenda", true);
 }
 
@@ -307,9 +329,9 @@ function refrescarConfirmacion() {
 
   $("reserva-zona").value = $("buscar-zona").value || "Laureles";
   $("resumen-reserva").innerHTML = `
-    ${estado.servicios.map((s) => `<div>${s.nombre}</div>`).join("")}
+    ${estado.servicios.map((s) => `<div>${esc(s.nombre)}</div>`).join("")}
     <div class="item-detalle">${fecha(estado.bloque.inicio)} · ${minutos} min</div>
-    <div class="total">Total estimado: ${pesos(total)}</div>`;
+    <div class="total">${gettext("Total estimado:")} ${pesos(total)}</div>`;
 }
 
 async function crearReserva() {
@@ -323,19 +345,19 @@ async function crearReserva() {
     }),
   });
 
-  avisar(`Reserva #${reserva.id} creada por ${pesos(reserva.total)}`);
+  avisar(interpolate(gettext("Reserva #%(id)s creada por %(total)s"), {id: reserva.id, total: pesos(reserva.total)}, true));
   estado.servicios = [];
   estado.bloque = null;
   cambiarVista("vista-reservas");
 }
 
-async function cargarReservas() {
-  const datos = await pedir("/reservas/");
+async function cargarReservas(pagina = 1) {
+  const datos = await pedirPagina("/reservas/", pagina);
   const contenedor = $("lista-reservas");
   contenedor.innerHTML = "";
 
   if (!datos.resultados.length) {
-    contenedor.innerHTML = '<p class="vacio">Todavia no tienes reservas.</p>';
+    contenedor.innerHTML = `<p class="vacio">${gettext("Todavia no tienes reservas.")}</p>`;
     return;
   }
 
@@ -343,6 +365,7 @@ async function cargarReservas() {
     const item = pintarReserva(reserva, true);
     contenedor.appendChild(item);
   });
+  paginar(contenedor, datos, cargarReservas);
 }
 
 function pintarReserva(reserva, conAcciones) {
@@ -350,28 +373,28 @@ function pintarReserva(reserva, conAcciones) {
   item.className = "item estatico";
 
   const detalles = reserva.detalles
-    .map((d) => `${d.cantidad} x ${d.servicio} — ${pesos(d.subtotal)}`)
+    .map((d) => `${d.cantidad} x ${esc(d.servicio)} — ${pesos(d.subtotal)}`)
     .join("<br>");
 
   const penalizacion =
     Number(reserva.penalizacion) > 0
-      ? `<br>Penalizacion aplicada: ${pesos(reserva.penalizacion)}`
+      ? `<br>${gettext("Penalizacion aplicada:")} ${pesos(reserva.penalizacion)}`
       : "";
 
   item.innerHTML = `
     <div class="cabecera-reserva">
       <div>
-        <div class="item-titulo">Reserva #${reserva.id} · ${
-    conAcciones ? reserva.profesional : reserva.cliente
+        <div class="item-titulo">${gettext("Reserva")} #${reserva.id} · ${
+    esc(conAcciones ? reserva.profesional : reserva.cliente)
   }</div>
         <div class="item-detalle">${fecha(reserva.inicio)}</div>
-        <div class="item-detalle">${reserva.direccion} (${reserva.zona})</div>
+        <div class="item-detalle">${esc(reserva.direccion)} (${esc(reserva.zona)})</div>
       </div>
-      <span class="etiqueta ${reserva.estado}">${reserva.estado}</span>
+      <span class="etiqueta ${reserva.estado}">${gettext(reserva.estado)}</span>
     </div>
     <div class="detalles-reserva">
       ${detalles}<br>
-      <strong>Total: ${pesos(reserva.total)}</strong> · tarifa ${reserva.tarifa_aplicada}
+      <strong>${gettext("Total:")} ${pesos(reserva.total)}</strong> · ${gettext("tarifa")} ${gettext(reserva.tarifa_aplicada)}
       ${penalizacion}
     </div>`;
 
@@ -383,14 +406,14 @@ function pintarReserva(reserva, conAcciones) {
     if (reserva.estado === "PENDIENTE") {
       const pagar = document.createElement("button");
       pagar.className = "boton pequeno";
-      pagar.textContent = "Pagar con tarjeta";
+      pagar.textContent = gettext("Pagar con tarjeta");
       pagar.onclick = () => intentar(() => pagarReserva(reserva.id));
       acciones.appendChild(pagar);
     }
 
     const cancelar = document.createElement("button");
     cancelar.className = "boton pequeno peligro";
-    cancelar.textContent = "Cancelar";
+    cancelar.textContent = gettext("Cancelar");
     cancelar.onclick = () => intentar(() => cancelarReserva(reserva.id));
     acciones.appendChild(cancelar);
 
@@ -404,11 +427,12 @@ async function pagarReserva(id) {
     method: "POST",
     body: JSON.stringify({ reserva_id: id, medio: "TARJETA" }),
   });
-  avisar(`Pago aprobado (${pago.referencia_externa}). Reserva confirmada.`);
+  avisar(interpolate(gettext("Pago aprobado (%(referencia)s). Reserva confirmada."), {referencia: pago.referencia_externa}, true));
   await cargarReservas();
 }
 
 async function cancelarReserva(id) {
+  if (!window.confirm(gettext("¿Cancelar esta reserva? Se aplicará la política de cancelación según la anticipación de la visita."))) return;
   const reserva = await pedir(`/reservas/${id}/cancelacion/`, {
     method: "POST",
     body: JSON.stringify({ motivo: "Cancelada desde la aplicacion" }),
@@ -416,8 +440,8 @@ async function cancelarReserva(id) {
   const retenido = Number(reserva.penalizacion);
   avisar(
     retenido > 0
-      ? `Reserva cancelada. Se retuvo ${pesos(retenido)} por politica de cancelacion.`
-      : "Reserva cancelada sin penalizacion."
+      ? interpolate(gettext("Reserva cancelada. Se retuvo %(monto)s por politica de cancelacion."), {monto: pesos(retenido)}, true)
+      : gettext("Reserva cancelada sin penalizacion.")
   );
   await cargarReservas();
 }
@@ -426,23 +450,19 @@ async function cancelarReserva(id) {
 function avisoDeVerificacion() {
   const pro = estado.perfil.profesional;
   if (!pro || pro.verificado) return "";
-  return `<div class="tarjeta alerta">
-      Tu cuenta esta <strong>pendiente de verificacion</strong>. Puedes publicar
-      servicios y horarios, pero no apareceras en las busquedas hasta que un
-      administrador te verifique (regla RN-07).
-    </div>`;
+  return `<div class="tarjeta alerta">${gettext("Tu cuenta está pendiente de verificación. Puedes publicar servicios y horarios; aparecerás en las búsquedas cuando un administrador te verifique.")}</div>`;
 }
 
-async function cargarMisServicios() {
+async function cargarMisServicios(pagina = 1) {
   $("aviso-verificacion").innerHTML = avisoDeVerificacion();
 
-  const datos = await pedir("/catalogo/mis-servicios/");
+  const datos = await pedirPagina("/catalogo/mis-servicios/", pagina);
   const contenedor = $("lista-mis-servicios");
   contenedor.innerHTML = "";
 
   if (!datos.resultados.length) {
     contenedor.innerHTML =
-      '<p class="vacio">Todavia no has publicado servicios.</p>';
+      `<p class="vacio">${gettext("Todavia no has publicado servicios.")}</p>`;
     return;
   }
 
@@ -452,18 +472,19 @@ async function cargarMisServicios() {
     item.innerHTML = `
       <div class="cabecera-reserva">
         <div>
-          <div class="item-titulo">${servicio.nombre}</div>
-          <div class="item-detalle">${servicio.categoria_nombre}</div>
-          <div class="item-detalle">${servicio.duracion_minutos} minutos · ${pesos(
+          <div class="item-titulo">${esc(servicio.nombre)}</div>
+          <div class="item-detalle">${esc(servicio.categoria_nombre)}</div>
+          <div class="item-detalle">${servicio.duracion_minutos} ${gettext("minutos")} · ${pesos(
       servicio.precio_base
     )}</div>
         </div>
         <span class="etiqueta ${servicio.activo ? "CONFIRMADA" : "CANCELADA"}">
-          ${servicio.activo ? "ACTIVO" : "INACTIVO"}
+          ${gettext(servicio.activo ? "ACTIVO" : "INACTIVO")}
         </span>
       </div>`;
     contenedor.appendChild(item);
   });
+  paginar(contenedor, datos, cargarMisServicios);
 }
 
 async function publicarServicio() {
@@ -477,7 +498,7 @@ async function publicarServicio() {
       duracion_minutos: Number($("serv-duracion").value),
     }),
   });
-  avisar(`Servicio "${creado.nombre}" publicado.`);
+  avisar(interpolate(gettext('Servicio "%(nombre)s" publicado.'), {nombre: creado.nombre}, true));
   $("serv-nombre").value = "";
   $("serv-descripcion").value = "";
   $("serv-precio").value = "";
@@ -485,14 +506,14 @@ async function publicarServicio() {
   await cargarMisServicios();
 }
 
-async function cargarMiAgenda() {
-  const agenda = await pedir("/reservas/mi-agenda/");
+async function cargarMiAgenda(pagina = 1, paginaRecibidas = 1) {
+  const agenda = await pedirPagina("/reservas/mi-agenda/", pagina);
   const contenedor = $("lista-mi-agenda");
   contenedor.innerHTML = "";
 
   if (!agenda.resultados.length) {
     contenedor.innerHTML =
-      '<p class="vacio">Todavia no has publicado horarios.</p>';
+      `<p class="vacio">${gettext("Todavia no has publicado horarios.")}</p>`;
   }
 
   agenda.resultados.forEach((bloque) => {
@@ -502,26 +523,28 @@ async function cargarMiAgenda() {
       <div class="cabecera-reserva">
         <div>
           <div class="item-titulo">${fecha(bloque.inicio)}</div>
-          <div class="item-detalle">${bloque.duracion_minutos} minutos</div>
+          <div class="item-detalle">${bloque.duracion_minutos} ${gettext("minutos")}</div>
         </div>
         <span class="etiqueta ${
           bloque.estado === "LIBRE" ? "CONFIRMADA" : "PENDIENTE"
-        }">${bloque.estado}</span>
+        }">${gettext(bloque.estado)}</span>
       </div>`;
     contenedor.appendChild(item);
   });
 
-  const recibidas = await pedir("/reservas/recibidas/");
+  paginar(contenedor, agenda, n => cargarMiAgenda(n, paginaRecibidas));
+  const recibidas = await pedirPagina("/reservas/recibidas/", paginaRecibidas);
   const lista = $("lista-recibidas");
   lista.innerHTML = "";
 
   if (!recibidas.resultados.length) {
-    lista.innerHTML = '<p class="vacio">Nadie te ha reservado todavia.</p>';
+    lista.innerHTML = `<p class="vacio">${gettext("Nadie te ha reservado todavia.")}</p>`;
     return;
   }
   recibidas.resultados.forEach((reserva) =>
     lista.appendChild(pintarReserva(reserva, false))
   );
+  paginar(lista, recibidas, n => cargarMiAgenda(pagina, n));
 }
 
 async function abrirHorario() {
@@ -530,11 +553,11 @@ async function abrirHorario() {
   const horas = Number($("agenda-horas").value);
 
   if (!dia || !hora) {
-    avisar("Elige el dia y la hora de inicio.", "error", "FALTAN DATOS");
+    avisar(gettext("Elige el dia y la hora de inicio."), "error", "FALTAN DATOS");
     return;
   }
 
-  const inicio = new Date(`${dia}T${hora}`);
+  const inicio = new Date(`${dia}T${hora}:00-05:00`);
   const fin = new Date(inicio.getTime() + horas * 60 * 60 * 1000);
 
   await pedir("/reservas/disponibilidad/", {
@@ -545,12 +568,27 @@ async function abrirHorario() {
     }),
   });
 
-  avisar("Horario publicado.");
+  avisar(gettext("Horario publicado."));
   await cargarMiAgenda();
 }
 
 // ---------------------------------------------------------------- arranque
 document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("form.panel").forEach(form => form.addEventListener("submit", e => e.preventDefault()));
+  document.addEventListener("click", event => {
+    const boton = event.target.closest("button");
+    if (!boton?.classList.contains("principal")) return;
+    const contenedor = boton.closest(".panel, .tarjeta");
+    for (const campo of contenedor.querySelectorAll("input, select")) {
+      if (!campo.reportValidity()) { event.preventDefault(); event.stopImmediatePropagation(); return; }
+    }
+  }, true);
+  document.addEventListener("keydown", event => {
+    if ((event.key === "Enter" || event.key === " ") && event.target.matches(".item[role=button]")) {
+      event.preventDefault(); event.target.click();
+    }
+  });
+  intentar(cargarClima, null);
   document.querySelectorAll(".pestana").forEach((pestana) => {
     pestana.onclick = () => {
       document
@@ -576,7 +614,7 @@ document.addEventListener("DOMContentLoaded", () => {
           telefono: $("reg-telefono").value,
         }),
       });
-      avisar("Cuenta creada.");
+      avisar(gettext("Cuenta creada."));
       await iniciarSesion($("reg-correo").value, $("reg-clave").value);
     });
 
@@ -596,11 +634,11 @@ document.addEventListener("DOMContentLoaded", () => {
           zonas_cobertura: zonas,
         }),
       });
-      avisar("Cuenta profesional creada. Queda pendiente de verificacion.");
+      avisar(gettext("Cuenta profesional creada. Queda pendiente de verificacion."));
       await iniciarSesion($("pro-correo").value, $("pro-clave").value);
     });
 
-  $("btn-buscar").onclick = () => intentar(buscarProfesionales);
+  $("btn-buscar").onclick = () => intentar(buscarProfesionales, null);
   $("btn-reservar").onclick = () => intentar(crearReserva);
   $("btn-publicar-servicio").onclick = () => intentar(publicarServicio);
   $("btn-abrir-agenda").onclick = () => intentar(abrirHorario);
@@ -609,3 +647,43 @@ document.addEventListener("DOMContentLoaded", () => {
     intentar(entrarAlaApp);
   }
 });
+
+
+function esc(valor) {
+  const nodo = document.createElement("span");
+  nodo.textContent = String(valor ?? "");
+  return nodo.innerHTML;
+}
+
+async function cargarClima() {
+  try {
+    const clima = await pedir("/integraciones/clima/");
+    $("clima").textContent = interpolate(gettext("%(temperatura)s °C · Precipitación: %(lluvia)s mm · Actualizado: %(hora)s (Bogotá)"), {
+      temperatura: clima.temperatura_c, lluvia: clima.precipitacion_mm, hora: clima.observado_en,
+    }, true);
+  } catch (error) { $("clima").textContent = error.message; }
+}
+
+
+function pedirPagina(ruta, pagina) {
+  const separador = ruta.includes("?") ? "&" : "?";
+  return pedir(ruta + separador + "pagina=" + pagina);
+}
+
+function paginar(contenedor, datos, cargar) {
+  if (datos.paginas <= 1) return;
+  const nav = document.createElement("nav");
+  nav.className = "paginacion";
+  const etiqueta = document.createElement("span");
+  etiqueta.textContent = interpolate(gettext("Página %(actual)s de %(total)s"), {actual:datos.pagina,total:datos.paginas}, true);
+  for (const [texto,numero] of [[gettext("Anterior"),datos.pagina-1],[gettext("Siguiente"),datos.pagina+1]]) {
+    const boton = document.createElement("button");
+    boton.className = "boton pequeno";
+    boton.textContent = texto;
+    boton.disabled = numero < 1 || numero > datos.paginas;
+    boton.onclick = () => intentar(() => cargar(numero), boton);
+    nav.appendChild(boton);
+  }
+  nav.insertBefore(etiqueta,nav.lastChild);
+  contenedor.appendChild(nav);
+}

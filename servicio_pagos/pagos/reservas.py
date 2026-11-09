@@ -37,6 +37,9 @@ class ClienteReservas:
         )
 
     def _pedir(self, metodo: str, ruta: str, cabeceras: dict, id_peticion: str) -> dict:
+        from flask import has_request_context, request
+        if has_request_context():
+            cabeceras["Accept-Language"] = request.headers.get("Accept-Language", "es")
         if id_peticion:
             cabeceras["X-Request-ID"] = id_peticion
         try:

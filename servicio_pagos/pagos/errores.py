@@ -1,3 +1,4 @@
+from pagos.i18n import gettext as _, marcar as _lazy
 import logging
 
 from flask import jsonify
@@ -12,10 +13,10 @@ class ErrorDePagos(Exception):
 
     codigo = "ERR-000"
     estado_http = 409
-    mensaje_por_defecto = "La operacion viola una regla de negocio."
+    mensaje_por_defecto = _lazy("La operacion viola una regla de negocio.")
 
     def __init__(self, mensaje: str = "", **contexto) -> None:
-        super().__init__(mensaje or self.mensaje_por_defecto)
+        super().__init__(_(mensaje or self.mensaje_por_defecto))
         self.contexto = contexto
 
     def como_diccionario(self) -> dict:
@@ -28,47 +29,47 @@ class ErrorDePagos(Exception):
 class DatosInvalidos(ErrorDePagos):
     codigo = "VAL-000"
     estado_http = 400
-    mensaje_por_defecto = "La peticion tiene campos invalidos."
+    mensaje_por_defecto = _lazy("La peticion tiene campos invalidos.")
 
 
 class SinCredenciales(ErrorDePagos):
     codigo = "HTTP-401"
     estado_http = 401
-    mensaje_por_defecto = "Las credenciales de autenticacion no se proveyeron."
+    mensaje_por_defecto = _lazy("Las credenciales de autenticacion no se proveyeron.")
 
 
 class PagoNoEncontrado(ErrorDePagos):
     codigo = "PAG-01"
     estado_http = 404
-    mensaje_por_defecto = "El pago solicitado no existe."
+    mensaje_por_defecto = _lazy("El pago solicitado no existe.")
 
 
 class ReservaYaPagada(ErrorDePagos):
     codigo = "PAG-02"
-    mensaje_por_defecto = "Esta reserva ya tiene un pago registrado."
+    mensaje_por_defecto = _lazy("Esta reserva ya tiene un pago registrado.")
 
 
 class ReservaNoCobrable(ErrorDePagos):
     codigo = "PAG-03"
-    mensaje_por_defecto = "La reserva no esta en un estado que admita pago."
+    mensaje_por_defecto = _lazy("La reserva no esta en un estado que admita pago.")
 
 
 class PagoRechazado(ErrorDePagos):
     codigo = "PAG-04"
-    mensaje_por_defecto = "La pasarela rechazo el pago."
+    mensaje_por_defecto = _lazy("La pasarela rechazo el pago.")
 
 
 class PasarelaNoDisponible(ErrorDePagos):
     codigo = "PAG-05"
     estado_http = 502
-    mensaje_por_defecto = "La pasarela de pagos no esta respondiendo."
+    mensaje_por_defecto = _lazy("La pasarela de pagos no esta respondiendo.")
 
 
 class ReservasNoDisponible(ErrorDePagos):
     codigo = "PAG-06"
     estado_http = 503
     mensaje_por_defecto = (
-        "No se pudo consultar la reserva. Intente de nuevo en un momento."
+        _lazy("No se pudo consultar la reserva. Intente de nuevo en un momento.")
     )
 
 
@@ -76,8 +77,7 @@ class ReservaSinConfirmar(ErrorDePagos):
     codigo = "PAG-07"
     estado_http = 502
     mensaje_por_defecto = (
-        "El cobro se aprobo pero la reserva no se pudo confirmar. "
-        "El pago quedo registrado para conciliarlo."
+        _lazy("El cobro se aprobo pero la reserva no se pudo confirmar. El pago quedo registrado para conciliarlo.")
     )
 
 
@@ -94,8 +94,8 @@ class ErrorDeReservas(ErrorDePagos):
 
 
 MENSAJES_HTTP = {
-    404: "La ruta no existe en el servicio de pagos.",
-    405: "Metodo no permitido en esta ruta.",
+    404: _lazy("La ruta no existe en el servicio de pagos."),
+    405: _lazy("Metodo no permitido en esta ruta."),
 }
 
 
@@ -114,7 +114,7 @@ def registrar_manejadores(app) -> None:
     def error_http(error: HTTPException):
         cuerpo = {
             "codigo": f"HTTP-{error.code}",
-            "mensaje": MENSAJES_HTTP.get(error.code, error.description),
+            "mensaje": _(MENSAJES_HTTP.get(error.code, error.description)),
         }
         return _respuesta(cuerpo, error.code)
 
@@ -124,6 +124,6 @@ def registrar_manejadores(app) -> None:
         logger.exception("Error no controlado en el servicio de pagos")
         cuerpo = {
             "codigo": "HTTP-500",
-            "mensaje": "Error interno del servicio de pagos.",
+            "mensaje": _("Error interno del servicio de pagos."),
         }
         return _respuesta(cuerpo, 500)

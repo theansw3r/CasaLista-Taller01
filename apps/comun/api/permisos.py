@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 import hmac
 
 from django.conf import settings
@@ -13,7 +14,7 @@ class EsServicioInterno(BasePermission):
     reserva sin haber pagado.
     """
 
-    message = "Esta ruta solo la pueden usar los servicios internos de CasaLista."
+    message = _lazy("Esta ruta solo la pueden usar los servicios internos de CasaLista.")
 
     def has_permission(self, request, view) -> bool:
         esperado = settings.TOKEN_SERVICIO_PAGOS

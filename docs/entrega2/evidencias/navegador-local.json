@@ -1,0 +1,26 @@
+{
+  "fecha_local": "2026-11-09",
+  "zona_horaria": "America/Bogota",
+  "origen": "http://localhost:8080/",
+  "metodo": "Navegación y revisión visual en navegador mediante herramientas de interfaz",
+  "observaciones": {
+    "portada_es": true,
+    "cambio_idioma_en": true,
+    "login_cliente": true,
+    "catalogo_y_vacio_agenda_en": true,
+    "login_profesional": true,
+    "publicar_horario_en": true,
+    "crear_reserva_en": true,
+    "pago_simulado_en": true,
+    "reserva_confirmada_id": 5,
+    "consulta_open_meteo_visible": true,
+    "aliado_indicado_pendiente": true,
+    "errores_consola_observados": 0,
+    "movil": {"ancho":390,"alto":844,"scrollWidth":390,"desbordamiento_horizontal":false}
+  },
+  "limites": [
+    "Datos y cobros exclusivamente de demostración local.",
+    "Las capturas se inspeccionaron en la sesión; este registro no contiene archivos de imagen.",
+    "No acredita AWS Academy ni consumo del aliado."
+  ]
+}

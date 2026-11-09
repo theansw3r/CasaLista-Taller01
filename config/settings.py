@@ -44,6 +44,7 @@ APPS_DEL_PROYECTO = [
     "apps.catalogo",
     "apps.reservas",
     "apps.pagos",
+    "apps.integraciones",
 ]
 
 INSTALLED_APPS = APPS_DE_DJANGO + APPS_DE_TERCEROS + APPS_DEL_PROYECTO
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -104,7 +106,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
 ]
 
-LANGUAGE_CODE = "es-co"
+LANGUAGE_CODE = "es"
+LANGUAGES = [("es", "Español"), ("en", "English")]
+LOCALE_PATHS = [BASE_DIR / "locale"]
+CSRF_TRUSTED_ORIGINS = lista("CSRF_TRUSTED_ORIGINS")
 TIME_ZONE = "America/Bogota"
 USE_I18N = True
 USE_TZ = True
@@ -194,3 +199,25 @@ if "test" in sys.argv:
 
     LOGGING["root"]["level"] = "CRITICAL"
     LOGGING["loggers"] = {"django.request": {"level": "CRITICAL"}}
+
+# Celery: los eventos se conservan en Postgres antes de publicarlos en Redis.
+CELERY_BROKER_URL = variable("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_BROKER_TRANSPORT_OPTIONS = {"socket_connect_timeout": 2, "socket_timeout": 2}
+CELERY_TASK_PUBLISH_RETRY = False
+CELERY_TASK_IGNORE_RESULT = True
+CELERY_TASK_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_TASK_TIME_LIMIT = 60
+CELERY_BEAT_SCHEDULE = {
+    "recuperar-outbox": {
+        "task": "apps.reservas.tasks.recuperar_notificaciones", "schedule": 60.0,
+    }
+}
+EMAIL_TIMEOUT = 10
+EMAIL_HOST = variable("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(variable("EMAIL_PORT", "25"))
+EMAIL_HOST_USER = variable("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = variable("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = variable("EMAIL_USE_TLS", "0") == "1"

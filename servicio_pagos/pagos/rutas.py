@@ -1,3 +1,4 @@
+from pagos.i18n import gettext as _, marcar as _lazy
 from datetime import timezone
 
 from flask import Blueprint, current_app, g, jsonify, request
@@ -59,15 +60,15 @@ def _exigir_token() -> str:
 
 def _leer_cuerpo(cuerpo) -> tuple[int, str]:
     if not isinstance(cuerpo, dict):
-        raise DatosInvalidos("El cuerpo de la peticion debe ser un objeto JSON.")
+        raise DatosInvalidos(_("El cuerpo de la peticion debe ser un objeto JSON."))
 
     errores = {}
     reserva_id = cuerpo.get("reserva_id")
     if isinstance(reserva_id, bool) or not isinstance(reserva_id, int) or reserva_id < 1:
-        errores["reserva_id"] = ["Debe ser un numero entero mayor o igual a 1."]
+        errores["reserva_id"] = [_("Debe ser un numero entero mayor o igual a 1.")]
     medio = cuerpo.get("medio")
     if medio not in MEDIOS:
-        errores["medio"] = [f"Debe ser uno de: {', '.join(MEDIOS)}."]
+        errores["medio"] = [_("Debe ser uno de: %(medios)s.") % {"medios": ", ".join(MEDIOS)}]
 
     if errores:
         raise DatosInvalidos(campos=errores)

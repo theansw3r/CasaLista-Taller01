@@ -11,3 +11,9 @@ servicio_pagos/
 nginx/
 docker/
 docker-compose.yml
+
+.venv312/
+.evidencias-locales/
+*.pem
+*.key
+scripts/

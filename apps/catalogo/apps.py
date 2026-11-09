@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from django.apps import AppConfig
 
 
@@ -5,4 +6,4 @@ class CatalogoConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "apps.catalogo"
     label = "catalogo"
-    verbose_name = "CasaLista - Catalogo"
+    verbose_name = _lazy("CasaLista - Catalogo")

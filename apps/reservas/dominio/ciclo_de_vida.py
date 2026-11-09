@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from apps.reservas.dominio.excepciones import TransicionDeEstadoInvalida
 from apps.reservas.models import Reserva
 
@@ -27,8 +28,7 @@ class CicloDeVidaReserva:
     def _transicionar(cls, reserva, nuevo_estado: str) -> None:
         if not cls.puede_pasar_a(reserva, nuevo_estado):
             raise TransicionDeEstadoInvalida(
-                f"Una reserva {reserva.get_estado_display().lower()} no puede "
-                f"pasar a {Estado(nuevo_estado).label.lower()}.",
+                _("Una reserva %(v0)s no puede pasar a %(v1)s.") % {'v0': reserva.get_estado_display().lower(), 'v1': Estado(nuevo_estado).label.lower()},
                 estado_actual=reserva.estado,
                 estado_solicitado=nuevo_estado,
             )

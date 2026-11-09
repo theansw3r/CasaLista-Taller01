@@ -1,3 +1,4 @@
+from django.utils.translation import gettext as _, gettext_lazy as _lazy
 import logging
 
 from django.conf import settings
@@ -10,20 +11,18 @@ logger = logging.getLogger(__name__)
 
 
 def _asunto(reserva) -> str:
-    return f"CasaLista - Reserva #{reserva.pk} creada"
+    return _("CasaLista - Reserva #%(id)s creada") % {"id": reserva.pk}
 
 
 def _cuerpo(reserva) -> str:
     inicio = timezone.localtime(reserva.bloque.inicio)
-    return (
-        f"Hola {reserva.cliente.nombre},\n\n"
-        f"Tu reserva con {reserva.profesional.nombre} quedo registrada.\n"
-        f"Fecha: {inicio:%d/%m/%Y %H:%M}\n"
-        f"Direccion: {reserva.direccion} ({reserva.zona})\n"
-        f"Total: $ {reserva.total}\n"
-        f"Estado: {reserva.get_estado_display()}\n\n"
-        f"Te avisaremos cuando confirmemos el pago."
-    )
+    return _(
+        "Hola %(cliente)s,\n\nTu reserva con %(profesional)s quedó registrada.\n"
+        "Fecha: %(fecha)s\nDirección: %(direccion)s (%(zona)s)\n"
+        "Total: COP %(total)s\nEstado: %(estado)s\n\nTe avisaremos cuando confirmemos el pago."
+    ) % {"cliente": reserva.cliente.nombre, "profesional": reserva.profesional.nombre,
+         "fecha": inicio.strftime("%d/%m/%Y %H:%M"), "direccion": reserva.direccion,
+         "zona": reserva.zona, "total": reserva.total, "estado": reserva.get_estado_display()}
 
 
 class NotificadorConsola(Notificador):
@@ -42,11 +41,25 @@ class NotificadorEmail(Notificador):
         destinatario = getattr(reserva.cliente.usuario, "email", "")
         if not destinatario:
             logger.warning("Reserva %s: el cliente no tiene correo.", reserva.pk)
-            return
+            raise ValueError(_("El cliente no tiene correo"))
         send_mail(
             subject=_asunto(reserva),
             message=_cuerpo(reserva),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[destinatario],
-            fail_silently=True,
+            fail_silently=False,
         )
+
+
+class NotificadorAsincrono(Notificador):
+    nombre = "ASYNC"
+
+    def enviar_confirmacion_reserva(self, reserva):
+        from django.db import transaction
+        from django.utils.translation import get_language
+        from apps.reservas.models import NotificacionPendiente
+        from apps.reservas.tasks import publicar_notificacion
+        evento, _ = NotificacionPendiente.objects.get_or_create(
+            reserva=reserva, defaults={"idioma": get_language() or "es"},
+        )
+        transaction.on_commit(lambda: publicar_notificacion(evento.pk))

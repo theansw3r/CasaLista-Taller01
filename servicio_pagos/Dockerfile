@@ -10,6 +10,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY pagos/ pagos/
+COPY locale/ locale/
 COPY wsgi.py .
 
 EXPOSE 5000
