@@ -62,7 +62,9 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/salud/', timeout=3)"]
+      # Host "django" porque Compose siempre lo agrega a ALLOWED_HOSTS: asi el
+      # chequeo no depende de que .env incluya localhost (en AWS solo va la IP).
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen(u.Request('http://127.0.0.1:8000/api/v1/salud/', headers={'Host': 'django'}), timeout=3)"]
       interval: 10s
       timeout: 5s
       retries: 20
