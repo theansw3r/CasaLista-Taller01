@@ -1,12 +1,22 @@
 from django.contrib import admin
 
-from apps.reservas.models import BloqueDisponibilidad, DetalleReserva, Reserva
+from apps.reservas.models import (
+    BloqueDisponibilidad,
+    DetalleReserva,
+    NotificacionPendiente,
+    Reserva,
+)
 
 
 class DetalleReservaInline(admin.TabularInline):
     model = DetalleReserva
     extra = 0
-    readonly_fields = ["servicio", "cantidad", "precio_unitario", "duracion_unitaria_minutos"]
+    readonly_fields = [
+        "servicio",
+        "cantidad",
+        "precio_unitario",
+        "duracion_unitaria_minutos",
+    ]
     can_delete = False
 
 
@@ -18,14 +28,20 @@ class BloqueDisponibilidadAdmin(admin.ModelAdmin):
 
 @admin.register(Reserva)
 class ReservaAdmin(admin.ModelAdmin):
-    list_display = ["id", "cliente", "profesional", "estado", "total", "tarifa_aplicada", "creada_en"]
+    list_display = [
+        "id",
+        "cliente",
+        "profesional",
+        "estado",
+        "total",
+        "tarifa_aplicada",
+        "creada_en",
+    ]
     list_filter = ["estado", "tarifa_aplicada"]
     search_fields = ["cliente__nombre", "profesional__nombre"]
     readonly_fields = ["total", "tarifa_aplicada", "penalizacion", "creada_en"]
     inlines = [DetalleReservaInline]
 
-
-from apps.reservas.models import NotificacionPendiente
 
 @admin.register(NotificacionPendiente)
 class NotificacionPendienteAdmin(admin.ModelAdmin):
