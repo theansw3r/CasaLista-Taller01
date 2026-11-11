@@ -46,6 +46,8 @@ class IndiceService:
                 "reservas": "/api/v1/reservas/",
                 "pagos": "/api/v1/pagos/",
                 "pagos_v2": "/api/v2/pagos/",
+                "clima": "/api/v1/integraciones/clima/",
+                "aliado": "/api/v1/integraciones/aliado/",
                 "salud": "/api/v1/salud/",
             },
         }
