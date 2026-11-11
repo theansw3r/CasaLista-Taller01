@@ -1,9 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.db import transaction
+from django.db import IntegrityError, transaction
 
 from apps.cuentas.dominio.excepciones import (
     ClienteNoRegistrado,
     CorreoYaRegistrado,
+    DocumentoYaRegistrado,
     ProfesionalNoRegistrado,
 )
 from apps.cuentas.dto import RegistrarClienteCommand, RegistrarProfesionalCommand
@@ -15,6 +16,11 @@ Usuario = get_user_model()
 def _exigir_correo_libre(correo: str) -> None:
     if Usuario.objects.filter(username=correo).exists():
         raise CorreoYaRegistrado(correo=correo)
+
+
+def _exigir_documento_libre(documento: str) -> None:
+    if Profesional.objects.filter(documento=documento).exists():
+        raise DocumentoYaRegistrado(documento=documento)
 
 
 class RegistroClienteService:
@@ -40,22 +46,31 @@ class RegistroProfesionalService:
 
     def registrar(self, comando: RegistrarProfesionalCommand) -> Profesional:
         correo = comando.correo.strip().lower()
-        _exigir_correo_libre(correo)
+        documento = comando.documento.strip()
 
-        with transaction.atomic():
-            usuario = Usuario.objects.create_user(
-                username=correo,
-                email=correo,
-                password=comando.contrasena,
-            )
-            return Profesional.objects.create(
-                usuario=usuario,
-                nombre=comando.nombre.strip(),
-                documento=comando.documento.strip(),
-                descripcion=comando.descripcion.strip(),
-                zonas_cobertura=",".join(comando.zonas_cobertura),
-                verificado=False,
-            )
+        _exigir_correo_libre(correo)
+        _exigir_documento_libre(documento)
+
+        try:
+            with transaction.atomic():
+                usuario = Usuario.objects.create_user(
+                    username=correo,
+                    email=correo,
+                    password=comando.contrasena,
+                )
+                return Profesional.objects.create(
+                    usuario=usuario,
+                    nombre=comando.nombre.strip(),
+                    documento=documento,
+                    descripcion=comando.descripcion.strip(),
+                    zonas_cobertura=",".join(comando.zonas_cobertura),
+                    verificado=False,
+                )
+        except IntegrityError:
+            # Red de seguridad: si dos peticiones llegan a la vez, las dos
+            # pasan la comprobacion de arriba y solo una gana. La otra tiene
+            # que salir como error de negocio y no como 500.
+            raise DocumentoYaRegistrado(documento=documento) from None
 
 
 class ConsultaPerfilService:

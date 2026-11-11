@@ -3,13 +3,13 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from apps.catalogo.services import CatalogoService
 from apps.comun.pruebas import crear_cliente, crear_profesional
 from apps.cuentas.dominio.cobertura import PoliticaDeCobertura
 from apps.cuentas.dominio.excepciones import (
     CorreoYaRegistrado,
     ProfesionalNoHabilitado,
 )
-from apps.catalogo.services import CatalogoService
 from apps.cuentas.dto import RegistrarClienteCommand
 from apps.cuentas.models import Cliente, Profesional
 from apps.cuentas.services import (
@@ -215,3 +215,55 @@ class VerificacionProfesionalServiceTest(TestCase):
 
         encontrados = CatalogoService().buscar_profesionales()
         self.assertEqual([p.pk for p in encontrados], [self.profesional.pk])
+
+
+class RegistroProfesionalDuplicadoTest(APITestCase):
+    """Un documento repetido tiene que dar 400, nunca un 500."""
+
+    def _cuerpo(self, **cambios):
+        cuerpo = {
+            "correo": "primero@correo.com",
+            "contrasena": "contrasena-larga",
+            "nombre": "Reparaciones",
+            "documento": "1034989718",
+            "descripcion": "Reparo electrodomesticos",
+            "zonas_cobertura": ["Laureles"],
+        }
+        cuerpo.update(cambios)
+        return cuerpo
+
+    def test_400_si_el_documento_ya_existe(self):
+        url = reverse("cuentas:registro-profesional")
+        self.client.post(url, self._cuerpo(), format="json")
+
+        respuesta = self.client.post(
+            url, self._cuerpo(correo="segundo@correo.com"), format="json"
+        )
+
+        self.assertEqual(respuesta.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(respuesta.data["error"]["codigo"], "CTA-04")
+
+    def test_no_deja_el_usuario_huerfano_si_falla(self):
+        """Si el documento choca, tampoco debe quedar la cuenta creada."""
+        url = reverse("cuentas:registro-profesional")
+        self.client.post(url, self._cuerpo(), format="json")
+
+        self.client.post(url, self._cuerpo(correo="segundo@correo.com"), format="json")
+
+        from django.contrib.auth import get_user_model
+
+        self.assertFalse(
+            get_user_model().objects.filter(username="segundo@correo.com").exists()
+        )
+
+    def test_dos_profesionales_con_documentos_distintos_si_pueden(self):
+        url = reverse("cuentas:registro-profesional")
+        self.client.post(url, self._cuerpo(), format="json")
+
+        respuesta = self.client.post(
+            url,
+            self._cuerpo(correo="otro@correo.com", documento="999888777"),
+            format="json",
+        )
+
+        self.assertEqual(respuesta.status_code, status.HTTP_201_CREATED)
