@@ -6,15 +6,13 @@ pagos migrado a un microservicio en Flask con el patrón Strangler (Taller 2).
 
 ## Entrega 2
 
-La rama de trabajo incorpora Redis/Celery con outbox transaccional, integración
-Open-Meteo mediante Adapter/DIP, interfaz renovada y traducciones gettext ES/EN.
-El [estado y las evidencias](docs/entrega2/ESTADO_Y_EVIDENCIAS.md) distinguen lo
-verificado localmente de lo pendiente: aliado, AWS Academy/IP elástica y main.
+Desplegado en AWS Academy: **http://52.2.74.242** (EC2 con IP elástica).
 
-- [Auditoría inicial](docs/entrega2/AUDITORIA_INICIAL.md)
-- [Arquitectura y diagramas](docs/entrega2/ARQUITECTURA.md)
-- [Contratos de API](docs/entrega2/CONTRATOS_API.md)
-- [Despliegue y conservación de datos](docs/entrega2/DESPLIEGUE_AWS.md)
+Incluye Redis/Celery con outbox transaccional, consumo de Open-Meteo mediante
+Adapter e inversión de dependencias, interfaz renovada y traducción ES/EN con
+gettext. El consumo del servicio del equipo aliado queda pendiente.
+
+Toda la documentación de la entrega está en [docs/ENTREGA2.md](docs/ENTREGA2.md).
 
 ## Con Docker Compose
 
@@ -125,6 +123,7 @@ apps/
   catalogo/    # Servicio
   reservas/    # BloqueDisponibilidad, Reserva, DetalleReserva  (acá está el Builder)
   pagos/       # Pago  (legacy, /api/v1/pagos/)
+  integraciones/  # Adapter de Open-Meteo y consumo del equipo aliado
 servicio_pagos/  # microservicio Flask que reemplaza a apps/pagos (/api/v2/pagos/)
 nginx/           # nginx.conf: reparte el tráfico entre Django y Flask
 docker/          # script que crea la base de datos de pagos en Postgres
