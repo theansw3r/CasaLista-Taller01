@@ -1,9 +1,9 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from decimal import Decimal
 
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils.translation import gettext_lazy as _lazy
 
 
 class Cliente(models.Model):
@@ -12,7 +12,7 @@ class Cliente(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="cliente",
-        help_text=_lazy("Cuenta de acceso. Un usuario tiene como maximo un perfil de cliente."),
+        help_text=_lazy("Cuenta de acceso. Un usuario tiene como máximo un perfil de cliente."),
     )
     nombre = models.CharField(max_length=120)
     telefono = models.CharField(max_length=20, blank=True)
@@ -37,7 +37,7 @@ class Profesional(models.Model):
     nombre = models.CharField(max_length=120)
     descripcion = models.TextField(
         blank=True,
-        help_text=_lazy("Como se presenta: oficio, experiencia, que trabajos hace."),
+        help_text=_lazy("Cómo se presenta: oficio, experiencia, qué trabajos hace."),
     )
     documento = models.CharField(
         max_length=30,
@@ -58,7 +58,7 @@ class Profesional(models.Model):
         decimal_places=2,
         default=Decimal("0.00"),
         validators=[MinValueValidator(Decimal("0")), MaxValueValidator(Decimal("5"))],
-        help_text=_lazy("Lo recalcula el modulo de Reputacion (Entrega 2)."),
+        help_text=_lazy("Lo recalcula el módulo de Reputación (Entrega 2)."),
     )
     creado_en = models.DateTimeField(auto_now_add=True)
 

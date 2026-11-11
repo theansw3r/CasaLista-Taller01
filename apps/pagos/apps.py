@@ -1,5 +1,5 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _lazy
 
 
 class PagosConfig(AppConfig):

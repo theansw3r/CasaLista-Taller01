@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CasaLista</title>
-  <link rel="stylesheet" href="{% static 'css/estilos.css' %}?v=7">
+  <link rel="stylesheet" href="{% static 'css/estilos.css' %}?v=9">
 </head>
 <body data-url-pagos="{{ url_pagos }}">
 
@@ -38,7 +38,7 @@
   <section id="pantalla-acceso">
     <div class="tarjeta">
       <div class="pestanas">
-        <button class="pestana activa" data-panel="panel-login">{% translate "Iniciar sesion" %}</button>
+        <button class="pestana activa" data-panel="panel-login">{% translate "Iniciar sesión" %}</button>
         <button class="pestana" data-panel="panel-registro">{% translate "Soy cliente" %}</button>
         <button class="pestana" data-panel="panel-registro-pro">{% translate "Soy profesional" %}</button>
       </div>
@@ -47,7 +47,7 @@
         <label>{% translate "Correo" %}
           <input type="email" id="login-correo" autocomplete="email" required>
         </label>
-        <label>{% translate "Contrasena" %}
+        <label>{% translate "Contraseña" %}
           <input type="password" id="login-clave" autocomplete="current-password" required>
         </label>
         <button class="boton principal" type="submit" id="btn-login">{% translate "Entrar" %}</button>
@@ -61,23 +61,23 @@
         <label>{% translate "Correo" %}
           <input type="email" id="reg-correo" autocomplete="email" required>
         </label>
-        <label>{% translate "Contrasena (minimo 8 caracteres)" %}
+        <label>{% translate "Contraseña (mínimo 8 caracteres)" %}
           <input type="password" id="reg-clave" minlength="8" autocomplete="new-password" required>
         </label>
-        <label>{% translate "Telefono" %}
+        <label>{% translate "Teléfono" %}
           <input type="text" id="reg-telefono" autocomplete="tel" maxlength="20">
         </label>
         <button class="boton principal" type="submit" id="btn-registro">{% translate "Registrarme" %}</button>
       </form>
 
       <form id="panel-registro-pro" class="panel oculto">
-        <label>{% translate "Nombre o razon social" %}
+        <label>{% translate "Nombre o razón social" %}
           <input type="text" id="pro-nombre" required>
         </label>
         <label>{% translate "Correo" %}
           <input type="email" id="pro-correo" autocomplete="email" required>
         </label>
-        <label>{% translate "Contrasena (minimo 8 caracteres)" %}
+        <label>{% translate "Contraseña (mínimo 8 caracteres)" %}
           <input type="password" id="pro-clave" minlength="8" autocomplete="new-password" required>
         </label>
         <label>{% translate "Documento de identidad" %}
@@ -96,7 +96,7 @@
         </fieldset>
         <button class="boton principal" type="submit" id="btn-registro-pro">{% translate "Registrarme como profesional" %}</button>
         <p class="pista">
-          {% translate "Un administrador debe verificar tu cuenta antes de que aparezcas en las busquedas (regla RN-07)." %}
+          {% translate "Un administrador debe verificar tu cuenta antes de que aparezcas en las búsquedas (regla RN-07)." %}
         </p>
       </form>
     </div>
@@ -115,11 +115,11 @@
         <div class="fila">
           <select id="buscar-oficio" aria-label="{% translate 'Oficio' %}">
             <option value="">{% translate "Todos los oficios" %}</option>
-            <option value="PLOMERIA">{% translate "Plomeria" %}</option>
+            <option value="PLOMERIA">{% translate "Plomería" %}</option>
             <option value="ELECTRICIDAD">{% translate "Electricidad" %}</option>
-            <option value="ELECTRODOMESTICOS">{% translate "Reparacion de electrodomesticos" %}</option>
+            <option value="ELECTRODOMESTICOS">{% translate "Reparación de electrodomésticos" %}</option>
             <option value="PINTURA">{% translate "Pintura" %}</option>
-            <option value="CERRAJERIA">{% translate "Cerrajeria" %}</option>
+            <option value="CERRAJERIA">{% translate "Cerrajería" %}</option>
           </select>
           <select id="buscar-zona" aria-label="{% translate 'Zona' %}">
             <option value="">{% translate "Todas las zonas" %}</option>
@@ -146,7 +146,7 @@
 
       <div class="tarjeta oculto" id="bloque-confirmar">
         <h2>{% translate "4. Confirma la reserva" %}</h2>
-        <label>{% translate "Direccion de la visita" %}
+        <label>{% translate "Dirección de la visita" %}
           <input type="text" id="reserva-direccion" maxlength="180" autocomplete="street-address" required>
         </label>
         <label>{% translate "Zona" %}
@@ -174,24 +174,24 @@
         <h2>{% translate "Publicar un servicio" %}</h2>
         <label>{% translate "Oficio" %}
           <select id="serv-categoria">
-            <option value="PLOMERIA">{% translate "Plomeria" %}</option>
+            <option value="PLOMERIA">{% translate "Plomería" %}</option>
             <option value="ELECTRICIDAD">{% translate "Electricidad" %}</option>
-            <option value="ELECTRODOMESTICOS">{% translate "Reparacion de electrodomesticos" %}</option>
+            <option value="ELECTRODOMESTICOS">{% translate "Reparación de electrodomésticos" %}</option>
             <option value="PINTURA">{% translate "Pintura" %}</option>
-            <option value="CERRAJERIA">{% translate "Cerrajeria" %}</option>
+            <option value="CERRAJERIA">{% translate "Cerrajería" %}</option>
           </select>
         </label>
         <label>{% translate "Nombre del servicio" %}
           <input type="text" id="serv-nombre" maxlength="120" required>
         </label>
-        <label>{% translate "Que incluye la visita" %}
+        <label>{% translate "Qué incluye la visita" %}
           <input type="text" id="serv-descripcion" maxlength="500" minlength="20" required>
         </label>
         <div class="fila">
           <label style="flex:1">{% translate "Precio" %}
             <input type="number" id="serv-precio" required min="0">
           </label>
-          <label style="flex:1">{% translate "Duracion (minutos)" %}
+          <label style="flex:1">{% translate "Duración (minutos)" %}
             <input type="number" id="serv-duracion" required min="60" max="240" step="30">
           </label>
         </div>
@@ -212,13 +212,13 @@
       <div class="tarjeta">
         <h2>{% translate "Abrir un horario" %}</h2>
         <div class="fila">
-          <label style="flex:1">{% translate "Dia" %}
+          <label style="flex:1">{% translate "Día" %}
             <input type="date" id="agenda-dia" required>
           </label>
           <label style="flex:1">{% translate "Hora de inicio" %}
             <input type="time" id="agenda-hora" required value="09:00">
           </label>
-          <label style="flex:1">{% translate "Duracion (horas)" %}
+          <label style="flex:1">{% translate "Duración (horas)" %}
             <input type="number" id="agenda-horas" required value="2" min="1" max="8">
           </label>
         </div>
@@ -248,6 +248,6 @@
 <div id="avisos" class="avisos" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script src="{% url 'javascript-catalog' %}"></script>
-<script src="{% static 'js/app.js' %}?v=7"></script>
+<script src="{% static 'js/app.js' %}?v=9"></script>
 </body>
 </html>

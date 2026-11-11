@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: CasaLista Entrega 2\n"
+"Project-Id-Version: CasaLista\n"
 "Language: en\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -40,13 +40,13 @@ msgstr "Cancel"
 msgid "Cuenta creada."
 msgstr "Account created."
 
-msgid "Cuenta profesional creada. Queda pendiente de verificacion."
+msgid "Cuenta profesional creada. Queda pendiente de verificación."
 msgstr "Professional account created. Verification is pending."
 
 msgid "DINAMICA"
 msgstr "DYNAMIC"
 
-msgid "Elige el dia y la hora de inicio."
+msgid "Elige el día y la hora de inicio."
 msgstr "Choose a date and start time."
 
 msgid "Horario publicado."
@@ -73,7 +73,7 @@ msgstr "Cannot connect to the server. Please try again."
 msgid "OCUPADO"
 msgstr "BOOKED"
 
-msgid "Ocurrio un error inesperado."
+msgid "Ocurrió un error inesperado."
 msgstr "An unexpected error occurred."
 
 msgid "PENDIENTE"
@@ -88,17 +88,17 @@ msgstr "Payment approved (%(referencia)s). Booking confirmed."
 msgid "Reserva #%(id)s creada por %(total)s"
 msgstr "Booking #%(id)s created for %(total)s"
 
-msgid "Reserva cancelada sin penalizacion."
+msgid "Reserva cancelada sin penalización."
 msgstr "Booking cancelled without a fee."
 
-msgid "Reserva cancelada. Se retuvo %(monto)s por politica de cancelacion."
+msgid "Reserva cancelada. Se retuvo %(monto)s por política de cancelación."
 msgstr ""
 "Booking cancelled. %(monto)s was retained under the cancellation policy."
 
 msgid "Servicio \"%(nombre)s\" publicado."
 msgstr "Service \"%(nombre)s\" published."
 
-msgid "Tu sesion expiro. Vuelve a iniciar sesion."
+msgid "Tu sesión expiró. Vuelve a iniciar sesión."
 msgstr "Your session expired. Please sign in again."
 
 msgid ""
@@ -117,16 +117,16 @@ msgstr "Available"
 msgid "Este profesional no tiene horarios libres."
 msgstr "This professional has no available time slots."
 
-msgid "Este profesional todavia no publico servicios."
+msgid "Este profesional todavía no publicó servicios."
 msgstr "This professional has not published any services yet."
 
-msgid "Nadie te ha reservado todavia."
+msgid "Nadie te ha reservado todavía."
 msgstr "You have not received any bookings yet."
 
-msgid "No hay profesionales verificados para esa busqueda."
+msgid "No hay profesionales verificados para esa búsqueda."
 msgstr "No verified professionals match your search."
 
-msgid "Penalizacion aplicada:"
+msgid "Penalización aplicada:"
 msgstr "Cancellation fee:"
 
 msgid "Reserva"
@@ -135,13 +135,13 @@ msgstr "Booking"
 msgid "Salir"
 msgstr "Sign out"
 
-msgid "Todavia no has publicado horarios."
+msgid "Todavía no has publicado horarios."
 msgstr "You have not published any availability yet."
 
-msgid "Todavia no has publicado servicios."
+msgid "Todavía no has publicado servicios."
 msgstr "You have not published any services yet."
 
-msgid "Todavia no tienes reservas."
+msgid "Todavía no tienes reservas."
 msgstr "You have no bookings yet."
 
 msgid "Total estimado:"

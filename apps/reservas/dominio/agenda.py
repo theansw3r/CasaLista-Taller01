@@ -1,5 +1,5 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from django.utils import timezone
+from django.utils.translation import gettext as _
 
 from apps.reservas.dominio.excepciones import (
     BloqueNoDisponible,
@@ -34,7 +34,7 @@ class ReglasAgenda:
     def exigir_rango_valido(cls, inicio, fin) -> None:
         if fin <= inicio:
             raise RangoHorarioInvalido(
-                _("La franja debe terminar despues de empezar."),
+                _("La franja debe terminar después de empezar."),
                 inicio=inicio.isoformat(),
                 fin=fin.isoformat(),
             )

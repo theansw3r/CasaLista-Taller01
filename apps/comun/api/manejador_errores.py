@@ -1,6 +1,6 @@
-from django.utils.translation import gettext as _
 import logging
 
+from django.utils.translation import gettext as _
 from rest_framework.response import Response
 from rest_framework.views import exception_handler as manejador_de_drf
 
@@ -55,7 +55,7 @@ def _mensaje_legible(detalle) -> str:
     if isinstance(detalle, dict):
         if "detail" in detalle:
             return str(detalle["detail"])
-        return _("La peticion tiene campos invalidos.")
+        return _("La petición tiene campos inválidos.")
     if isinstance(detalle, list) and detalle:
         return str(detalle[0])
     return str(detalle)

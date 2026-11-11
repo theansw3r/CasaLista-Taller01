@@ -1,8 +1,10 @@
-from pagos.i18n import gettext as _, marcar as _lazy
 import logging
 
 from flask import jsonify
 from werkzeug.exceptions import HTTPException
+
+from pagos.i18n import gettext as _
+from pagos.i18n import marcar as _lazy
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +15,7 @@ class ErrorDePagos(Exception):
 
     codigo = "ERR-000"
     estado_http = 409
-    mensaje_por_defecto = _lazy("La operacion viola una regla de negocio.")
+    mensaje_por_defecto = _lazy("La operación viola una regla de negocio.")
 
     def __init__(self, mensaje: str = "", **contexto) -> None:
         super().__init__(_(mensaje or self.mensaje_por_defecto))
@@ -29,13 +31,13 @@ class ErrorDePagos(Exception):
 class DatosInvalidos(ErrorDePagos):
     codigo = "VAL-000"
     estado_http = 400
-    mensaje_por_defecto = _lazy("La peticion tiene campos invalidos.")
+    mensaje_por_defecto = _lazy("La petición tiene campos inválidos.")
 
 
 class SinCredenciales(ErrorDePagos):
     codigo = "HTTP-401"
     estado_http = 401
-    mensaje_por_defecto = _lazy("Las credenciales de autenticacion no se proveyeron.")
+    mensaje_por_defecto = _lazy("Las credenciales de autenticación no se proveyeron.")
 
 
 class PagoNoEncontrado(ErrorDePagos):
@@ -51,18 +53,18 @@ class ReservaYaPagada(ErrorDePagos):
 
 class ReservaNoCobrable(ErrorDePagos):
     codigo = "PAG-03"
-    mensaje_por_defecto = _lazy("La reserva no esta en un estado que admita pago.")
+    mensaje_por_defecto = _lazy("La reserva no está en un estado que admita pago.")
 
 
 class PagoRechazado(ErrorDePagos):
     codigo = "PAG-04"
-    mensaje_por_defecto = _lazy("La pasarela rechazo el pago.")
+    mensaje_por_defecto = _lazy("La pasarela rechazó el pago.")
 
 
 class PasarelaNoDisponible(ErrorDePagos):
     codigo = "PAG-05"
     estado_http = 502
-    mensaje_por_defecto = _lazy("La pasarela de pagos no esta respondiendo.")
+    mensaje_por_defecto = _lazy("La pasarela de pagos no está respondiendo.")
 
 
 class ReservasNoDisponible(ErrorDePagos):
@@ -77,7 +79,7 @@ class ReservaSinConfirmar(ErrorDePagos):
     codigo = "PAG-07"
     estado_http = 502
     mensaje_por_defecto = (
-        _lazy("El cobro se aprobo pero la reserva no se pudo confirmar. El pago quedo registrado para conciliarlo.")
+        _lazy("El cobro se aprobó pero la reserva no se pudo confirmar. El pago quedó registrado para conciliarlo.")
     )
 
 

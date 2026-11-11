@@ -176,7 +176,7 @@ class PublicacionServicioAPITest(APITestCase):
 
         self.assertEqual(respuesta.status_code, status.HTTP_201_CREATED)
         self.assertEqual(respuesta.data["categoria"], "PLOMERIA")
-        self.assertEqual(respuesta.data["categoria_nombre"], "Plomeria")
+        self.assertEqual(respuesta.data["categoria_nombre"], "Plomería")
 
     def test_400_si_el_oficio_no_es_del_nicho(self):
         """CasaLista no es un marketplace de servicios en general."""

@@ -1,4 +1,5 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
+from django.utils.translation import gettext_lazy as _lazy
+
 from apps.comun.dominio.excepciones import (
     DatosInvalidos,
     RecursoNoEncontrado,
@@ -23,7 +24,7 @@ class CantidadInvalida(DatosInvalidos):
 
 class RangoHorarioInvalido(DatosInvalidos):
     codigo = "AGD-01"
-    mensaje_por_defecto = _lazy("La franja debe terminar despues de empezar.")
+    mensaje_por_defecto = _lazy("La franja debe terminar después de empezar.")
 
 
 class BloqueNoEncontrado(RecursoNoEncontrado):

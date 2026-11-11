@@ -1,9 +1,9 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _lazy
 
 from apps.catalogo.models import Servicio
 from apps.cuentas.models import Cliente, Profesional
@@ -83,7 +83,7 @@ class Reserva(models.Model):
     tarifa_aplicada = models.CharField(
         max_length=20,
         default="BASE",
-        help_text=_lazy("Que estrategia se uso. Sin esto un total no se puede auditar."),
+        help_text=_lazy("Qué estrategia se usó. Sin esto un total no se puede auditar."),
     )
     penalizacion = models.DecimalField(
         max_digits=12,

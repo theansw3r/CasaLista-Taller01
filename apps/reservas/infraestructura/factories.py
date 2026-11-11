@@ -2,8 +2,8 @@ from apps.comun.infraestructura.factory import FactoryPorEntorno
 from apps.reservas.dominio.puertos import CalculadorTarifa, Notificador
 from apps.reservas.dominio.tarifas import TarifaBase, TarifaDinamica
 from apps.reservas.infraestructura.notificaciones import (
-    NotificadorConsola,
     NotificadorAsincrono,
+    NotificadorConsola,
     NotificadorEmail,
 )
 

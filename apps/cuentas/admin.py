@@ -1,5 +1,5 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _lazy
 
 from apps.cuentas.models import Cliente, Profesional
 from apps.cuentas.services import VerificacionProfesionalService
@@ -26,7 +26,7 @@ class ProfesionalAdmin(admin.ModelAdmin):
         cuantos = self.servicio().verificar(queryset)
         self.message_user(request, f"{cuantos} profesional(es) verificado(s).")
 
-    @admin.action(description=_lazy("Quitar la verificacion"))
+    @admin.action(description=_lazy("Quitar la verificación"))
     def revocar(self, request, queryset):
         cuantos = self.servicio().revocar(queryset)
         self.message_user(request, f"{cuantos} profesional(es) sin verificar.")

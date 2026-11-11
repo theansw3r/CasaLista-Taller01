@@ -1,6 +1,6 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils.translation import gettext_lazy as _lazy
 
 from apps.cuentas.models import Profesional
 
@@ -15,17 +15,17 @@ class Servicio(models.Model):
         formulario de contacto.
         """
 
-        PLOMERIA = "PLOMERIA", _lazy("Plomeria")
+        PLOMERIA = "PLOMERIA", _lazy("Plomería")
         ELECTRICIDAD = "ELECTRICIDAD", _lazy("Electricidad")
-        ELECTRODOMESTICOS = "ELECTRODOMESTICOS", _lazy("Reparacion de electrodomesticos")
+        ELECTRODOMESTICOS = "ELECTRODOMESTICOS", _lazy("Reparación de electrodomésticos")
         PINTURA = "PINTURA", _lazy("Pintura")
-        CERRAJERIA = "CERRAJERIA", _lazy("Cerrajeria")
+        CERRAJERIA = "CERRAJERIA", _lazy("Cerrajería")
 
     profesional = models.ForeignKey(
         Profesional,
         on_delete=models.CASCADE,
         related_name="servicios",
-        help_text=_lazy("Agregacion: 1 profesional ofrece 1..* servicios."),
+        help_text=_lazy("Agregación: 1 profesional ofrece 1..* servicios."),
     )
     categoria = models.CharField(
         max_length=20,
@@ -34,7 +34,7 @@ class Servicio(models.Model):
     )
     nombre = models.CharField(max_length=120)
     descripcion = models.TextField(
-        help_text=_lazy("Que incluye la visita. El cliente decide con esto."),
+        help_text=_lazy("Qué incluye la visita. El cliente decide con esto."),
     )
     precio_base = models.DecimalField(
         max_digits=12,
@@ -44,11 +44,11 @@ class Servicio(models.Model):
     )
     duracion_minutos = models.PositiveIntegerField(
         validators=[MinValueValidator(60), MaxValueValidator(240)],
-        help_text=_lazy("Duracion de la visita: entre 1 y 4 horas (Business Case 1.1)."),
+        help_text=_lazy("Duración de la visita: entre 1 y 4 horas (Business Case 1.1)."),
     )
     requiere_visita_previa = models.BooleanField(
         default=False,
-        help_text=_lazy("Trabajos que necesitan diagnostico antes de cotizar en firme."),
+        help_text=_lazy("Trabajos que necesitan diagnóstico antes de cotizar en firme."),
     )
     activo = models.BooleanField(default=True)
 

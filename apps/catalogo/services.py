@@ -1,5 +1,5 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from django.db import IntegrityError
+from django.utils.translation import gettext as _
 
 from apps.catalogo.dominio.estandares import EstandaresDeCasaLista
 from apps.catalogo.dominio.excepciones import (
@@ -50,7 +50,7 @@ class CatalogoService:
             return Profesional.objects.get(pk=profesional_id, verificado=True)
         except Profesional.DoesNotExist:
             raise ProfesionalNoEncontrado(
-                _("No existe un profesional verificado con id %(v0)s.") % {'v0': profesional_id},
+                _("No existe un profesional verificado con id %(id)s.") % {"id": profesional_id},
                 profesional_id=profesional_id,
             ) from None
 
@@ -78,7 +78,7 @@ class PublicacionServicioService:
             )
         except IntegrityError:
             raise ServicioDuplicado(
-                _("Ya tienes un servicio llamado '%(v0)s'.") % {'v0': comando.nombre},
+                _("Ya tienes un servicio llamado '%(nombre)s'.") % {"nombre": comando.nombre},
                 nombre=comando.nombre,
             ) from None
 
@@ -97,7 +97,7 @@ class PublicacionServicioService:
             servicio = Servicio.objects.get(pk=servicio_id, profesional=profesional)
         except Servicio.DoesNotExist:
             raise ServicioNoEncontrado(
-                _("No tienes un servicio con id %(v0)s.") % {'v0': servicio_id}, servicio_id=servicio_id
+                _("No tienes un servicio con id %(id)s.") % {"id": servicio_id}, servicio_id=servicio_id
             ) from None
         servicio.activo = activo
         servicio.save(update_fields=["activo"])

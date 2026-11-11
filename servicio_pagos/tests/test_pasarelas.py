@@ -1,6 +1,11 @@
 from decimal import Decimal
 
-from pagos.pasarelas import PasarelaPSE, PasarelaSimulada, PasarelaTarjeta, pasarela_para
+from pagos.pasarelas import (
+    PasarelaPSE,
+    PasarelaSimulada,
+    PasarelaTarjeta,
+    pasarela_para,
+)
 
 
 def test_con_simulada_se_ignora_el_medio():
@@ -17,4 +22,4 @@ def test_la_tarjeta_rechaza_montos_menores_al_minimo():
     resultado = PasarelaTarjeta().cobrar(Decimal("999.99"), "reserva-1")
 
     assert not resultado.aprobado
-    assert "minimo" in resultado.motivo
+    assert "mínimo" in resultado.motivo

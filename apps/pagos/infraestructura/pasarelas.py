@@ -1,7 +1,8 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
 import logging
 import uuid
 from decimal import Decimal
+
+from django.utils.translation import gettext as _
 
 from apps.pagos.dominio.puertos import PasarelaDePago, ResultadoPago
 
@@ -30,7 +31,7 @@ class PasarelaTarjeta(PasarelaDePago):
         if monto < self.MONTO_MINIMO:
             return ResultadoPago(
                 aprobado=False,
-                motivo=_("El monto minimo con tarjeta es $ %(v0)s.") % {'v0': self.MONTO_MINIMO},
+                motivo=_("El monto mínimo con tarjeta es $ %(monto)s.") % {"monto": self.MONTO_MINIMO},
             )
         logger.info("[TARJETA] cobro aprobado por %s", monto)
         return ResultadoPago(aprobado=True, referencia=f"TC-{uuid.uuid4().hex[:12]}")

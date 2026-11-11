@@ -1,8 +1,8 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils.translation import gettext_lazy as _lazy
 
 from apps.reservas.models import Reserva
 
@@ -16,8 +16,8 @@ class Pago(models.Model):
         REEMBOLSADO = "REEMBOLSADO", _lazy("Reembolsado")
 
     class Medio(models.TextChoices):
-        TARJETA = "TARJETA", _lazy("Tarjeta de credito o debito")
-        PSE = "PSE", _lazy("PSE (debito bancario)")
+        TARJETA = "TARJETA", _lazy("Tarjeta de crédito o débito")
+        PSE = "PSE", _lazy("PSE (débito bancario)")
 
     reserva = models.OneToOneField(
         Reserva,
@@ -37,7 +37,7 @@ class Pago(models.Model):
     )
     pasarela = models.CharField(
         max_length=20,
-        help_text=_lazy("Que pasarela lo proceso. Sin esto no se puede conciliar."),
+        help_text=_lazy("Qué pasarela lo procesó. Sin esto no se puede conciliar."),
     )
     referencia_externa = models.CharField(
         max_length=64,

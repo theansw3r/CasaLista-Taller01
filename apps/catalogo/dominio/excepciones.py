@@ -1,4 +1,5 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
+from django.utils.translation import gettext_lazy as _lazy
+
 from apps.comun.dominio.excepciones import RecursoNoEncontrado, ReglaDeNegocioViolada
 
 
@@ -15,7 +16,7 @@ class ProfesionalNoEncontrado(RecursoNoEncontrado):
 class ServicioInactivo(ReglaDeNegocioViolada):
 
     codigo = "CAT-03"
-    mensaje_por_defecto = _lazy("El servicio ya no esta disponible.")
+    mensaje_por_defecto = _lazy("El servicio ya no está disponible.")
 
 
 class ServicioDuplicado(ReglaDeNegocioViolada):

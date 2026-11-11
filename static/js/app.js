@@ -73,7 +73,7 @@ async function pedir(ruta, opciones = {}) {
     // para que el usuario vuelva a entrar, en vez de quedar reintentando.
     if (respuesta.status === 401 && estado.token) {
       cerrarSesion();
-      const vencida = new Error(gettext("Tu sesion expiro. Vuelve a iniciar sesion."));
+      const vencida = new Error(gettext("Tu sesión expiró. Vuelve a iniciar sesión."));
       vencida.codigo = "SESION";
       throw vencida;
     }
@@ -81,7 +81,7 @@ async function pedir(ruta, opciones = {}) {
     // La API siempre responde errores con la misma forma:
     // {"error": {"codigo": "RN-01", "mensaje": "..."}}
     const error = cuerpo.error || {};
-    const problema = new Error(error.mensaje || gettext("Ocurrio un error inesperado."));
+    const problema = new Error(error.mensaje || gettext("Ocurrió un error inesperado."));
     problema.codigo = error.codigo || "HTTP-" + respuesta.status;
     problema.contexto = error.contexto;
     throw problema;
@@ -197,7 +197,7 @@ async function buscarProfesionales(pagina = 1) {
 
   if (!datos.resultados.length) {
     contenedor.innerHTML =
-      `<p class="vacio">${gettext("No hay profesionales verificados para esa busqueda.")}</p>`;
+      `<p class="vacio">${gettext("No hay profesionales verificados para esa búsqueda.")}</p>`;
     return;
   }
 
@@ -241,7 +241,7 @@ async function cargarServicios(profesionalId, pagina = 1) {
 
   if (!datos.resultados.length) {
     contenedor.innerHTML =
-      `<p class="vacio">${gettext("Este profesional todavia no publico servicios.")}</p>`;
+      `<p class="vacio">${gettext("Este profesional todavía no publicó servicios.")}</p>`;
   }
 
   datos.resultados.forEach((servicio) => {
@@ -357,7 +357,7 @@ async function cargarReservas(pagina = 1) {
   contenedor.innerHTML = "";
 
   if (!datos.resultados.length) {
-    contenedor.innerHTML = `<p class="vacio">${gettext("Todavia no tienes reservas.")}</p>`;
+    contenedor.innerHTML = `<p class="vacio">${gettext("Todavía no tienes reservas.")}</p>`;
     return;
   }
 
@@ -378,7 +378,7 @@ function pintarReserva(reserva, conAcciones) {
 
   const penalizacion =
     Number(reserva.penalizacion) > 0
-      ? `<br>${gettext("Penalizacion aplicada:")} ${pesos(reserva.penalizacion)}`
+      ? `<br>${gettext("Penalización aplicada:")} ${pesos(reserva.penalizacion)}`
       : "";
 
   item.innerHTML = `
@@ -435,13 +435,13 @@ async function cancelarReserva(id) {
   if (!window.confirm(gettext("¿Cancelar esta reserva? Se aplicará la política de cancelación según la anticipación de la visita."))) return;
   const reserva = await pedir(`/reservas/${id}/cancelacion/`, {
     method: "POST",
-    body: JSON.stringify({ motivo: "Cancelada desde la aplicacion" }),
+    body: JSON.stringify({}),
   });
   const retenido = Number(reserva.penalizacion);
   avisar(
     retenido > 0
-      ? interpolate(gettext("Reserva cancelada. Se retuvo %(monto)s por politica de cancelacion."), {monto: pesos(retenido)}, true)
-      : gettext("Reserva cancelada sin penalizacion.")
+      ? interpolate(gettext("Reserva cancelada. Se retuvo %(monto)s por política de cancelación."), {monto: pesos(retenido)}, true)
+      : gettext("Reserva cancelada sin penalización.")
   );
   await cargarReservas();
 }
@@ -462,7 +462,7 @@ async function cargarMisServicios(pagina = 1) {
 
   if (!datos.resultados.length) {
     contenedor.innerHTML =
-      `<p class="vacio">${gettext("Todavia no has publicado servicios.")}</p>`;
+      `<p class="vacio">${gettext("Todavía no has publicado servicios.")}</p>`;
     return;
   }
 
@@ -513,7 +513,7 @@ async function cargarMiAgenda(pagina = 1, paginaRecibidas = 1) {
 
   if (!agenda.resultados.length) {
     contenedor.innerHTML =
-      `<p class="vacio">${gettext("Todavia no has publicado horarios.")}</p>`;
+      `<p class="vacio">${gettext("Todavía no has publicado horarios.")}</p>`;
   }
 
   agenda.resultados.forEach((bloque) => {
@@ -538,7 +538,7 @@ async function cargarMiAgenda(pagina = 1, paginaRecibidas = 1) {
   lista.innerHTML = "";
 
   if (!recibidas.resultados.length) {
-    lista.innerHTML = `<p class="vacio">${gettext("Nadie te ha reservado todavia.")}</p>`;
+    lista.innerHTML = `<p class="vacio">${gettext("Nadie te ha reservado todavía.")}</p>`;
     return;
   }
   recibidas.resultados.forEach((reserva) =>
@@ -553,7 +553,7 @@ async function abrirHorario() {
   const horas = Number($("agenda-horas").value);
 
   if (!dia || !hora) {
-    avisar(gettext("Elige el dia y la hora de inicio."), "error", "FALTAN DATOS");
+    avisar(gettext("Elige el día y la hora de inicio."), "error", "FALTAN DATOS");
     return;
   }
 
@@ -634,7 +634,7 @@ document.addEventListener("DOMContentLoaded", () => {
           zonas_cobertura: zonas,
         }),
       });
-      avisar(gettext("Cuenta profesional creada. Queda pendiente de verificacion."));
+      avisar(gettext("Cuenta profesional creada. Queda pendiente de verificación."));
       await iniciarSesion($("pro-correo").value, $("pro-clave").value);
     });
 

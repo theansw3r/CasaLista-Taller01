@@ -1,4 +1,5 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
+from django.utils.translation import gettext as _
+
 from apps.cuentas.dominio.excepciones import ProfesionalNoHabilitado
 
 
@@ -24,12 +25,12 @@ class PoliticaDeCobertura:
     def exigir_habilitado(cls, profesional, zona: str) -> None:
         if not profesional.verificado:
             raise ProfesionalNoHabilitado(
-                _("El profesional %(v0)s todavia no esta verificado.") % {'v0': profesional.nombre},
+                _("El profesional %(profesional)s todavía no está verificado.") % {"profesional": profesional.nombre},
                 profesional_id=profesional.pk,
             )
         if not cls.cubre_zona(profesional, zona):
             raise ProfesionalNoHabilitado(
-                _("El profesional %(v0)s no cubre la zona '%(v1)s'.") % {'v0': profesional.nombre, 'v1': zona},
+                _("El profesional %(profesional)s no cubre la zona '%(zona)s'.") % {"profesional": profesional.nombre, "zona": zona},
                 zona_solicitada=zona,
                 zonas_cubiertas=cls.zonas_de(profesional),
             )

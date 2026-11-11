@@ -1,9 +1,10 @@
-from pagos.i18n import gettext as _, marcar as _lazy
 import logging
 import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from decimal import Decimal
+
+from pagos.i18n import gettext as _
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ class PasarelaTarjeta(PasarelaDePago):
         if monto < self.MONTO_MINIMO:
             return ResultadoPago(
                 aprobado=False,
-                motivo=_("El monto minimo con tarjeta es $ %(v0)s.") % {'v0': self.MONTO_MINIMO},
+                motivo=_("El monto mínimo con tarjeta es $ %(monto)s.") % {"monto": self.MONTO_MINIMO},
             )
         logger.info("[TARJETA] cobro aprobado por %s", monto)
         return ResultadoPago(aprobado=True, referencia=f"TC-{uuid.uuid4().hex[:12]}")

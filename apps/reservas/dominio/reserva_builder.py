@@ -1,7 +1,7 @@
 from __future__ import annotations
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
 
 from django.db import transaction
+from django.utils.translation import gettext as _
 
 from apps.catalogo.dominio.precios import CalculadoraDeServicio
 from apps.cuentas.dominio.cobertura import PoliticaDeCobertura
@@ -98,7 +98,7 @@ class ReservaBuilder:
             raise DatosDeReservaIncompletos(_("Falta indicar la franja de agenda."))
         if not self._direccion or not self._zona:
             raise DatosDeReservaIncompletos(
-                _("Falta la direccion o la zona de la visita.")
+                _("Falta la dirección o la zona de la visita.")
             )
 
     def _validar_lineas(self) -> None:
@@ -107,7 +107,7 @@ class ReservaBuilder:
         for servicio, cantidad in self._lineas:
             if cantidad <= 0:
                 raise CantidadInvalida(
-                    _("La cantidad de '%(v0)s' debe ser mayor que cero.") % {'v0': servicio.nombre},
+                    _("La cantidad de '%(servicio)s' debe ser mayor que cero.") % {"servicio": servicio.nombre},
                     servicio_id=servicio.pk,
                 )
             CalculadoraDeServicio.exigir_disponible(servicio)
@@ -137,7 +137,7 @@ class ReservaBuilder:
         disponible = ReglasAgenda.duracion_minutos(self._bloque)
         if solicitada > disponible:
             raise DuracionExcedeBloque(
-                _("Los servicios requieren %(v0)s minutos y la franja solo tiene %(v1)s.") % {'v0': solicitada, 'v1': disponible},
+                _("Los servicios requieren %(requeridos)s minutos y la franja solo tiene %(disponibles)s.") % {"requeridos": solicitada, "disponibles": disponible},
                 minutos_solicitados=solicitada,
                 minutos_disponibles=disponible,
             )

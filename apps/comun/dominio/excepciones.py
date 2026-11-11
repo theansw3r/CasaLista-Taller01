@@ -1,9 +1,11 @@
-from django.utils.translation import gettext as _, gettext_lazy as _lazy
+from django.utils.translation import gettext_lazy as _lazy
+
+
 class ErrorDeDominio(Exception):
 
     codigo = "ERR-000"
     estado_http = 409
-    mensaje_por_defecto = _lazy("La operacion viola una regla de negocio.")
+    mensaje_por_defecto = _lazy("La operación viola una regla de negocio.")
 
     def __init__(self, mensaje: str = "", **contexto) -> None:
         super().__init__(mensaje or self.mensaje_por_defecto)

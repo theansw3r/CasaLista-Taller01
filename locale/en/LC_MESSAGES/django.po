@@ -1,13 +1,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: CasaLista Entrega 2\n"
+"Project-Id-Version: CasaLista\n"
 "Language: en\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "%(v0)s='%(v1)s' no es un valor valido. Opciones disponibles: %(v2)s."
-msgstr "%(v0)s='%(v1)s' is not a valid value. Available options: %(v2)s."
+msgid ""
+"%(variable)s='%(valor)s' no es un valor válido. Opciones disponibles: "
+"%(opciones)s."
+msgstr ""
+"%(variable)s='%(valor)s' is not a valid value. Available options: "
+"%(opciones)s."
 
 msgid "1 reserva genera 0..1 pago."
 msgstr "1 booking generates 0..1 payment."
@@ -30,7 +34,7 @@ msgstr "Add availability"
 msgid "Accede para gestionar tus reservas y servicios."
 msgstr "Sign in to manage your bookings and services."
 
-msgid "Agregacion: 1 profesional ofrece 1..* servicios."
+msgid "Agregación: 1 profesional ofrece 1..* servicios."
 msgstr "Aggregation: 1 professional offers 1..* services."
 
 msgid "Aplicar"
@@ -45,7 +49,7 @@ msgstr "Availability slots"
 msgid "Buscar"
 msgstr "Search"
 
-msgid "CasaLista - Catalogo"
+msgid "CasaLista - Catálogo"
 msgstr "CasaLista - Catalogue"
 
 msgid "CasaLista - Cuentas"
@@ -65,48 +69,48 @@ msgstr ""
 "hours."
 
 msgid ""
-"CasaLista solo agenda visitas de hasta %(v0)s minutos (cuatro horas). Un "
-"trabajo mas largo se divide en varias visitas."
+"CasaLista solo agenda visitas de hasta %(minutos)s minutos (cuatro horas). "
+"Un trabajo más largo se divide en varias visitas."
 msgstr ""
-"CasaLista schedules visits of up to %(v0)s minutes (four hours). Longer jobs"
-" require several visits."
+"CasaLista schedules visits of up to %(minutos)s minutes (four hours). Longer"
+" jobs require several visits."
 
-msgid "Cerrajeria"
+msgid "Cerrajería"
 msgstr "Locksmithing"
 
-msgid "Como se presenta: oficio, experiencia, que trabajos hace."
+msgid "Cómo se presenta: oficio, experiencia, qué trabajos hace."
 msgstr "Profile: trade, experience and services offered."
 
 msgid "Consultando el clima…"
 msgstr "Checking the weather…"
 
-msgid "Contrasena"
+msgid "Contraseña"
 msgstr "Password"
 
-msgid "Contrasena (minimo 8 caracteres)"
+msgid "Contraseña (mínimo 8 caracteres)"
 msgstr "Password (at least 8 characters)"
 
 msgid "Correo"
 msgstr "Email"
 
-msgid "Cuenta de acceso. Un usuario tiene como maximo un perfil de cliente."
+msgid "Cuenta de acceso. Un usuario tiene como máximo un perfil de cliente."
 msgstr "Login account. A user can have at most one customer profile."
 
 msgid "Datos de Open-Meteo"
 msgstr "Data by Open-Meteo"
 
-msgid "Debe ser un numero entero mayor o igual a 1."
+msgid "Debe ser un número entero mayor o igual a 1."
 msgstr "Must be an integer greater than or equal to 1."
 
 msgid "Debe ser uno de: %(medios)s."
 msgstr "Must be one of: %(medios)s."
 
 msgid ""
-"Describe el servicio con al menos %(v0)s caracteres: el cliente decide con "
-"esa informacion."
+"Describe el servicio con al menos %(caracteres)s caracteres: el cliente "
+"decide con esa información."
 msgstr ""
-"Describe the service in at least %(v0)s characters so customers can make an "
-"informed choice."
+"Describe the service in at least %(caracteres)s characters so customers can "
+"make an informed choice."
 
 msgid "Describe tu experiencia"
 msgstr "Tell us about your experience"
@@ -117,10 +121,10 @@ msgstr "Booking detail"
 msgid "Detalles de reserva"
 msgstr "Booking details"
 
-msgid "Dia"
+msgid "Día"
 msgstr "Date"
 
-msgid "Direccion de la visita"
+msgid "Dirección de la visita"
 msgstr "Visit address"
 
 msgid "Documento de identidad"
@@ -129,20 +133,17 @@ msgstr "Identity document"
 msgid "Documento de identidad. Lo usa el administrador para verificar."
 msgstr "Identity document used by the administrator for verification."
 
-msgid "Duracion (horas)"
+msgid "Duración (horas)"
 msgstr "Duration (hours)"
 
-msgid "Duracion (minutos)"
+msgid "Duración (minutos)"
 msgstr "Duration (minutes)"
 
-msgid "Duracion de la visita: entre 1 y 4 horas (Business Case 1.1)."
+msgid "Duración de la visita: entre 1 y 4 horas (Business Case 1.1)."
 msgstr "Visit duration: between 1 and 4 hours (Business Case 1.1)."
 
 msgid "EMPIEZA AQUÍ"
 msgstr "START HERE"
-
-msgid "El cliente no tiene correo"
-msgstr "The customer has no email address"
 
 msgid "El clima en Medellín"
 msgstr "Weather in Medellín"
@@ -151,28 +152,28 @@ msgid "El clima no está disponible. Puedes continuar tu reserva."
 msgstr "Weather is unavailable. You can continue your booking."
 
 msgid ""
-"El cobro se aprobo pero la reserva no se pudo confirmar. El pago quedo "
+"El cobro se aprobó pero la reserva no se pudo confirmar. El pago quedó "
 "registrado para conciliarlo."
 msgstr ""
 "The payment was approved but the booking could not be confirmed. The payment"
 " was recorded for reconciliation."
 
-msgid "El cuerpo de la peticion debe ser un objeto JSON."
+msgid "El cuerpo de la petición debe ser un objeto JSON."
 msgstr "The request body must be a JSON object."
 
-msgid "El monto minimo con tarjeta es $ %(v0)s."
-msgstr "The minimum card payment is $ %(v0)s."
+msgid "El monto mínimo con tarjeta es $ %(monto)s."
+msgstr "The minimum card payment is $ %(monto)s."
 
 msgid "El pago solicitado no existe."
 msgstr "The requested payment does not exist."
 
-msgid "El profesional %(v0)s no cubre la zona '%(v1)s'."
-msgstr "Professional %(v0)s does not cover the area '%(v1)s'."
+msgid "El profesional %(profesional)s no cubre la zona '%(zona)s'."
+msgstr "Professional %(profesional)s does not cover the area '%(zona)s'."
 
-msgid "El profesional %(v0)s todavia no esta verificado."
-msgstr "Professional %(v0)s is not verified yet."
+msgid "El profesional %(profesional)s todavía no está verificado."
+msgstr "Professional %(profesional)s is not verified yet."
 
-msgid "El profesional no esta habilitado para esta reserva."
+msgid "El profesional no está habilitado para esta reserva."
 msgstr "The professional is not eligible for this booking."
 
 msgid "El profesional solicitado no existe."
@@ -184,8 +185,8 @@ msgstr "The professional already has an availability slot at that time."
 msgid "El recurso solicitado no existe."
 msgstr "The requested resource does not exist."
 
-msgid "El servicio '%(v0)s' ya no esta disponible."
-msgstr "Service '%(v0)s' is no longer available."
+msgid "El servicio '%(servicio)s' ya no está disponible."
+msgstr "Service '%(servicio)s' is no longer available."
 
 msgid "El servicio no cumple los estandares de CasaLista."
 msgstr "The service does not meet CasaLista standards."
@@ -193,7 +194,7 @@ msgstr "The service does not meet CasaLista standards."
 msgid "El servicio solicitado no existe."
 msgstr "The requested service does not exist."
 
-msgid "El servicio ya no esta disponible."
+msgid "El servicio ya no está disponible."
 msgstr "The service is no longer available."
 
 msgid "Electricidad"
@@ -224,7 +225,7 @@ msgstr "The booking customer is required."
 msgid "Falta indicar la franja de agenda."
 msgstr "An availability slot is required."
 
-msgid "Falta la direccion o la zona de la visita."
+msgid "Falta la dirección o la zona de la visita."
 msgstr "The visit address or area is missing."
 
 msgid "Faltan datos obligatorios para construir la reserva."
@@ -245,7 +246,7 @@ msgstr "Language"
 msgid "Información para tu visita"
 msgstr "Information for your visit"
 
-msgid "Iniciar sesion"
+msgid "Iniciar sesión"
 msgstr "Sign in"
 
 msgid ""
@@ -255,8 +256,8 @@ msgstr ""
 "Integration pending: the partner team and its API contract have not been "
 "identified."
 
-msgid "La cantidad de '%(v0)s' debe ser mayor que cero."
-msgstr "The quantity of '%(v0)s' must be greater than zero."
+msgid "La cantidad de '%(servicio)s' debe ser mayor que cero."
+msgstr "The quantity of '%(servicio)s' must be greater than zero."
 
 msgid "La cantidad de un servicio debe ser mayor que cero."
 msgstr "The quantity of a service must be greater than zero."
@@ -267,7 +268,7 @@ msgstr "The authenticated account has no customer profile."
 msgid "La cuenta autenticada no tiene un perfil de profesional."
 msgstr "The authenticated account has no professional profile."
 
-msgid "La franja debe terminar despues de empezar."
+msgid "La franja debe terminar después de empezar."
 msgstr "The time slot must end after it starts."
 
 msgid "La franja elegida pertenece a otro profesional."
@@ -288,20 +289,20 @@ msgstr "The time slot belongs to another professional."
 msgid "La franja se solapa con otra ya publicada."
 msgstr "The time slot overlaps an existing one."
 
-msgid "La operacion viola una regla de negocio."
+msgid "La operación viola una regla de negocio."
 msgstr "The operation violates a business rule."
 
-msgid "La pasarela de pagos no esta respondiendo."
+msgid "La pasarela de pagos no está respondiendo."
 msgstr "The payment gateway is not responding."
 
-msgid "La pasarela rechazo el pago."
+msgid "La pasarela rechazó el pago."
 msgstr "The payment gateway declined the payment."
 
-msgid "La peticion tiene campos invalidos."
+msgid "La petición tiene campos inválidos."
 msgstr "The request contains invalid fields."
 
-msgid "La reserva #%(v0)s esta %(v1)s y no admite pago."
-msgstr "Booking #%(v0)s is %(v1)s and cannot accept payment."
+msgid "La reserva #%(id)s está %(estado)s y no admite pago."
+msgstr "Booking #%(id)s is %(estado)s and cannot accept payment."
 
 msgid "La reserva debe incluir al menos un servicio."
 msgstr "A booking must include at least one service."
@@ -309,7 +310,7 @@ msgstr "A booking must include at least one service."
 msgid "La reserva no admite esa operacion en su estado actual."
 msgstr "The booking cannot perform this operation in its current state."
 
-msgid "La reserva no esta en un estado que admita pago."
+msgid "La reserva no está en un estado que admita pago."
 msgstr "The booking is not in a state that accepts payment."
 
 msgid "La reserva pertenece a otro cliente."
@@ -318,21 +319,24 @@ msgstr "The booking belongs to another customer."
 msgid "La reserva solicitada no existe."
 msgstr "The requested booking does not exist."
 
-msgid "Las credenciales de autenticacion no se proveyeron."
+msgid "Las credenciales de autenticación no se proveyeron."
 msgstr "Authentication credentials were not provided."
 
 msgid "Lo calcula la estrategia de tarifa al construir la reserva."
 msgstr "Calculated by the pricing strategy when the booking is built."
 
-msgid "Lo recalcula el modulo de Reputacion (Entrega 2)."
+msgid "Lo recalcula el módulo de Reputación (Entrega 2)."
 msgstr "Recalculated by the Reputation module (Delivery 2)."
 
 msgid "Los servicios no caben en la franja elegida."
 msgstr "The services do not fit in the selected time slot."
 
-msgid "Los servicios requieren %(v0)s minutos y la franja solo tiene %(v1)s."
+msgid ""
+"Los servicios requieren %(requeridos)s minutos y la franja solo tiene "
+"%(disponibles)s."
 msgstr ""
-"The services require %(v0)s minutes but the time slot only has %(v1)s."
+"The services require %(requeridos)s minutes but the time slot only has "
+"%(disponibles)s."
 
 msgid "Menos pendientes."
 msgstr "Less on your to-do list."
@@ -352,20 +356,20 @@ msgstr "More time for you."
 msgid "NUESTRA RED"
 msgstr "OUR NETWORK"
 
-msgid "No existe el pago %(v0)s."
-msgstr "Payment %(v0)s does not exist."
+msgid "No existe el pago %(id)s."
+msgstr "Payment %(id)s does not exist."
 
-msgid "No existe el servicio %(v0)s."
-msgstr "Service %(v0)s does not exist."
+msgid "No existe el servicio %(id)s."
+msgstr "Service %(id)s does not exist."
 
-msgid "No existe la franja de agenda %(v0)s."
-msgstr "Availability slot %(v0)s does not exist."
+msgid "No existe la franja de agenda %(id)s."
+msgstr "Availability slot %(id)s does not exist."
 
-msgid "No existe la reserva %(v0)s."
-msgstr "Booking %(v0)s does not exist."
+msgid "No existe la reserva %(id)s."
+msgstr "Booking %(id)s does not exist."
 
-msgid "No existe un profesional verificado con id %(v0)s."
-msgstr "No verified professional with ID %(v0)s exists."
+msgid "No existe un profesional verificado con id %(id)s."
+msgstr "No verified professional with ID %(id)s exists."
 
 msgid "No puedes publicar dos horarios que se crucen (AGD-03)."
 msgstr "You cannot publish overlapping time slots (AGD-03)."
@@ -376,8 +380,8 @@ msgstr "The booking could not be retrieved. Please try again shortly."
 msgid "No tiene permiso sobre este recurso."
 msgstr "You do not have permission for this resource."
 
-msgid "No tienes un servicio con id %(v0)s."
-msgstr "You do not have a service with ID %(v0)s."
+msgid "No tienes un servicio con id %(id)s."
+msgstr "You do not have a service with ID %(id)s."
 
 msgid "Nombre"
 msgstr "Name"
@@ -385,7 +389,7 @@ msgstr "Name"
 msgid "Nombre del servicio"
 msgstr "Service name"
 
-msgid "Nombre o razon social"
+msgid "Nombre o razón social"
 msgstr "Name or business name"
 
 msgid "Oficio"
@@ -397,7 +401,7 @@ msgstr "Trade category. Only the five supported trades are allowed."
 msgid "PLANEA TU VISITA"
 msgstr "PLAN YOUR VISIT"
 
-msgid "PSE (debito bancario)"
+msgid "PSE (débito bancario)"
 msgstr "PSE (bank debit)"
 
 msgid "Pendiente de pago"
@@ -406,7 +410,7 @@ msgstr "Awaiting payment"
 msgid "Pintura"
 msgstr "Painting"
 
-msgid "Plomeria"
+msgid "Plomería"
 msgstr "Plumbing"
 
 msgid "Precio"
@@ -424,19 +428,19 @@ msgstr "Publish service"
 msgid "Publicar un servicio"
 msgstr "Publish a service"
 
-msgid "Que estrategia se uso. Sin esto un total no se puede auditar."
+msgid "Qué estrategia se usó. Sin esto un total no se puede auditar."
 msgstr "The pricing strategy used, required to audit the total."
 
-msgid "Que incluye la visita"
+msgid "Qué incluye la visita"
 msgstr "What the visit includes"
 
-msgid "Que incluye la visita. El cliente decide con esto."
+msgid "Qué incluye la visita. El cliente decide con esto."
 msgstr "What the visit includes, to help the customer choose."
 
-msgid "Que pasarela lo proceso. Sin esto no se puede conciliar."
+msgid "Qué pasarela lo procesó. Sin esto no se puede conciliar."
 msgstr "The payment gateway used, required for reconciliation."
 
-msgid "Quitar la verificacion"
+msgid "Quitar la verificación"
 msgstr "Remove verification"
 
 msgid "RN-04: monto retenido si el cliente cancela."
@@ -451,7 +455,7 @@ msgstr "Create account"
 msgid "Registrarme como profesional"
 msgstr "Register as a professional"
 
-msgid "Reparacion de electrodomesticos"
+msgid "Reparación de electrodomésticos"
 msgstr "Appliance repair"
 
 msgid "Reservar"
@@ -484,10 +488,10 @@ msgstr "I'm a professional"
 msgid "TU HOGAR, EN BUENAS MANOS"
 msgstr "YOUR HOME, IN GOOD HANDS"
 
-msgid "Tarjeta de credito o debito"
+msgid "Tarjeta de crédito o débito"
 msgstr "Credit or debit card"
 
-msgid "Telefono"
+msgid "Teléfono"
 msgstr "Phone"
 
 msgid "Todas las zonas"
@@ -499,7 +503,7 @@ msgstr "All trades"
 msgid "Todos los servicios de una reserva deben ser del mismo profesional."
 msgstr "All services in a booking must belong to the same professional."
 
-msgid "Trabajos que necesitan diagnostico antes de cotizar en firme."
+msgid "Trabajos que necesitan diagnóstico antes de cotizar en firme."
 msgstr "Jobs that require a diagnosis before a final quotation."
 
 msgid "Tu próxima visita, sin complicaciones."
@@ -507,16 +511,16 @@ msgstr "Your next visit, made simple."
 
 msgid ""
 "Un administrador debe verificar tu cuenta antes de que aparezcas en las "
-"busquedas (regla RN-07)."
+"búsquedas (regla RN-07)."
 msgstr ""
 "An administrator must verify your account before it appears in searches "
 "(rule RN-07)."
 
-msgid "Una reserva %(v0)s no puede pasar a %(v1)s."
-msgstr "A %(v0)s booking cannot transition to %(v1)s."
+msgid "Una reserva %(estado_actual)s no puede pasar a %(estado_nuevo)s."
+msgstr "A %(estado_actual)s booking cannot transition to %(estado_nuevo)s."
 
-msgid "Una visita no puede durar menos de %(v0)s minutos."
-msgstr "A visit cannot last less than %(v0)s minutes."
+msgid "Una visita no puede durar menos de %(minutos)s minutos."
+msgstr "A visit cannot last less than %(minutos)s minutes."
 
 msgid "Verificar los profesionales seleccionados"
 msgstr "Verify selected professionals"
@@ -527,8 +531,8 @@ msgstr "An account with this email address already exists."
 msgid "Ya publicaste un servicio con ese nombre."
 msgstr "You have already published a service with this name."
 
-msgid "Ya tienes un servicio llamado '%(v0)s'."
-msgstr "You already have a service named '%(v0)s'."
+msgid "Ya tienes un servicio llamado '%(nombre)s'."
+msgstr "You already have a service named '%(nombre)s'."
 
 msgid "Zona"
 msgstr "Area"
@@ -634,3 +638,12 @@ msgstr "Service"
 
 msgid "Servicios"
 msgstr "Services"
+
+msgid "Ya existe un profesional con ese documento."
+msgstr "A professional with that ID number already exists."
+
+msgid "CasaLista - Integraciones"
+msgstr "CasaLista - Integrations"
+
+#~ msgid "El cliente no tiene correo"
+#~ msgstr "The customer has no email address"
