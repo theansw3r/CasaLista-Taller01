@@ -12,7 +12,8 @@ Incluye Redis/Celery con outbox transaccional, consumo de Open-Meteo mediante
 Adapter e inversión de dependencias, interfaz renovada y traducción ES/EN con
 gettext. El consumo del servicio del equipo aliado queda pendiente.
 
-Toda la documentación de la entrega está en [docs/ENTREGA2.md](docs/ENTREGA2.md).
+Toda la documentación de la entrega está en la Wiki:
+[Entrega 2](https://github.com/theansw3r/CasaLista-Taller01/wiki/Entrega-2).
 
 ## Con Docker Compose
 
